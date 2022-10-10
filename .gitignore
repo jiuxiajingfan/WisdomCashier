@@ -1,0 +1,4 @@
+# Project exclude paths
+/WisdomCashier-admin/target/
+/WisdomCashier-base/target/
+/WisdomCashier-customer/target/
