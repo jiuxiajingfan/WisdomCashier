@@ -21,4 +21,5 @@ public interface UserService extends IService<User> {
      * @return
      */
     R<String> signUp(SignUpDto signUpDto);
+
 }

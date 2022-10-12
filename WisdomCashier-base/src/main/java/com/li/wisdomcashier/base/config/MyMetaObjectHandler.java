@@ -1,4 +1,4 @@
-package com.li.wisdomcashier.config;
+package com.li.wisdomcashier.base.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
