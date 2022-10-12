@@ -1,5 +1,6 @@
 package com.li.wisdomcashier.admin.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -18,13 +19,16 @@ import springfox.documentation.spring.web.plugins.Docket;
  * @Version 1.0
  */
 @Configuration
-@Profile("!prod")
 public class Knife4gConfig {
+
+    @Value("${swagger.enable:false}")
+    private Boolean enable;
 
     @Bean(value = "dockerBean")
     public Docket dockerBean() {
         //指定使用Swagger2规范
         Docket docket=new Docket(DocumentationType.SWAGGER_2)
+                .enable(enable)
                 .apiInfo(new ApiInfoBuilder()
                         //描述字段支持Markdown语法
                         .description("# 智慧收银管理端Api文档")

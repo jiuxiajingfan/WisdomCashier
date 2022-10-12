@@ -26,12 +26,12 @@ public class SignUpDto {
 
     @ApiModelProperty(value = "用户名")
     @Length(min = 1,max = 8,message = "用户名必须在1-8位之间！" )
-    String nikeName;
+    String userNickname;
 
 //   ，长度在6~18之间，只能包含字符、数字和下划线
     @ApiModelProperty(value = "密码")
     @Pattern(regexp = "\\w{6,18}$" , message = "密码格式不符合要求")
-    String pwd;
+    String userPwd;
 
     @ApiModelProperty(value = "邮箱")
     @Pattern(regexp = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$",message = "邮箱格式不正确！")
