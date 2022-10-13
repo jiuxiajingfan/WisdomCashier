@@ -1,14 +1,11 @@
 package com.li.wisdomcashier.base.service;
 
-import com.li.wisdomcashier.base.entity.po.R;
-import com.li.wisdomcashier.base.util.CodeUtils;
 import com.li.wisdomcashier.base.util.EmailUtils;
-import com.li.wisdomcashier.base.util.RedisUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -25,18 +22,15 @@ import javax.mail.internet.MimeMessage;
 @Service
 public class EmailService {
 
-    @Autowired
-    private JavaMailSenderImpl mailSender;
-
     @Resource
-    private RedisUtils redisUtils;
+    private JavaMailSenderImpl mailSender;
 
     @Value("${spring.mail.username}")
     private String mailFrom;
 
     @Async("threadPool")
-    public void sendSimpleMail(String from, String to,String code) {
-        SimpleMailMessage message = EmailUtils.simple(from, to,code);
+    public void sendSimpleMail(String to,String code) {
+        SimpleMailMessage message = EmailUtils.simple(mailFrom, to,code);
         try {
             Thread.sleep(4000);
             mailSender.send(message);
@@ -49,19 +43,10 @@ public class EmailService {
     @Async("threadPool")
     public void sendMultiPartMail(String from, String to) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
-        MimeMessage mimeMessage = EmailUtils.mimeMessage(message,from, to);
+        MimeMessage mimeMessage = EmailUtils.mimeMessage(message,mailFrom, to);
         mailSender.send(mimeMessage);
 
     }
 
-    public R<String> getCode(String email) {
-        if (redisUtils.hasKey(email)) {
-            return R.error("请勿重复调用~");
-        } else {
-            String code = CodeUtils.getCode();
-            redisUtils.set(email, code,90);
-            this.sendSimpleMail(mailFrom, email, code);
-        }
-        return R.ok();
-    }
+
 }

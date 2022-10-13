@@ -30,6 +30,7 @@ public class Knife4gConfig {
         Docket docket=new Docket(DocumentationType.SWAGGER_2)
                 .enable(enable)
                 .apiInfo(new ApiInfoBuilder()
+                        .title("智慧收银管理端Api文档")
                         //描述字段支持Markdown语法
                         .description("# 智慧收银管理端Api文档")
                         .contact(new Contact("nine","dianaforever.cn"
