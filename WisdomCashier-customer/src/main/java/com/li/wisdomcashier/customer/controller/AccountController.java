@@ -1,11 +1,11 @@
 package com.li.wisdomcashier.customer.controller;
 
+import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
-import com.li.wisdomcashier.base.entity.po.R;
-import com.li.wisdomcashier.base.service.EmailService;
+import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.service.UserService;
-import com.li.wisdomcashier.base.util.RedisUtils;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -27,19 +27,23 @@ public class AccountController {
     @Resource
     private UserService userService;
 
-    @Resource
-    private EmailService emailService;
-
-    @Resource
-    private RedisUtils redisUtils;
-
+    @ApiOperation(value = "注册")
     @PostMapping("/signup")
     public R<String> signUp(@Validated  @RequestBody SignUpDto signUpDto){
         return userService.signUp(signUpDto);
     }
 
+    @ApiOperation(value = "邮箱验证码服务")
     @GetMapping("/getcode")
     public R<String> getCode(String email){
-        return emailService.getCode(email);
+        return userService.getCode(email);
     }
+
+    @ApiOperation(value = "Ping")
+    @GetMapping("/test")
+    public R<User> test(){
+        return userService.test();
+    }
+
+
 }

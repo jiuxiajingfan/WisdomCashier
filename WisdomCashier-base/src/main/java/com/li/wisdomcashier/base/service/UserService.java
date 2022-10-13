@@ -1,7 +1,7 @@
 package com.li.wisdomcashier.base.service;
 
+import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
-import com.li.wisdomcashier.base.entity.po.R;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -22,4 +22,7 @@ public interface UserService extends IService<User> {
      */
     R<String> signUp(SignUpDto signUpDto);
 
+    R<String> getCode(String email);
+
+    R<User> test();
 }

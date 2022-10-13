@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.time.LocalDateTime;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -36,11 +38,12 @@ public class Shop implements Serializable {
     @TableField("shop_name")
     private String shopName;
 
-      @TableField(value = "gmt_create", fill = FieldFill.INSERT)
-    private String gmtCreate;
+    @TableField(value = "gmt_create", fill = FieldFill.INSERT)
+    private LocalDateTime gmtCreate;
 
-      @TableField(value = "gmt_update", fill = FieldFill.UPDATE)
-    private String gmtUpdate;
+    @TableField(value = "gmt_update", fill = FieldFill.INSERT_UPDATE)
+    private LocalDateTime gmtUpdate;
+
 
     @ApiModelProperty(value = "介绍")
     @TableField("tip")

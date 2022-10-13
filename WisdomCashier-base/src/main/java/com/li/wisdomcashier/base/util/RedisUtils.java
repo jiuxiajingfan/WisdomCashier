@@ -7,6 +7,7 @@ package com.li.wisdomcashier.base.util;
  * @Date 2022/10/12 14:48
  * @Version 1.0
  */
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -19,6 +20,7 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 @Component
+@Slf4j
 public final class RedisUtils{
 
     @Autowired
@@ -57,6 +59,7 @@ public final class RedisUtils{
      * @param key 键
      * @return true 存在 false不存在
      */
+
     public boolean hasKey(String key) {
         try {
             return redisTemplate.hasKey(key);
@@ -106,7 +109,7 @@ public final class RedisUtils{
             redisTemplate.opsForValue().set(key, value);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis设置失败！{}",e.toString());
             return false;
         }
     }
@@ -129,7 +132,7 @@ public final class RedisUtils{
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis设置失败！{}",e.toString());
             return false;
         }
     }
@@ -191,7 +194,7 @@ public final class RedisUtils{
             redisTemplate.opsForHash().putAll(key, map);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis设置失败！{}",e.toString());
             return false;
         }
     }
@@ -212,7 +215,7 @@ public final class RedisUtils{
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis设置失败！{}",e.toString());
             return false;
         }
     }
@@ -231,7 +234,7 @@ public final class RedisUtils{
             redisTemplate.opsForHash().put(key, item, value);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis设置失败！{}",e.toString());
             return false;
         }
     }
@@ -253,7 +256,7 @@ public final class RedisUtils{
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis设置失败！{}",e.toString());
             return false;
         }
     }
@@ -316,7 +319,7 @@ public final class RedisUtils{
         try {
             return redisTemplate.opsForSet().members(key);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis获取失败！{}",e.toString());
             return null;
         }
     }
@@ -333,7 +336,7 @@ public final class RedisUtils{
         try {
             return redisTemplate.opsForSet().isMember(key, value);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis查询失败！{}",e.toString());
             return false;
         }
     }
@@ -372,7 +375,7 @@ public final class RedisUtils{
             }
             return count;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis设置失败！{}",e.toString());
             return 0;
         }
     }
@@ -387,7 +390,7 @@ public final class RedisUtils{
         try {
             return redisTemplate.opsForSet().size(key);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis获取失败！{}",e.toString());
             return 0;
         }
     }
@@ -406,7 +409,7 @@ public final class RedisUtils{
             Long count = redisTemplate.opsForSet().remove(key, values);
             return count;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis移除失败！{}",e.toString());
             return 0;
         }
     }
@@ -424,7 +427,7 @@ public final class RedisUtils{
         try {
             return redisTemplate.opsForList().range(key, start, end);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis获取失败！{}",e.toString());
             return null;
         }
     }
@@ -439,7 +442,7 @@ public final class RedisUtils{
         try {
             return redisTemplate.opsForList().size(key);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis获取失败！{}",e.toString());
             return 0;
         }
     }
@@ -455,7 +458,7 @@ public final class RedisUtils{
         try {
             return redisTemplate.opsForList().index(key, index);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis获取失败！{}",e.toString());
             return null;
         }
     }
@@ -472,7 +475,7 @@ public final class RedisUtils{
             redisTemplate.opsForList().rightPush(key, value);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis设置失败！{}",e.toString());
             return false;
         }
     }
@@ -492,7 +495,7 @@ public final class RedisUtils{
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis设置失败！{}",e.toString());
             return false;
         }
 
@@ -511,7 +514,7 @@ public final class RedisUtils{
             redisTemplate.opsForList().rightPushAll(key, value);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis设置失败！{}",e.toString());
             return false;
         }
 
@@ -534,7 +537,7 @@ public final class RedisUtils{
             }
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis设置失败！{}",e.toString());
             return false;
         }
     }
@@ -554,7 +557,7 @@ public final class RedisUtils{
             redisTemplate.opsForList().set(key, index, value);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis更新失败！{}",e.toString());
             return false;
         }
     }
@@ -574,7 +577,7 @@ public final class RedisUtils{
             Long remove = redisTemplate.opsForList().remove(key, count, value);
             return remove;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("redis移除失败！{}",e.toString());
             return 0;
         }
 

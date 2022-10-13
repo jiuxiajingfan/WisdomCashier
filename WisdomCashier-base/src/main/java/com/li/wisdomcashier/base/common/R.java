@@ -1,4 +1,4 @@
-package com.li.wisdomcashier.base.entity.po;
+package com.li.wisdomcashier.base.common;
 
 import lombok.Data;
 import lombok.Getter;

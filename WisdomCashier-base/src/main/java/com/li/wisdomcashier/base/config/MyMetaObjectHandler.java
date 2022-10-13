@@ -1,9 +1,12 @@
 package com.li.wisdomcashier.base.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 /**
@@ -15,14 +18,18 @@ import java.util.Date;
  */
 
 @Component
+@Slf4j
 public class MyMetaObjectHandler  implements MetaObjectHandler {
     @Override
     public void insertFill(MetaObject metaObject) {
-        this.setFieldValByName("gmt_create", new Date(), metaObject);
+        log.info("start insert fill ....");
+        this.strictInsertFill(metaObject, "gmtCreate",LocalDateTime.class, LocalDateTime.now());
+        this.strictInsertFill(metaObject, "gmtUpdate",LocalDateTime.class, LocalDateTime.now());
     }
     @Override
     public void updateFill(MetaObject metaObject) {
-        this.setFieldValByName("gmt_update", new Date(), metaObject);
+        log.info("start update fill ....");
+        this.strictUpdateFill(metaObject, "gmtUpdate", LocalDateTime.class, LocalDateTime.now());
     }
 
 }

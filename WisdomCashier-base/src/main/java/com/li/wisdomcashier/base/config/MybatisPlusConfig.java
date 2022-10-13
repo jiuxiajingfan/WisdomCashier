@@ -22,7 +22,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @EnableTransactionManagement
 @Configuration
-@MapperScan("com.li")
+@MapperScan("com.li.wisdomcashier.base.mapper")
 public class MybatisPlusConfig {
 
     @Bean
@@ -47,5 +47,6 @@ public class MybatisPlusConfig {
 
         return interceptor;
     }
+
 }
 
