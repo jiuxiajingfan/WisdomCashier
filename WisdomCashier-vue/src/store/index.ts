@@ -1,9 +1,15 @@
 import { createStore } from "vuex";
 
-export default createStore({
-  state: {},
-  getters: {},
+const store = createStore({
+  state() {
+    return {
+      //当前登录的用户信息
+      userinfo: {},
+      //监测当前用户是否登录
+      islogin: false,
+    };
+  },
   mutations: {},
-  actions: {},
-  modules: {},
 });
+
+export default store;
