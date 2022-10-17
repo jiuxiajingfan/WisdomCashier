@@ -31,13 +31,7 @@ public class EmailService {
     @Async("threadPool")
     public void sendSimpleMail(String to,String code) {
         SimpleMailMessage message = EmailUtils.simple(mailFrom, to,code);
-        try {
-            Thread.sleep(4000);
-            mailSender.send(message);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }
-
+        mailSender.send(message);
     }
 
     @Async("threadPool")

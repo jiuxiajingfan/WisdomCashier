@@ -56,6 +56,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public R<String> getCode(String email) {
+        log.info("调用邮箱服务：{}",email);
         if (redisUtils.hasKey(email)) {
             return R.error("请勿重复调用~");
         } else {
