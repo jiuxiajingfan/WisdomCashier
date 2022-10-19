@@ -85,6 +85,7 @@
 import { onUnmounted, reactive, ref } from "vue";
 import utils from "@/utils/utils";
 import api from "@/api/api";
+import md5 from "js-md5";
 let isLogin = ref(false);
 // 是否正在获取验证码
 let isCodeIng = ref(false);
@@ -124,10 +125,7 @@ const getCode = () => {
       },
     })
     .then((res) => {
-      utils.showMessage(
-        res.data.code,
-        res.data.code == 0 ? res.data.data : res.data.msg
-      );
+      utils.showMessage(res.data.code, res.data.msg);
     });
 
   timer = setInterval(() => {
@@ -221,13 +219,10 @@ const register = () => {
           code: registerFormData.code,
           email: registerFormData.email,
           userName: registerFormData.name,
-          userPwd: registerFormData.password,
+          userPwd: md5(registerFormData.password),
         })
         .then((res) => {
-          utils.showMessage(
-            res.data.code,
-            res.data.code == 0 ? res.data.data : res.data.msg
-          );
+          utils.showMessage(res.data.code, res.data.msg);
         });
     }
   });
