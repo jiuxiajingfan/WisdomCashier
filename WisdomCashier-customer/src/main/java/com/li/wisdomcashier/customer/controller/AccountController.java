@@ -1,6 +1,7 @@
 package com.li.wisdomcashier.customer.controller;
 
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.service.UserService;
@@ -44,6 +45,13 @@ public class AccountController {
     public R<User> test(){
         return userService.test();
     }
+
+    @ApiOperation(value = "注册")
+    @PostMapping("/login")
+    public R<String> login(@Validated  @RequestBody LoginDto loginDto){
+        return userService.login(loginDto);
+    }
+
 
 
 }
