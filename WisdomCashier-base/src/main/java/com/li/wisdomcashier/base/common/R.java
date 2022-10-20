@@ -1,5 +1,6 @@
 package com.li.wisdomcashier.base.common;
 
+import com.li.wisdomcashier.base.enums.ResultStatus;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -17,116 +18,69 @@ import java.io.Serializable;
 @Data
 @Slf4j
 public class R<T> implements Serializable {
-    public static final String SUCCESS_MSG = "success";
-    private static final long serialVersionUID = 1L;
-    public static final int FAIL_CODE = 1;
-    public static final int SUCCESS_CODE = 0;
+    private final Integer status;   // 状态码
 
-    @Getter
-    @Setter
-    private int code = 0;
+    private final T data;   // 返回的数据
 
-    @Getter
-    @Setter
-    private String msg = SUCCESS_MSG;
+    private final String msg;    // 自定义信息
 
 
-    @Getter
-    @Setter
-    private T data;
-
-
-    public R() {
-        super();
-    }
-
-    public R(T data) {
-        super();
-        this.data = data;
-    }
-
-    public static <T> R<T> ok() {
-        R<T> r = new R<>();
-        r.setData(null);
-        r.setCode(SUCCESS_CODE);
-        r.setMsg(SUCCESS_MSG);
-        return r;
+    /**
+     * 成功的结果
+     *
+     * @param data 返回结果
+     * @param msg  返回信息
+     */
+    public static <T> R<T> ok(T data, String msg) {
+        return new R<>(ResultStatus.SUCCESS.getStatus(), data, msg);
     }
 
 
-    public R(Throwable e) {
-        super();
-        this.msg = e.getMessage();
-        this.code = FAIL_CODE;
-    }
-
-    public static <T> R<T> errorAndLog(String msg) {
-        R<T> r = new R<>();
-        r.setMsg(msg);
-        r.setCode(FAIL_CODE);
-        log.error(msg);
-        return r;
-    }
-
-    public static <T> R<T> errorAndLog(R<?> rr) {
-        R<T> r = new R<>();
-        r.setMsg(rr.getMsg());
-        r.setCode(FAIL_CODE);
-        return r;
-    }
-
-
-    public static <T> R<T> error(R<?> rr) {
-        R<T> r = new R<>();
-        r.setMsg(r.getMsg());
-        r.setMsg(rr.getMsg());
-        r.setCode(FAIL_CODE);
-        return r;
-    }
-
-    public static <T> R<T> error(String msg) {
-        R<T> r = new R<>();
-        r.setMsg(msg);
-        r.setCode(FAIL_CODE);
-        return r;
-    }
-
-    public static <T> R<T> success(String msg, T data) {
-        R<T> r = new R<>();
-        r.setMsg(msg);
-        r.setCode(SUCCESS_CODE);
-        r.setData(data);
-        return r;
-    }
-
-    public static <T> R<T> successMsg(String msg) {
-        R<T> r = new R<>();
-        r.setCode(SUCCESS_CODE);
-        r.setMsg(msg);
-        return r;
-    }
-
-    public R(T data, String msg, int code) {
-        super();
-        this.data = data;
-        this.msg = msg;
-        this.code = code;
-    }
-
+    /**
+     * 成功的结果
+     *
+     * @param data 返回结果
+     */
     public static <T> R<T> ok(T data) {
-        R<T> r = new R<>();
-        r.setData(data);
-        return r;
+        return new R<T>(ResultStatus.SUCCESS.getStatus(), data, "success");
     }
 
-    public static <T> R<T> op(int count) {
-        return count > 0 ? R.successMsg("操作成功"):R.error("操作失败");
+    /**
+     * 成功的结果
+     *
+     * @param msg 返回信息
+     */
+    public static <T> R<T> ok(String msg) {
+        return new R<T>(ResultStatus.SUCCESS.getStatus(), null, msg);
+    }
+
+    /**
+     * 成功的结果
+     */
+    public static <T> R<T> ok() {
+        return new R<T>(ResultStatus.SUCCESS.getStatus(), null, "success");
     }
 
 
+    /**
+     * 失败的结果，无异常
+     *
+     * @param msg 返回信息
+     */
+    public static <T> R<T> error(String msg) {
+        return new R<T>(ResultStatus.FAIL.getStatus(), null, msg);
+    }
 
-    public boolean hasError() {
-        return this.code != SUCCESS_CODE;
+    public static <T> R<T> error(ResultStatus resultStatus) {
+        return new R<T>(resultStatus.getStatus(), null, resultStatus.getDescription());
+    }
+
+    public static <T> R<T> error(String msg, ResultStatus resultStatus) {
+        return new R<T>(resultStatus.getStatus(), null, msg);
+    }
+
+    public static <T> R<T> error(String msg, Integer status) {
+        return new R<T>(status, null, msg);
     }
 
 }

@@ -4,8 +4,10 @@ import com.li.wisdomcashier.base.bean.UserRealm;
 import com.li.wisdomcashier.base.entity.po.JWTFilter;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,7 +48,11 @@ public class ShiroConfig {
         Map<String, Filter> filterMap = new HashMap<>();
         filterMap.put("jwt", new JWTFilter());
         shiroFilterFactoryBean.setFilters(filterMap);
-
+        Map<String,String> commonFilterMap = new HashMap<>();
+        commonFilterMap.put("/doc.html", "anon");
+        commonFilterMap.put("/webjars/**/**", "anon");
+        commonFilterMap.put("/**","jwt");
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(commonFilterMap);
         shiroFilterFactoryBean.setUnauthorizedUrl("/401");
 
         /*
@@ -84,6 +90,30 @@ public class ShiroConfig {
     @Bean
     public UserRealm userRealm(){
         return new UserRealm();
+    }
+
+
+
+    //开启Shiro注解支持
+    /**
+     * 如果userPrefix和proxyTargetClass都为false会导致 aop和shiro权限注解不兼容 资源报错404
+     * 因此两个属性至少需要其中一个属性为true才可以
+     */
+    @Bean
+    public DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator() {
+        DefaultAdvisorAutoProxyCreator advisorAutoProxyCreator = new DefaultAdvisorAutoProxyCreator();
+        advisorAutoProxyCreator.setProxyTargetClass(true);
+        return advisorAutoProxyCreator;
+    }
+    /**
+     * 开启aop注解支持
+     * @return
+     */
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(@Qualifier("getDefaultWebSecurityManager") DefaultWebSecurityManager securityManager) {
+        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
+        return authorizationAttributeSourceAdvisor;
     }
 
 }

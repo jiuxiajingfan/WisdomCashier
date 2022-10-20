@@ -8,6 +8,7 @@ import com.li.wisdomcashier.base.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,6 +42,7 @@ public class AccountController {
     }
 
     @ApiOperation(value = "Ping")
+    @RequiresAuthentication
     @GetMapping("/test")
     public R<User> test(){
         return userService.test();

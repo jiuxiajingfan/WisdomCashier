@@ -74,7 +74,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         convert.setUserNickname("用户"+ RandomUtil.randomString(6));
         convert.setStatus(0);
         userMapper.insert(convert);
-        return R.successMsg("注册成功！");
+        return R.ok("注册成功！");
     }
 
     @Override
@@ -87,7 +87,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             redisUtils.set(email, code,90);
             emailService.sendSimpleMail(email, code);
         }
-        return R.successMsg("验证码已发送，请耐心等待~");
+        return R.ok("验证码已发送，请耐心等待~");
     }
 
     @Override
@@ -144,7 +144,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return R.ok(jwtToken.getCredentials().toString());
         } catch (AuthenticationException e) {
             log.info(e.toString());
-            throw new RuntimeException(e);
+            return R.error("账号或密码错误！登录失败");
         }
     }
 
