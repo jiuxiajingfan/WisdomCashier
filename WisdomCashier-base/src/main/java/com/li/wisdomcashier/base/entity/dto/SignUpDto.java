@@ -25,10 +25,9 @@ public class SignUpDto {
     @Length(min = 5,max = 20,message = "账号长度必须在5-20位之间！")
     String userName;
 
-//   ，长度在6~18之间，只能包含字符、数字和下划线
+//   长度在6~18之间，只能包含字符、数字和下划线
     @ApiModelProperty(value = "密码")
     @NotBlank(message = "密码不能为空")
-    @Pattern(regexp = "\\w{6,18}$" , message = "密码格式不符合要求")
     String userPwd;
 
     @ApiModelProperty(value = "邮箱")

@@ -1,7 +1,6 @@
 <template>
-  <login></login>
+  <router-view></router-view>
 </template>
-
 <style lang="scss">
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
@@ -12,9 +11,7 @@
 }
 </style>
 <script>
-import LoginBox from "@/views/LoginBox";
-import Login from "@/views/Login";
 export default {
-  components: { Login },
+  name: "app",
 };
 </script>

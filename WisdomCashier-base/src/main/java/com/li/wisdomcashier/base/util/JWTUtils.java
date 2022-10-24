@@ -5,6 +5,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import org.springframework.beans.factory.annotation.Value;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
@@ -17,8 +18,9 @@ import java.util.Date;
  * @Version 1.0
  */
 public class JWTUtils {
-    // 过期时间5分钟
-    private static final long EXPIRE_TIME = 5*60*1000;
+
+    @Value("${jwt.timeOut:1000}")
+    private static long EXPIRE_TIME;
 
     /**
      * 校验token是否正确

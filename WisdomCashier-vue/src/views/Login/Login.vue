@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import LoginBox from "@/views/LoginBox";
+import LoginBox from "@/views/Login/LoginBox";
 export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Login",
@@ -17,7 +17,7 @@ export default {
 </script>
 <style scoped>
 .login-page {
-  background: url("../../public/img/12.jpg") no-repeat;
+  background: url("../../../public/img/12.jpg") no-repeat;
   background-position: center;
   height: 100%;
   width: 100%;

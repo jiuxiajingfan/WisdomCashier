@@ -53,13 +53,27 @@
     <div
       :class="['container', 'container-login', { 'is-txl is-z200': isLogin }]"
     >
-      <form>
+      <el-form ref="loginForm" :model="loginFormData" :rules="rules2">
         <h2 class="title">立即使用</h2>
         <!--        <span class="text">or use email for registration</span>-->
-        <input class="form__input" type="text" placeholder="账号" />
-        <input class="form__input" type="password" placeholder="密码" />
-        <div class="primary-btn">登录</div>
-      </form>
+        <el-form-item prop="name">
+          <input
+            class="form__input"
+            type="text"
+            placeholder="账号"
+            v-model="loginFormData.name"
+          />
+        </el-form-item>
+        <el-form-item prop="password">
+          <input
+            class="form__input"
+            type="password"
+            placeholder="密码"
+            v-model="loginFormData.password"
+          />
+        </el-form-item>
+        <div class="primary-btn" @click="useVerify">登录</div>
+      </el-form>
     </div>
     <div :class="['switch', { login: isLogin }]">
       <div class="switch__circle"></div>
@@ -79,12 +93,17 @@
       </div>
     </div>
   </div>
+  <Verify
+    @success="success"
+    mode="pop"
+    captchaType="blockPuzzle"
+    :imgSize="{ width: '330px', height: '155px' }"
+    ref="verify"
+  ></Verify>
 </template>
 
 <script setup>
 import { onUnmounted, reactive, ref } from "vue";
-import utils from "@/utils/utils";
-import api from "@/api/api";
 import md5 from "js-md5";
 let isLogin = ref(false);
 // 是否正在获取验证码
@@ -101,10 +120,6 @@ let registerFormData = reactive({
   email: "",
   password: "",
   code: "",
-});
-let loginFormData = reactive({
-  email: "",
-  password: "",
 });
 onUnmounted(() => {
   timer && clearInterval(timer);
@@ -125,7 +140,10 @@ const getCode = () => {
       },
     })
     .then((res) => {
-      utils.showMessage(res.data.code, res.data.msg);
+      utils.showMessage(
+        res.data.code,
+        res.data.code == 0 ? res.data.data : res.data.msg
+      );
     });
 
   timer = setInterval(() => {
@@ -164,7 +182,7 @@ const checkCode = (rule, value, callback) => {
 };
 const rules = reactive({
   name: [
-    { required: true, message: "请输入用户名", trigger: "blur" },
+    { required: true, message: "请输入账号", trigger: "blur" },
     {
       min: 5,
       max: 20,
@@ -203,17 +221,10 @@ const rules = reactive({
     },
   ],
 });
-const login = () => {
-  console.log("q");
-};
 const register = () => {
   // 数据校验
-  let isOk = true;
   registerForm.value.validate((valid) => {
-    if (!valid) {
-      isOk = false;
-      console.log("修改+" + isOk);
-    } else {
+    if (valid) {
       api
         .post("/account/signup", {
           code: registerFormData.code,
@@ -222,14 +233,83 @@ const register = () => {
           userPwd: md5(registerFormData.password),
         })
         .then((res) => {
-          utils.showMessage(res.data.code, res.data.msg);
+          utils.showMessage(
+            res.data.code,
+            res.data.code == 0 ? res.data.data : res.data.msg
+          );
+        })
+        .catch((err) => {
+          utils.showErrMessage(err.response.data.msg);
         });
     }
   });
-  console.log("最终修改+" + isOk);
 };
 const onSubmit = () => {
   console.log("q");
+};
+</script>
+<script>
+import Verify from "@/components/verifition/Verify";
+import api from "@/api/api";
+import utils from "@/utils/utils";
+export default {
+  name: "loginBox",
+  components: { Verify },
+  data() {
+    return {
+      loginFormData: {
+        email: "",
+        password: "",
+        code: "",
+      },
+      rules2: {
+        name: [
+          {
+            required: true,
+            message: "请输入账号",
+            trigger: "blur",
+          },
+        ],
+        password: [
+          {
+            required: true,
+            message: "请输入密码",
+            trigger: "blur",
+          },
+        ],
+      },
+    };
+  },
+  methods: {
+    success(params) {
+      // params 返回的二次验证参数, 和登录参数一起回传给登录接口，方便后台进行二次验证
+      api
+        .post("account/login", {
+          userName: this.loginFormData.name,
+          userPwd: md5(this.loginFormData.password),
+          verification: params.captchaVerification,
+        })
+        .then((res) => {
+          if (res.data.code != 200) {
+            utils.showMessage(res.data.code, res.data.msg);
+          } else {
+            utils.saveData("token", res.data.msg);
+            utils.showMessage(res.data.code, "登录成功，欢迎回来！");
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+          utils.showErrMessage(err.response.data.msg);
+        });
+    },
+    useVerify() {
+      this.$refs.loginForm.validate((valid) => {
+        if (valid) {
+          this.$refs.verify.show();
+        }
+      });
+    },
+  },
 };
 </script>
 

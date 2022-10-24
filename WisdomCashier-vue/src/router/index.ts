@@ -1,26 +1,43 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import LoginBox from "../views/LoginBox.vue";
-
+import Login from "../views/Login/Login.vue";
+import h from "../views/Home/Home.vue";
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/",
-    name: "home",
-    component: LoginBox,
+    path: "/login",
+    name: "login",
+    component: Login,
   },
   {
-    path: "/about",
-    name: "about",
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () =>
-      import(/* webpackChunkName: "about" */ "../views/AboutView.vue"),
+    path: "/home",
+    name: "home",
+    component: h,
+    meta: {
+      auth: true,
+    },
   },
 ];
 
 const router = createRouter({
   history: createWebHistory(process.env.BASE_URL),
   routes,
+});
+
+router.beforeEach((to, from, next) => {
+  if (!!to.meta && to.meta.auth === false) {
+    next();
+    return;
+  } else {
+    if (to.path === "/login") {
+      next();
+    } else {
+      const token = localStorage.getItem("token");
+      if (token === undefined || token === "") {
+        next("/login");
+      } else {
+        next();
+      }
+    }
+  }
 });
 
 export default router;

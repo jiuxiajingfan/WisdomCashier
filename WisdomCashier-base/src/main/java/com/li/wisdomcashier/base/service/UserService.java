@@ -4,6 +4,7 @@ import com.li.wisdomcashier.base.bean.UserBean;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
+import com.li.wisdomcashier.base.entity.po.JWTToken;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 

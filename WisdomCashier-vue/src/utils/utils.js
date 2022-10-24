@@ -10,7 +10,7 @@ const utils = {
     return localStorage.getItem(key);
   },
   showMessage(code, msg) {
-    if (code == 0) {
+    if (code === 200) {
       ElMessage({
         showClose: true,
         message: msg,
@@ -23,6 +23,13 @@ const utils = {
         type: "error",
       });
     }
+  },
+  showErrMessage(msg) {
+    ElMessage({
+      showClose: true,
+      message: msg,
+      type: "error",
+    });
   },
 };
 export default utils;

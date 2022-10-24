@@ -18,7 +18,7 @@ import java.io.Serializable;
 @Data
 @Slf4j
 public class R<T> implements Serializable {
-    private final Integer status;   // 状态码
+    private final Integer code;   // 状态码
 
     private final T data;   // 返回的数据
 

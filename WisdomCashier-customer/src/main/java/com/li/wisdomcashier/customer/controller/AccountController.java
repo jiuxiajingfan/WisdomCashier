@@ -1,8 +1,12 @@
 package com.li.wisdomcashier.customer.controller;
 
+import com.anji.captcha.model.common.ResponseModel;
+import com.anji.captcha.model.vo.CaptchaVO;
+import com.anji.captcha.service.CaptchaService;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
+import com.li.wisdomcashier.base.entity.po.JWTToken;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.service.UserService;
 import io.swagger.annotations.Api;
@@ -29,6 +33,9 @@ public class AccountController {
     @Resource
     private UserService userService;
 
+    @Resource
+    private CaptchaService captchaService;
+
     @ApiOperation(value = "注册")
     @PostMapping("/signup")
     public R<String> signUp(@Validated  @RequestBody SignUpDto signUpDto){
@@ -48,12 +55,17 @@ public class AccountController {
         return userService.test();
     }
 
-    @ApiOperation(value = "注册")
+    @ApiOperation(value = "登录")
     @PostMapping("/login")
     public R<String> login(@Validated  @RequestBody LoginDto loginDto){
         return userService.login(loginDto);
     }
 
+    @ApiOperation(value = "滑块验证")
+    @PostMapping("/check")
+    public ResponseModel check(@RequestBody CaptchaVO captchaVO){
+        return captchaService.check(captchaVO);
+    }
 
 
 }

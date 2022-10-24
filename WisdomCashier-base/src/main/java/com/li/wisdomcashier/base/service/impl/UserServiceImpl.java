@@ -29,6 +29,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -84,7 +85,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return R.error("请勿重复调用~");
         } else {
             String code = CodeUtils.getCode();
-            redisUtils.set(email, code,90);
+            //两分钟有效
+            redisUtils.set(email, code,120);
             emailService.sendSimpleMail(email, code);
         }
         return R.ok("验证码已发送，请耐心等待~");
@@ -135,13 +137,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public R<String> login(LoginDto loginDto) {
         //获取当前用户
         Subject subject = SecurityUtils.getSubject();
-        //设置用户session过期时间
-//        subject.getSession().setTimeout(timeout);
+//        //设置用户session过期时间
+//        subject.getSession().setTimeout();
         //封装用户的登录数据
         JWTToken jwtToken = new JWTToken(JWTUtils.sign(loginDto.getUserName(), loginDto.getUserPwd()));
         try{
             subject.login(jwtToken);
-        return R.ok(jwtToken.getCredentials().toString());
+        return R.ok(jwtToken.getPrincipal().toString());
         } catch (AuthenticationException e) {
             log.info(e.toString());
             return R.error("账号或密码错误！登录失败");

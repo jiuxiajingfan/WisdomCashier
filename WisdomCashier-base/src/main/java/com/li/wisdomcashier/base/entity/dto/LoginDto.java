@@ -17,14 +17,16 @@ import javax.validation.constraints.Pattern;
 @Data
 public class LoginDto {
     @ApiModelProperty(value = "用户账户")
-    @NotBlank(message = "账号不能为空")
-    @Length(min = 5,max = 20,message = "账号长度必须在5-20位之间！")
+    @NotBlank(message = "账号密码错误！登录失败！")
+    @Length(min = 5,max = 20,message = "账号密码错误！登录失败！")
     String userName;
 
     //   ，长度在6~18之间，只能包含字符、数字和下划线
     @ApiModelProperty(value = "密码")
-    @NotBlank(message = "密码不能为空")
-    @Pattern(regexp = "\\w{6,18}$" , message = "密码格式不符合要求")
+    @NotBlank(message = "账号密码错误！登录失败！")
     String userPwd;
+
+    @ApiModelProperty(value = "图形验证信息")
+    String verification;
 
 }
