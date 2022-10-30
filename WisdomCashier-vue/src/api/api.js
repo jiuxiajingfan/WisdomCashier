@@ -1,7 +1,9 @@
 import axios from "axios";
 import utils from "@/utils/utils";
 import router from "@/router";
-
+import { useAuthStore } from "../store/index";
+import pinia from "@/store/store";
+const store = useAuthStore(pinia);
 const api = axios.create({
   baseURL: "/api",
   //请求超时时间
@@ -29,6 +31,9 @@ api.interceptors.request.use(
 //相应拦截器
 axios.interceptors.response.use(
   (response) => {
+    if (response.headers.get("refresh") === "true") {
+      localStorage.removeItem("token");
+    }
     if (response.data.code === 200 || response.data.code == undefined) {
       return Promise.resolve(response);
     } else {
@@ -50,7 +55,7 @@ axios.interceptors.response.use(
           if (error.response.data.msg) {
             utils.showErrMessage(error.response.data.msg);
           }
-          router.push("/api/admin/login");
+          router.push("/login");
           break;
         // 403
         // 无权限访问或操作的请求

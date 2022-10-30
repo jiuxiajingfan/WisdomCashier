@@ -9,6 +9,7 @@ import org.apache.shiro.ShiroException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.authz.UnauthenticatedException;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -106,8 +107,8 @@ public class GlobalDefaultExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(value = ShiroException.class)
     public R<Void> handleShiroException(ShiroException e,
-                                                   HttpServletRequest httpRequest,
-                                                   HttpServletResponse httpResponse) {
+                                        @NotNull HttpServletRequest httpRequest,
+                                        HttpServletResponse httpResponse) {
         httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
         return R.error("对不起，您无权限进行此操作，请先登录进行授权认证", ResultStatus.FORBIDDEN);
     }

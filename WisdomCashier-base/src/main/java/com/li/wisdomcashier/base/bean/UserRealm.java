@@ -2,7 +2,8 @@ package com.li.wisdomcashier.base.bean;
 
 import com.li.wisdomcashier.base.entity.po.JWTToken;
 import com.li.wisdomcashier.base.service.UserService;
-import com.li.wisdomcashier.base.util.JWTUtils;
+import com.li.wisdomcashier.base.util.JwtUtils;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -28,6 +29,8 @@ public class UserRealm extends AuthorizingRealm {
     @Resource
     private UserService userService;
 
+    @Resource
+    private JwtUtils jwtUtils;
 
     /**
      * 大坑！，必须重写此方法，不然Shiro会报错
@@ -42,7 +45,8 @@ public class UserRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
-        String username = JWTUtils.getUsername(principals.toString());
+        Claims claim = jwtUtils.getClaimByToken(principals.toString());
+        String username = claim.getSubject();
         UserBean user = userService.getUser(username);
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         simpleAuthorizationInfo.addRoles(user.getRole());
@@ -58,7 +62,8 @@ public class UserRealm extends AuthorizingRealm {
         log.info("==========================认证");
         String token = (String) auth.getCredentials();
         // 解密获得username，用于和数据库进行对比
-        String username = JWTUtils.getUsername(token);
+        Claims claim = jwtUtils.getClaimByToken(auth.getPrincipal().toString());
+        String username = claim.getSubject();
         if (username == null) {
             throw new AuthenticationException("token invalid");
         }
@@ -66,10 +71,6 @@ public class UserRealm extends AuthorizingRealm {
         UserBean userBean = userService.getUser(username);
         if (userBean == null) {
             throw new AuthenticationException("User didn't existed!");
-        }
-
-        if (!JWTUtils.verify(token, username, userBean.getPassword())) {
-            throw new AuthenticationException("Username or password error");
         }
 
         return new SimpleAuthenticationInfo(token, token, getName());

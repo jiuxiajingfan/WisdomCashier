@@ -1,16 +1,28 @@
 package com.li.wisdomcashier.base.entity.po;
 
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONUtil;
+import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.enums.ResultStatus;
+import com.li.wisdomcashier.base.util.JwtUtils;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 
-import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
-import org.springframework.http.HttpStatus;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
+import org.apache.shiro.web.util.WebUtils;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.context.WebApplicationContext;
+import org.springframework.web.context.support.WebApplicationContextUtils;
+
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 
 /**
@@ -21,98 +33,82 @@ import javax.servlet.http.HttpServletResponse;
  * @Version 1.0
  */
 @Slf4j
-public class JWTFilter extends BasicHttpAuthenticationFilter {
+public class JWTFilter extends AuthenticatingFilter {
 
-    /**
-     * 过滤器拦截请求的入口方法
-     * 是否允许访问，如果带有 token，则对 token 进行检查，否则直接通过
-     */
+
+
+
     @Override
-    protected boolean isAccessAllowed(ServletRequest request, ServletResponse response, Object mappedValue) {
-        log.info("检查是否携带Token");
-        if (isLoginAttempt(request, response)) {//请求头包含Token
-            try { //如果存在，则进入 executeLogin 方法，检查 token 是否正确
-                log.info("执行===》executeLogin");
-                executeLogin(request, response);
+    protected AuthenticationToken createToken(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
+        // 获取 token
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String jwt = request.getHeader("Authorization");
+        if (StrUtil.isEmpty(jwt)) {
+            return null;
+        }
+        return new JWTToken(jwt);
+    }
+
+
+    @Override
+    protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String token = request.getHeader("Authorization");
+        if (StrUtil.isEmpty(token)) {
+            return true;
+        } else {
+            JwtUtils jwtUtils = getBean(JwtUtils.class,request);
+            // 判断是否已过期
+            Claims claim = jwtUtils.getClaimByToken(token);
+            if (claim == null || jwtUtils.isTokenExpired(claim.getExpiration())) {
                 return true;
-            } catch (Exception e) {
-                //token 错误
-                responseError(response, e.getMessage());
             }
         }
-        //如果请求头不存在 Token，则可能是执行登陆操作或者是游客状态访问，无需检查 token，直接返回 true
-        return true;
+        // 执行自动登录
+        return executeLogin(servletRequest, servletResponse);
     }
-
-    /**
-     * 判断用户是否已经登录
-     * 检测 header 里面是否包含 Token 字段
-     */
-
     @Override
-    protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
-        HttpServletRequest req = (HttpServletRequest) request;
-        String token = req.getHeader("Authorization");
-        return token != null;
-    }
-
-    /**
-     * Shiro认证操作
-     * executeLogin实际上就是先调用createToken来获取token，这里我们重写了这个方法，就不会自动去调用createToken来获取token
-     * 然后调用getSubject方法来获取当前用户再调用login方法来实现登录
-     * 这也解释了我们为什么要自定义jwtToken，因为我们不再使用Shiro默认的UsernamePasswordToken了。
-     * */
-    @Override
-    protected boolean executeLogin(ServletRequest request, ServletResponse response) throws Exception {
-
-        HttpServletRequest req = (HttpServletRequest) request;
-        String token = req.getHeader("Authorization");
-
-        JWTToken jwt = new JWTToken(token);
-        //交给自定义的realm对象去登录，如果错误他会抛出异常并被捕获
-        //log.info("获取的Token为" + ((HttpServletRequest) request).getHeader("Authorization"));
+    protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
+        HttpServletResponse httpResponse = (HttpServletResponse) response;
+        HttpServletRequest httpRequest = (HttpServletRequest) request;
         try {
-            log.info("进入Shiro认证");
-            getSubject(request, response).login(jwt);
-        }catch (Exception e) {
-            e.printStackTrace();
+            //处理登录失败的异常
+            Throwable throwable = e.getCause() == null ? e : e.getCause();
+            R<Void> result = R.error(throwable.getMessage(), ResultStatus.ACCESS_DENIED);
+            String json = JSONUtil.toJsonStr(result);
+            httpResponse.setContentType("application/json;charset=utf-8");
+            httpResponse.setHeader("Access-Control-Expose-Headers", "Refresh-Token,Authorization,Url-Type"); //让前端可用访问
+            httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
+            httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
+            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            httpResponse.getWriter().print(json);
+        } catch (IOException e1) {
         }
-
-        return true;
+        return false;
     }
 
     /**
-     * 在JwtFilter处理逻辑之前，进行跨域处理
-     * @param request
-     * @param response
-     * @return
-     * @throws Exception
+     * 对跨域提供支持
      */
     @Override
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
-        log.info("进入预处理器--处理完成进入JwtFilter");
-        HttpServletRequest req= (HttpServletRequest) request;
-        HttpServletResponse res= (HttpServletResponse) response;
-        res.setHeader("Access-control-Allow-Origin",req.getHeader("Origin"));
-        res.setHeader("Access-control-Allow-Methods","GET,POST,OPTIONS,PUT,DELETE");
-        res.setHeader("Access-control-Allow-Headers",req.getHeader("Access-Control-Request-Headers"));
-        // 跨域时会首先发送一个option请求，这里我们给option请求直接返回正常状态
-        if (req.getMethod().equals(RequestMethod.OPTIONS.name())) {
-            res.setStatus(HttpStatus.OK.value());
+        HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
+        HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
+        httpServletResponse.setHeader("Access-control-Allow-Origin", httpServletRequest.getHeader("Origin"));
+        httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE");
+        httpServletResponse.setHeader("Access-Control-Allow-Header  s", httpServletRequest.getHeader("Access-Control-Request-Headers"));
+        httpServletResponse.setHeader("Access-Control-Expose-Headers",
+                "Refresh-Token,Authorization,Url-Type,Content-disposition,Content-Type"); //让前端可用访问
+        // 跨域时会首先发送一个OPTIONS请求，这里我们给OPTIONS请求直接返回正常状态
+        if (httpServletRequest.getMethod().equals(RequestMethod.OPTIONS.name())) {
+            httpServletResponse.setStatus(org.springframework.http.HttpStatus.OK.value());
             return false;
         }
         return super.preHandle(request, response);
     }
 
-    /**
-     * 非法请求
-     */
-    private void responseError(ServletResponse response, String message) {
-        try {
-            log.info("非法请求"+message);
-        } catch (Exception e) {
-            log.info(e.getMessage());
-        }
+    public <T> T getBean(Class<T> clazz, HttpServletRequest request) {
+        WebApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getServletContext());
+        return applicationContext.getBean(clazz);
     }
-
 }

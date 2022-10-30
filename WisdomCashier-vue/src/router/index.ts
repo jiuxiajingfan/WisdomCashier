@@ -1,9 +1,13 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Login from "../views/Login/Login.vue";
 import h from "../views/Home/Home.vue";
+import pinia from "@/store/store";
+import { useAuthStore } from "../store/index";
+import { ElMessage } from "element-plus";
+const store = useAuthStore(pinia);
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/login",
+    path: "/Login",
     name: "login",
     component: Login,
   },
@@ -28,11 +32,20 @@ router.beforeEach((to, from, next) => {
     return;
   } else {
     if (to.path === "/login") {
-      next();
+      if (localStorage.getItem("token")) {
+        next("/home");
+      } else {
+        next();
+      }
     } else {
       const token = localStorage.getItem("token");
       if (token === undefined || token === "") {
         next("/login");
+        ElMessage({
+          showClose: true,
+          message: "请先登录！",
+          type: "error",
+        });
       } else {
         next();
       }

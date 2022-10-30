@@ -1,15 +1,15 @@
-import { createStore } from "vuex";
+import { defineStore } from "pinia";
 
-const store = createStore({
-  state() {
-    return {
-      //当前登录的用户信息
-      userinfo: {},
-      //监测当前用户是否登录
-      islogin: false,
-    };
+export const useAuthStore = defineStore("auth", {
+  state: () => {
+    return { token: "" };
   },
-  mutations: {},
+  getters: {
+    getToken: (state) => state.token,
+  },
+  actions: {
+    setToken(token: string) {
+      this.token = token;
+    },
+  },
 });
-
-export default store;

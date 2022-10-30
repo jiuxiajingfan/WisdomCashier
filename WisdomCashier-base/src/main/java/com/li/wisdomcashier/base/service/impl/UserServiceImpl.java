@@ -17,7 +17,7 @@ import com.li.wisdomcashier.base.service.EmailService;
 import com.li.wisdomcashier.base.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.CodeUtils;
-import com.li.wisdomcashier.base.util.JWTUtils;
+import com.li.wisdomcashier.base.util.JwtUtils;
 import com.li.wisdomcashier.base.util.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
@@ -54,6 +54,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private RoleMapper roleMapper;
+
+    @Resource
+    private JwtUtils jwtUtils;
 
     @Resource
     private PermissionMapper permissionMapper;
@@ -140,12 +143,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 //        //设置用户session过期时间
 //        subject.getSession().setTimeout();
         //封装用户的登录数据
-        JWTToken jwtToken = new JWTToken(JWTUtils.sign(loginDto.getUserName(), loginDto.getUserPwd()));
+        JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()));
         try{
             subject.login(jwtToken);
-        return R.ok(jwtToken.getPrincipal().toString());
+            return R.ok(jwtToken.getPrincipal().toString());
         } catch (AuthenticationException e) {
-            log.info(e.toString());
+            log.info(e.getMessage());
             return R.error("账号或密码错误！登录失败");
         }
     }

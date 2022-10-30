@@ -16,6 +16,15 @@ import javax.validation.constraints.Pattern;
  */
 @Data
 public class LoginDto {
+    @Override
+    public String toString() {
+        return "LoginDto{" +
+                "userName='" + userName + '\'' +
+                ", userPwd='" + userPwd + '\'' +
+                ", verification='" + verification + '\'' +
+                '}';
+    }
+
     @ApiModelProperty(value = "用户账户")
     @NotBlank(message = "账号密码错误！登录失败！")
     @Length(min = 5,max = 20,message = "账号密码错误！登录失败！")
