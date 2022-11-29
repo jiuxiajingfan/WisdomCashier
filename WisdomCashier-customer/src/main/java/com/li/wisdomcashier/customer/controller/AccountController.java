@@ -4,10 +4,12 @@ import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.common.UnCheck;
 import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
 import com.li.wisdomcashier.base.entity.po.JWTToken;
 import com.li.wisdomcashier.base.entity.po.User;
+import com.li.wisdomcashier.base.enums.ResultStatus;
 import com.li.wisdomcashier.base.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.validation.valueextraction.UnwrapByDefault;
 
 /**
  * @ClassName AccountController
@@ -38,34 +41,44 @@ public class AccountController {
 
     @ApiOperation(value = "注册")
     @PostMapping("/signup")
+    @UnCheck
     public R<String> signUp(@Validated  @RequestBody SignUpDto signUpDto){
         return userService.signUp(signUpDto);
     }
 
     @ApiOperation(value = "邮箱验证码服务")
     @GetMapping("/getcode")
+    @UnCheck
     public R<String> getCode(String email){
         return userService.getCode(email);
     }
 
     @ApiOperation(value = "Ping")
     @RequiresAuthentication
-    @GetMapping("/test")
+    @PostMapping("/test")
     public R<User> test(){
         return userService.test();
     }
 
     @ApiOperation(value = "登录")
     @PostMapping("/login")
+    @UnCheck
     public R<String> login(@Validated  @RequestBody LoginDto loginDto){
         return userService.login(loginDto);
     }
 
     @ApiOperation(value = "滑块验证")
     @PostMapping("/check")
+    @UnCheck
     public ResponseModel check(@RequestBody CaptchaVO captchaVO){
         return captchaService.check(captchaVO);
     }
 
+    @GetMapping("/401/{msg}")
+    @UnCheck
+    public R error (@PathVariable("msg") String msg){
+        log.info("装发");
+        return R.error(msg, ResultStatus.ACCESS_DENIED.getStatus());
+    }
 
 }

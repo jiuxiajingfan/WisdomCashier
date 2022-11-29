@@ -86,7 +86,7 @@ public class GlobalDefaultExceptionHandler {
                                                              HttpServletRequest httpRequest,
                                                              HttpServletResponse httpResponse) {
         httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
-        return R.error("请您先登录！", ResultStatus.ACCESS_DENIED);
+        return R.error("未登录或是登录有效期已过期，请登录！", ResultStatus.ACCESS_DENIED);
     }
 
     /**

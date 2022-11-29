@@ -1,9 +1,11 @@
 package com.li.wisdomcashier.base.config;
 
 import com.li.wisdomcashier.base.bean.UserRealm;
+import com.li.wisdomcashier.base.common.ShiroFilterProperties;
 import com.li.wisdomcashier.base.entity.po.JWTFilter;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
+import org.apache.shiro.spring.LifecycleBeanPostProcessor;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
@@ -11,12 +13,10 @@ import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreato
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.DependsOn;
 
 import javax.servlet.Filter;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @ClassName ShiroConfig
@@ -39,38 +39,42 @@ public class ShiroConfig {
      *       perms： 该资源必须得到资源权限才可以访问
      *       role: 该资源必须得到角色权限才可以访问
      */
-    @Bean
-    public ShiroFilterFactoryBean getShiroFilterFactoryBean(@Qualifier("getDefaultWebSecurityManager") DefaultWebSecurityManager defaultWebSecurityManager){
+    @Bean(name = "shiroFilterFactoryBean")
+    public ShiroFilterFactoryBean ShiroFilterFactoryBean(DefaultWebSecurityManager defaultWebSecurityManager){
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         shiroFilterFactoryBean.setSecurityManager(defaultWebSecurityManager);
 
         // 添加自己的过滤器并且取名为jwt
-        Map<String, Filter> filterMap = new HashMap<>();
+        Map<String, Filter> filterMap = new LinkedHashMap<>();
         filterMap.put("jwt", new JWTFilter());
         shiroFilterFactoryBean.setFilters(filterMap);
-        Map<String,String> commonFilterMap = new HashMap<>();
-        commonFilterMap.put("/doc.html", "anon");
-        commonFilterMap.put("/webjars/**/**", "anon");
-        commonFilterMap.put("/**","jwt");
-        shiroFilterFactoryBean.setFilterChainDefinitionMap(commonFilterMap);
-        shiroFilterFactoryBean.setUnauthorizedUrl("/401");
 
         /*
          * 自定义url规则
+         * 动态配置拦截器注入
          * http://shiro.apache.org/web.html#urls-
          */
-        Map<String, String> filterRuleMap = new HashMap<>();
-        // 所有请求通过我们自己的JWT Filter
-        filterRuleMap.put("/**", "jwt");
-        // 访问401和404页面不通过我们的Filter
-        filterRuleMap.put("/401", "anon");
-        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterRuleMap);
+        // 自定义url规则使用LinkedHashMap有序Map
+        LinkedHashMap<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
+        // Swagger接口文档
+         filterChainDefinitionMap.put("/v2/api-docs", "anon");
+         filterChainDefinitionMap.put("/webjars/**", "anon");
+         filterChainDefinitionMap.put("/swagger-resources/**", "anon");
+         filterChainDefinitionMap.put("/swagger-ui.html", "anon");
+         filterChainDefinitionMap.put("/doc.html", "anon");
+        // 公开接口
+        // filterChainDefinitionMap.put("/api/**", "anon");
+        // 登录接口放开
+//        filterChainDefinitionMap.put("/user/login", "anon");
+        // 所有请求通过我们自己的JWTFilter
+        filterChainDefinitionMap.put("/**", "jwt");
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
         return shiroFilterFactoryBean;
 
     }
 
     @Bean
-    public DefaultWebSecurityManager getDefaultWebSecurityManager(@Qualifier("userRealm") UserRealm userRealm){
+    public DefaultWebSecurityManager DefaultWebSecurityManager(UserRealm userRealm){
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         securityManager.setRealm(userRealm);
 
@@ -110,10 +114,16 @@ public class ShiroConfig {
      * @return
      */
     @Bean
-    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(@Qualifier("getDefaultWebSecurityManager") DefaultWebSecurityManager securityManager) {
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(DefaultWebSecurityManager securityManager) {
         AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
         authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
         return authorizationAttributeSourceAdvisor;
     }
+
+    @Bean
+    public ShiroFilterProperties getShiroFilterProperties(){
+        return new ShiroFilterProperties();
+    }
+
 
 }

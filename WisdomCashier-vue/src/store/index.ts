@@ -1,6 +1,8 @@
 import { defineStore } from "pinia";
-
 export const useAuthStore = defineStore("auth", {
+  persist: {
+    storage: sessionStorage,
+  },
   state: () => {
     return { token: "" };
   },

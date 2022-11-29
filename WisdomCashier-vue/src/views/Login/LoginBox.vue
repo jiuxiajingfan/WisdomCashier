@@ -253,8 +253,9 @@ import Verify from "@/components/verifition/Verify";
 import api from "@/api/api";
 import utils from "@/utils/utils";
 import { useAuthStore } from "@/store";
-import pinia from "@/store/store";
-const store = useAuthStore(pinia);
+import { storeToRefs } from "pinia/dist/pinia";
+const store = useAuthStore();
+
 export default {
   name: "loginBox",
   components: { Verify },
@@ -296,7 +297,6 @@ export default {
           if (res.data.code != 200) {
             utils.showMessage(res.data.code, res.data.msg);
           } else {
-            utils.saveData("token", res.data.msg);
             store.setToken(res.data.msg);
             utils.showMessage(res.data.code, "登录成功，欢迎回来！");
           }

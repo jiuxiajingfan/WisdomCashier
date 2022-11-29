@@ -24,6 +24,7 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -60,6 +61,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private PermissionMapper permissionMapper;
+
+    @Value("${tokenTime}")
+    private Long tokenTime;
     @Override
     public R<String> signUp(SignUpDto signUpDto) {
         if(!signUpDto.getCode().equals(redisUtils.get(signUpDto.getEmail()))) {
@@ -146,6 +150,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()));
         try{
             subject.login(jwtToken);
+            //限制多处登录
+            redisUtils.lSet(loginDto.getUserName()+"SESSION",subject.getSession().getId().toString(),14400);
+            if(redisUtils.lGetListSize(loginDto.getUserName()+"SESSION")>1){
+                redisUtils.lLPop(loginDto.getUserName()+"SESSION");
+            }
             return R.ok(jwtToken.getPrincipal().toString());
         } catch (AuthenticationException e) {
             log.info(e.getMessage());

@@ -26,8 +26,7 @@ public class JwtUtils {
 
     private String TOKEN_KEY = "token";
 
-    @Autowired
-    private RedisUtils redisUtils;
+
 
     /**
      * 生成jwt token
@@ -44,7 +43,6 @@ public class JwtUtils {
                 .setExpiration(expireDate)
                 .signWith(SignatureAlgorithm.HS512, secret)
                 .compact();
-        redisUtils.set(TOKEN_KEY + userId, token, expire);
         return token;
     }
 

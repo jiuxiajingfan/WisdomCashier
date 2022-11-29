@@ -7,7 +7,7 @@ import { ElMessage } from "element-plus";
 const store = useAuthStore(pinia);
 const routes: Array<RouteRecordRaw> = [
   {
-    path: "/Login",
+    path: "/login",
     name: "login",
     component: Login,
   },
@@ -31,14 +31,15 @@ router.beforeEach((to, from, next) => {
     next();
     return;
   } else {
+    const token = store.getToken;
     if (to.path === "/login") {
-      if (localStorage.getItem("token")) {
+      if (token != "") {
+        console.log("有token登录");
         next("/home");
       } else {
         next();
       }
     } else {
-      const token = localStorage.getItem("token");
       if (token === undefined || token === "") {
         next("/login");
         ElMessage({

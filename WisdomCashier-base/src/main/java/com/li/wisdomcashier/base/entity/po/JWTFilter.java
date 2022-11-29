@@ -1,21 +1,29 @@
 package com.li.wisdomcashier.base.entity.po;
 
 
-import cn.hutool.core.util.StrUtil;
-import cn.hutool.json.JSONUtil;
+import com.alibaba.fastjson2.JSON;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.common.UnCheck;
 import com.li.wisdomcashier.base.enums.ResultStatus;
 import com.li.wisdomcashier.base.util.JwtUtils;
+import com.li.wisdomcashier.base.util.RedisUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.web.filter.authc.AuthenticatingFilter;
+import org.apache.shiro.subject.Subject;
+import org.apache.shiro.web.filter.authc.BasicHttpAuthenticationFilter;
 import org.apache.shiro.web.util.WebUtils;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.servlet.HandlerExecutionChain;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 
 import javax.servlet.ServletRequest;
@@ -23,6 +31,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.lang.reflect.Method;
 
 
 /**
@@ -33,56 +43,91 @@ import java.io.IOException;
  * @Version 1.0
  */
 @Slf4j
-public class JWTFilter extends AuthenticatingFilter {
+public class JWTFilter extends BasicHttpAuthenticationFilter {
 
-
-
-
+    /**
+     * 尝试登录并且访问接口
+     * 检测header里面是否包含Authorization字段即可
+     */
     @Override
-    protected AuthenticationToken createToken(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
-        // 获取 token
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        String jwt = request.getHeader("Authorization");
-        if (StrUtil.isEmpty(jwt)) {
-            return null;
-        }
-        return new JWTToken(jwt);
+    protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
+        log.info("JwtFilter.isLoginAttempt");
+        HttpServletRequest req = (HttpServletRequest) request;
+        String token = req.getHeader("Authorization");
+        return token != null;
     }
 
-
+    /**
+     * 执行账号密码登录功能
+     */
     @Override
-    protected boolean onAccessDenied(ServletRequest servletRequest, ServletResponse servletResponse) throws Exception {
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        String token = request.getHeader("Authorization");
-        if (StrUtil.isEmpty(token)) {
-            return true;
-        } else {
-            JwtUtils jwtUtils = getBean(JwtUtils.class,request);
-            // 判断是否已过期
-            Claims claim = jwtUtils.getClaimByToken(token);
-            if (claim == null || jwtUtils.isTokenExpired(claim.getExpiration())) {
-                return true;
-            }
+    protected boolean executeLogin(ServletRequest httpServletRequest, ServletResponse httpServletResponse) throws AuthenticationException{
+        log.info("JwtFilter.executeLogin");
+        HttpServletRequest request = (HttpServletRequest) httpServletRequest;
+        HttpServletResponse response = (HttpServletResponse) httpServletResponse;
+        String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
+        JwtUtils jwtUtils = getBean(JwtUtils.class, request);
+        RedisUtils redisUtils = getBean(RedisUtils.class, request);
+        // 判断是否已过期
+        Claims claim = jwtUtils.getClaimByToken(authorization);
+        if (claim == null) {
+            throw new AuthenticationException("账号无效，请重新登录！");
         }
-        // 执行自动登录
-        return executeLogin(servletRequest, servletResponse);
-    }
-    @Override
-    protected boolean onLoginFailure(AuthenticationToken token, AuthenticationException e, ServletRequest request, ServletResponse response) {
-        HttpServletResponse httpResponse = (HttpServletResponse) response;
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        if (jwtUtils.isTokenExpired(claim.getExpiration())) {
+            throw new AuthenticationException("登录有效期已过,请重新登录！");
+        }
+        //是否多处登录
+        String s = redisUtils.lGetIndex(claim.getSubject() + "SESSION", 0).toString();
+        String id = request.getSession().getId();
+        if (id.compareTo(s) != 0) {
+            throw new AuthenticationException("账号在其他地方登录,请重新登录！");
+        }
+        JWTToken token = new JWTToken(authorization);
+        // 提交给realm进行登入，如果错误他会抛出异常并被捕获
+        Subject subject = SecurityUtils.getSubject();
         try {
-            //处理登录失败的异常
-            Throwable throwable = e.getCause() == null ? e : e.getCause();
-            R<Void> result = R.error(throwable.getMessage(), ResultStatus.ACCESS_DENIED);
-            String json = JSONUtil.toJsonStr(result);
-            httpResponse.setContentType("application/json;charset=utf-8");
-            httpResponse.setHeader("Access-Control-Expose-Headers", "Refresh-Token,Authorization,Url-Type"); //让前端可用访问
-            httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
-            httpResponse.setHeader("Url-Type", httpRequest.getHeader("Url-Type")); // 为了前端能区别请求来源
-            httpResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            httpResponse.getWriter().print(json);
-        } catch (IOException e1) {
+            subject.login(token);
+        } catch (Exception e) {
+            throw new AuthenticationException(e.getMessage());
+        }
+        // 如果没有抛出异常则代表登入成功，返回true
+        return true;
+    }
+
+    @Override
+    protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse response, Object mappedValue) {
+        log.info("JwtFilter.isAccessAllowed");
+        HttpServletResponse res = WebUtils.toHttp(response);
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        WebApplicationContext ctx = RequestContextUtils.findWebApplicationContext(request);
+        RequestMappingHandlerMapping mapping = ctx.getBean("requestMappingHandlerMapping",
+                RequestMappingHandlerMapping.class);
+        HandlerExecutionChain handler = null;
+        try {
+            handler = mapping.getHandler(request);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        HandlerMethod handlerClass = (HandlerMethod) handler.getHandler();
+        Class<?> nowClass = handlerClass.getBeanType();
+        Method method = handlerClass.getMethod();
+        UnCheck anonymousAccess = AnnotationUtils.getAnnotation(nowClass, UnCheck.class);
+        if (anonymousAccess != null) {
+            return true;
+        }
+        anonymousAccess = AnnotationUtils.getAnnotation(method, UnCheck.class);
+        if (anonymousAccess != null) {
+            return true;
+        }
+        //未携带token拒绝访问
+        if (!isLoginAttempt(request, response)) {
+            return false;
+        }
+        try {
+            executeLogin(servletRequest, response);
+            return true;
+        } catch (AuthenticationException e) {
+            response401(response,e.getMessage());
         }
         return false;
     }
@@ -92,23 +137,38 @@ public class JWTFilter extends AuthenticatingFilter {
      */
     @Override
     protected boolean preHandle(ServletRequest request, ServletResponse response) throws Exception {
-        HttpServletRequest httpServletRequest = WebUtils.toHttp(request);
-        HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
-        httpServletResponse.setHeader("Access-control-Allow-Origin", httpServletRequest.getHeader("Origin"));
-        httpServletResponse.setHeader("Access-Control-Allow-Methods", "GET,POST,OPTIONS,PUT,DELETE");
-        httpServletResponse.setHeader("Access-Control-Allow-Header  s", httpServletRequest.getHeader("Access-Control-Request-Headers"));
-        httpServletResponse.setHeader("Access-Control-Expose-Headers",
-                "Refresh-Token,Authorization,Url-Type,Content-disposition,Content-Type"); //让前端可用访问
-        // 跨域时会首先发送一个OPTIONS请求，这里我们给OPTIONS请求直接返回正常状态
-        if (httpServletRequest.getMethod().equals(RequestMethod.OPTIONS.name())) {
-            httpServletResponse.setStatus(org.springframework.http.HttpStatus.OK.value());
-            return false;
-        }
         return super.preHandle(request, response);
+    }
+
+    /*
+     * 如果没有去除将会循环调用doGetAuthenticationInfo方法
+     */
+    @Override
+    protected boolean onAccessDenied(ServletRequest request, ServletResponse response) throws Exception {
+        this.sendChallenge(request, response);
+        return false;
     }
 
     public <T> T getBean(Class<T> clazz, HttpServletRequest request) {
         WebApplicationContext applicationContext = WebApplicationContextUtils.getRequiredWebApplicationContext(request.getServletContext());
         return applicationContext.getBean(clazz);
+    }
+
+
+    /**
+     * 直接返回Response err信息
+     */
+    private void response401(ServletResponse response, String msg) {
+        HttpServletResponse httpServletResponse = WebUtils.toHttp(response);
+        httpServletResponse.setStatus(HttpStatus.UNAUTHORIZED.value());
+        httpServletResponse.setCharacterEncoding("UTF-8");
+        httpServletResponse.setContentType("application/json; charset=utf-8");
+        try (PrintWriter out = httpServletResponse.getWriter()) {
+            R<String> error = R.error(msg,ResultStatus.ACCESS_DENIED.getStatus());
+            String data = JSON.toJSONString(error);
+            out.append(data);
+        } catch (IOException e) {
+            log.error("直接返回Response信息出现IOException异常:{}", e.getMessage());
+        }
     }
 }

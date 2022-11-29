@@ -498,7 +498,6 @@ public final class RedisUtils{
             log.info("redis设置失败！{}",e.toString());
             return false;
         }
-
     }
 
 
@@ -517,7 +516,6 @@ public final class RedisUtils{
             log.info("redis设置失败！{}",e.toString());
             return false;
         }
-
     }
 
 
@@ -580,7 +578,23 @@ public final class RedisUtils{
             log.info("redis移除失败！{}",e.toString());
             return 0;
         }
-
     }
+
+    /**
+     * list 左出队列
+     * @param key
+     * @return
+     */
+    public Boolean lLPop(String key) {
+        try {
+            redisTemplate.opsForList().leftPop(key);
+            return true;
+        } catch (Exception e) {
+            log.info("redis移除失败！{}",e.toString());
+            return false;
+        }
+    }
+
+
 
 }

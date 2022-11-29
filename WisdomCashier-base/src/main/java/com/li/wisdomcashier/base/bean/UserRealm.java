@@ -24,7 +24,6 @@ import javax.annotation.Resource;
  */
 @Slf4j
 public class UserRealm extends AuthorizingRealm {
-    private static final Logger LOGGER = LogManager.getLogger(UserRealm.class);
 
     @Resource
     private UserService userService;
@@ -65,14 +64,12 @@ public class UserRealm extends AuthorizingRealm {
         Claims claim = jwtUtils.getClaimByToken(auth.getPrincipal().toString());
         String username = claim.getSubject();
         if (username == null) {
-            throw new AuthenticationException("token invalid");
+            throw new AuthenticationException("不存在该用户！");
         }
-
         UserBean userBean = userService.getUser(username);
         if (userBean == null) {
-            throw new AuthenticationException("User didn't existed!");
+            throw new AuthenticationException("不存在该用户！");
         }
-
         return new SimpleAuthenticationInfo(token, token, getName());
     }
 
