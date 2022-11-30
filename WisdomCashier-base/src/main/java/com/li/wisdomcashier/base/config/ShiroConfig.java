@@ -54,21 +54,10 @@ public class ShiroConfig {
          * 动态配置拦截器注入
          * http://shiro.apache.org/web.html#urls-
          */
-        // 自定义url规则使用LinkedHashMap有序Map
-        LinkedHashMap<String, String> filterChainDefinitionMap = new LinkedHashMap<String, String>();
-        // Swagger接口文档
-         filterChainDefinitionMap.put("/v2/api-docs", "anon");
-         filterChainDefinitionMap.put("/webjars/**", "anon");
-         filterChainDefinitionMap.put("/swagger-resources/**", "anon");
-         filterChainDefinitionMap.put("/swagger-ui.html", "anon");
-         filterChainDefinitionMap.put("/doc.html", "anon");
-        // 公开接口
-        // filterChainDefinitionMap.put("/api/**", "anon");
-        // 登录接口放开
-//        filterChainDefinitionMap.put("/user/login", "anon");
-        // 所有请求通过我们自己的JWTFilter
-        filterChainDefinitionMap.put("/**", "jwt");
-        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
+        Map<String, String> filterRuleMap = new LinkedHashMap<>();
+        List<Map<String, String>> perms = this.getShiroFilterProperties().getPerms();
+        perms.forEach(perm -> filterRuleMap.put(perm.get("key"), perm.get("value")));
+        shiroFilterFactoryBean.setFilterChainDefinitionMap(filterRuleMap);
         return shiroFilterFactoryBean;
 
     }

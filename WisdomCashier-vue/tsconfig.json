@@ -15,7 +15,8 @@
     "baseUrl": ".",
     "types": [
       "node",
-      "webpack-env"
+      "webpack-env",
+      "pinia-plugin-persist-uni"
     ],
     "paths": {
       "@/*": [

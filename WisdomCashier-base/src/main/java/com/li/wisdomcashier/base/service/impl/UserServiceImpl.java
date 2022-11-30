@@ -2,6 +2,9 @@ package com.li.wisdomcashier.base.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.extra.cglib.CglibUtil;
+import com.anji.captcha.model.common.ResponseModel;
+import com.anji.captcha.model.vo.CaptchaVO;
+import com.anji.captcha.service.CaptchaService;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.li.wisdomcashier.base.bean.UserBean;
 import com.li.wisdomcashier.base.common.R;
@@ -61,6 +64,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Resource
     private PermissionMapper permissionMapper;
+
+    @Resource
+    private CaptchaService captchaService;
 
     @Value("${tokenTime}")
     private Long tokenTime;
@@ -142,10 +148,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public R<String> login(LoginDto loginDto) {
+        CaptchaVO captchaVO = new CaptchaVO();
+        captchaVO.setCaptchaVerification(loginDto.getVerification());
+        ResponseModel verification = captchaService.verification(captchaVO);
+        //图形验证码验证
+        if(verification.getRepCode().compareTo(ResponseModel.success().getRepCode())!=0){
+            return R.error(verification.getRepMsg());
+        }
         //获取当前用户
         Subject subject = SecurityUtils.getSubject();
-//        //设置用户session过期时间
-//        subject.getSession().setTimeout();
         //封装用户的登录数据
         JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()));
         try{
@@ -161,5 +172,24 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return R.error("账号或密码错误！登录失败");
         }
     }
+
+   public R<String> login2(LoginDto loginDto){
+       Subject subject = SecurityUtils.getSubject();
+       //封装用户的登录数据
+       JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()));
+       try{
+           subject.login(jwtToken);
+           //限制多处登录
+           redisUtils.lSet(loginDto.getUserName()+"SESSION",subject.getSession().getId().toString(),14400);
+           if(redisUtils.lGetListSize(loginDto.getUserName()+"SESSION")>1){
+               redisUtils.lLPop(loginDto.getUserName()+"SESSION");
+           }
+           return R.ok(jwtToken.getPrincipal().toString());
+       } catch (AuthenticationException e) {
+           log.info(e.getMessage());
+           return R.error("账号或密码错误！登录失败");
+       }
+   }
+
 
 }

@@ -67,18 +67,27 @@ public class AccountController {
         return userService.login(loginDto);
     }
 
-    @ApiOperation(value = "滑块验证")
+    @ApiOperation(value = "滑块验证check")
     @PostMapping("/check")
     @UnCheck
     public ResponseModel check(@RequestBody CaptchaVO captchaVO){
         return captchaService.check(captchaVO);
     }
 
-    @GetMapping("/401/{msg}")
+    @ApiOperation(value = "滑块验证get")
+    @PostMapping("/get")
     @UnCheck
-    public R error (@PathVariable("msg") String msg){
-        log.info("装发");
-        return R.error(msg, ResultStatus.ACCESS_DENIED.getStatus());
+    public ResponseModel get(@RequestBody CaptchaVO captchaVO){
+        return captchaService.get(captchaVO);
     }
+
+
+    @ApiOperation(value = "快捷登录")
+    @PostMapping("/login2")
+    @UnCheck
+    public R<String> login2(@Validated  @RequestBody LoginDto loginDto){
+        return userService.login2(loginDto);
+    }
+
 
 }

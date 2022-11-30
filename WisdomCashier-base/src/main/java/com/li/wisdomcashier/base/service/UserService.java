@@ -37,4 +37,6 @@ public interface UserService extends IService<User> {
     UserBean getUser(String username);
 
     R<String> login(LoginDto loginDto);
+
+    R<String> login2(LoginDto loginDto);
 }

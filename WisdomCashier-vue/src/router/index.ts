@@ -33,14 +33,15 @@ router.beforeEach((to, from, next) => {
   } else {
     const token = store.getToken;
     if (to.path === "/login") {
-      if (token != "") {
+      if (token && token != "") {
         console.log("有token登录");
         next("/home");
       } else {
         next();
       }
     } else {
-      if (token === undefined || token === "") {
+      console.log(token);
+      if (token === null || token === "") {
         next("/login");
         ElMessage({
           showClose: true,

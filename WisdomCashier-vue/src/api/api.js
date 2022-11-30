@@ -85,7 +85,7 @@ axios.interceptors.response.use(
       if (error.code == "ECONNABORTED" || error.message.includes("timeout")) {
         utils.showErrMessage("检查网络");
       } else {
-        utils.showErrMessage("为响应");
+        utils.showErrMessage("未响应");
       }
       return Promise.reject(error);
     }
