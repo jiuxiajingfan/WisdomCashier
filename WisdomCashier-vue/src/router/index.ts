@@ -1,6 +1,6 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Login from "../views/Login/Login.vue";
-import h from "../views/Home/Home.vue";
+import choiceShop from "../views/Home/choiceShop.vue";
 import pinia from "@/store/store";
 import { useAuthStore } from "../store/index";
 import { ElMessage } from "element-plus";
@@ -12,9 +12,9 @@ const routes: Array<RouteRecordRaw> = [
     component: Login,
   },
   {
-    path: "/home",
-    name: "home",
-    component: h,
+    path: "/choiceShop",
+    name: "choiceShop",
+    component: choiceShop,
     meta: {
       auth: true,
     },
@@ -35,7 +35,7 @@ router.beforeEach((to, from, next) => {
     if (to.path === "/login") {
       if (token && token != "") {
         console.log("有token登录");
-        next("/home");
+        next("/choiceShop");
       } else {
         next();
       }

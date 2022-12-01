@@ -63,9 +63,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private JwtUtils jwtUtils;
 
     @Resource
-    private PermissionMapper permissionMapper;
-
-    @Resource
     private CaptchaService captchaService;
 
     @Value("${tokenTime}")

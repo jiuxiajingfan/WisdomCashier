@@ -1,8 +1,7 @@
 import { defineStore } from "pinia";
-import { ref } from "vue";
 export const useAuthStore = defineStore("auth", {
   state: () => {
-    const tokens = sessionStorage.getItem("token");
+    const tokens = localStorage.getItem("token");
     return {
       token: tokens,
     };
@@ -12,9 +11,8 @@ export const useAuthStore = defineStore("auth", {
   },
   actions: {
     setToken(token: string) {
-      sessionStorage.setItem("token", token);
+      localStorage.setItem("token", token);
       this.token = token;
     },
   },
-  persist: true,
 });

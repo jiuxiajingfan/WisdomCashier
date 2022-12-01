@@ -19,7 +19,8 @@ const api = axios.create({
 //请求拦截器
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem("token");
+    // const token = localStorage.getItem("token");
+    let token = store.getToken;
     token && (config.headers.Authorization = token);
     return config;
   },
@@ -28,12 +29,9 @@ api.interceptors.request.use(
   }
 );
 
-//相应拦截器
+//响应拦截器
 axios.interceptors.response.use(
   (response) => {
-    if (response.headers.get("refresh") === "true") {
-      localStorage.removeItem("token");
-    }
     if (response.data.code === 200 || response.data.code == undefined) {
       return Promise.resolve(response);
     } else {
@@ -55,6 +53,8 @@ axios.interceptors.response.use(
           if (error.response.data.msg) {
             utils.showErrMessage(error.response.data.msg);
           }
+          localStorage.removeItem("token");
+          store.setToken(null);
           router.push("/login");
           break;
         // 403
@@ -85,7 +85,7 @@ axios.interceptors.response.use(
       if (error.code == "ECONNABORTED" || error.message.includes("timeout")) {
         utils.showErrMessage("检查网络");
       } else {
-        utils.showErrMessage("未响应");
+        utils.showErrMessage("为响应");
       }
       return Promise.reject(error);
     }

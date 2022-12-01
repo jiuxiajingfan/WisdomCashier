@@ -244,15 +244,13 @@ const register = () => {
     }
   });
 };
-const onSubmit = () => {
-  console.log("q");
-};
 </script>
 <script>
 import Verify from "@/components/verifition/Verify";
 import api from "@/api/api";
 import utils from "@/utils/utils";
 import { useAuthStore } from "@/store";
+import router from "@/router";
 export default {
   name: "loginBox",
   components: { Verify },
@@ -296,6 +294,7 @@ export default {
             utils.showMessage(res.data.code, res.data.msg);
           } else {
             store.setToken(res.data.msg);
+            router.push("/choiceShop");
             utils.showMessage(res.data.code, "登录成功，欢迎回来！");
           }
         })
