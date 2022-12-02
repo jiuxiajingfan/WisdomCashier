@@ -4,18 +4,26 @@
       <h1>请选择店铺</h1>
     </div>
     <div class="box">
-      <div class="table">
-        <el-table
-          :data="tableData"
-          style="width: 100%"
-          height="250"
-          :show-header="false"
+      <dev class="searchBox">
+        <el-input
+          placeholder="请输入内容"
+          v-model="input"
+          class="input-with-select"
         >
-          <el-table-column prop="date" label="Date" align="center" />
+          <template #append>
+            <el-button icon="Search" />
+          </template>
+        </el-input>
+      </dev>
+      <br />
+      <br />
+      <br />
+      <div class="table">
+        <el-table :data="shops" style="width: 100%" :show-header="false">
           <el-table-column label="Operations" align="center">
-            <template #default>
-              <el-button link type="primary" size="huge" @click="handleClick">
-                进入
+            <template v-slot="scope">
+              <el-button link type="primary" size="large" @click="handleClick">
+                {{ scope.row.shopName }}
               </el-button>
             </template>
           </el-table-column>
@@ -26,118 +34,20 @@
 </template>
 
 <script setup>
-import zhCn from "element-plus/dist/locale/zh-cn.mjs";
-
-const tableData = [
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    state: "California",
-    city: "Los Angeles",
-    address: "No. 189, Grove St, Los Angeles",
-    zip: "CA 90036",
-    tag: "Home",
-  },
-  {
-    date: "2016-05-032016-05-032016-05-032016-05-032016-05-032016-05-032016-05-032016-05-032016-05-032016-05-032016-05-032016-05-03",
-    name: "Tom",
-    state: "California",
-    city: "Los Angeles",
-    address: "No. 189, Grove St, Los Angeles",
-    zip: "CA 90036",
-    tag: "Home",
-  },
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    state: "California",
-    city: "Los Angeles",
-    address: "No. 189, Grove St, Los Angeles",
-    zip: "CA 90036",
-    tag: "Home",
-  },
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    state: "California",
-    city: "Los Angeles",
-    address: "No. 189, Grove St, Los Angeles",
-    zip: "CA 90036",
-    tag: "Home",
-  },
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    state: "California",
-    city: "Los Angeles",
-    address: "No. 189, Grove St, Los Angeles",
-    zip: "CA 90036",
-    tag: "Home",
-  },
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    state: "California",
-    city: "Los Angeles",
-    address: "No. 189, Grove St, Los Angeles",
-    zip: "CA 90036",
-    tag: "Home",
-  },
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    state: "California",
-    city: "Los Angeles",
-    address: "No. 189, Grove St, Los Angeles",
-    zip: "CA 90036",
-    tag: "Home",
-  },
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    state: "California",
-    city: "Los Angeles",
-    address: "No. 189, Grove St, Los Angeles",
-    zip: "CA 90036",
-    tag: "Home",
-  },
-  {
-    date: "2016-05-03",
-    name: "Tom",
-    state: "California",
-    city: "Los Angeles",
-    address: "No. 189, Grove St, Los Angeles",
-    zip: "CA 90036",
-    tag: "Home",
-  },
-  {
-    date: "2016-05-02",
-    name: "Tom",
-    state: "California",
-    city: "Los Angeles",
-    address: "No. 189, Grove St, Los Angeles",
-    zip: "CA 90036",
-    tag: "Office",
-  },
-  {
-    date: "2016-05-04",
-    name: "Tom",
-    state: "California",
-    city: "Los Angeles",
-    address: "No. 189, Grove St, Los Angeles",
-    zip: "CA 90036",
-    tag: "Home",
-  },
-  {
-    date: "2016-05-01",
-    name: "Tom",
-    state: "California",
-    city: "Los Angeles",
-    address: "No. 189, Grove St, Los Angeles",
-    zip: "CA 90036",
-    tag: "Office",
-  },
-];
+import { onMounted } from "vue";
+import { ref } from "vue";
+import api from "@/api/api";
+const shops = ref([]);
+onMounted(() => {
+  api
+    .get("choiceShop/getUserShop")
+    .then((res) => {
+      let date = res.data.data;
+      shops.value = date;
+      console.log(date);
+    })
+    .catch();
+});
 </script>
 
 <style scoped lang="scss">
@@ -184,9 +94,13 @@ const tableData = [
       --el-table-border-color: transparent !important;
       --el-table-text-color: #feffff;
       --el-table-row-hover-bg-color: #2abd2a73;
+      font-size: 19px;
     }
     .el-button.is-link {
       color: #ffffff;
+    }
+    .el-button {
+      font-size: 19px;
     }
   }
 }

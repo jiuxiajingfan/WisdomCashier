@@ -3,7 +3,9 @@ import utils from "@/utils/utils";
 import router from "@/router";
 import { useAuthStore } from "../store/index";
 import pinia from "@/store/store";
+import { Vue } from "vue-class-component";
 const store = useAuthStore(pinia);
+Vue.prototype.$http = axios;
 const api = axios.create({
   baseURL: "/api",
   //请求超时时间
@@ -30,9 +32,9 @@ api.interceptors.request.use(
 );
 
 //响应拦截器
-axios.interceptors.response.use(
+api.interceptors.response.use(
   (response) => {
-    if (response.data.code === 200 || response.data.code == undefined) {
+    if (response.data.status === 200 || response.data.status == undefined) {
       return Promise.resolve(response);
     } else {
       utils.showErrMessage(response.data.msg);
@@ -40,12 +42,13 @@ axios.interceptors.response.use(
     }
   },
   (error) => {
+    console.log("响应错误");
     if (error.response) {
       if (error.response.data instanceof Blob) {
         // 如果是文件操作的返回，由后续进行处理
         return Promise.resolve(error.response);
       }
-      switch (error.response.code) {
+      switch (error.response.status) {
         // 401: 未登录 token过期
         // 未登录则跳转登录页面，并携带当前页面的路径
         // 在登录成功后返回当前页面，这一步需要在登录页操作。

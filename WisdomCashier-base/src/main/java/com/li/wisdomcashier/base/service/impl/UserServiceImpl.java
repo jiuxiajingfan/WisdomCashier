@@ -159,9 +159,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         try{
             subject.login(jwtToken);
             //限制多处登录
-            redisUtils.lSet(loginDto.getUserName()+"SESSION",subject.getSession().getId().toString(),14400);
-            if(redisUtils.lGetListSize(loginDto.getUserName()+"SESSION")>1){
-                redisUtils.lLPop(loginDto.getUserName()+"SESSION");
+            redisUtils.lSet(loginDto.getUserName()+"token",jwtToken.getPrincipal(),14400);
+            if(redisUtils.lGetListSize(loginDto.getUserName()+"token")>1){
+                redisUtils.lLPop(loginDto.getUserName()+"token");
             }
             return R.ok(jwtToken.getPrincipal().toString());
         } catch (AuthenticationException e) {
@@ -177,9 +177,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
        try{
            subject.login(jwtToken);
            //限制多处登录
-           redisUtils.lSet(loginDto.getUserName()+"SESSION",subject.getSession().getId().toString(),14400);
-           if(redisUtils.lGetListSize(loginDto.getUserName()+"SESSION")>1){
-               redisUtils.lLPop(loginDto.getUserName()+"SESSION");
+           redisUtils.lSet(loginDto.getUserName()+"token",jwtToken.getPrincipal(),14400);
+           if(redisUtils.lGetListSize(loginDto.getUserName()+"token")>1){
+               redisUtils.lLPop(loginDto.getUserName()+"token");
            }
            return R.ok(jwtToken.getPrincipal().toString());
        } catch (AuthenticationException e) {

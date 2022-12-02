@@ -71,22 +71,21 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         // 判断是否已过期
         Claims claim = jwtUtils.getClaimByToken(authorization);
         if (claim == null) {
-            throw new AuthenticationException("账号无效，请重新登录！");
+            throw new AuthenticationException("登录有效期已过,请重新登录！");
         }
         if (jwtUtils.isTokenExpired(claim.getExpiration())) {
             throw new AuthenticationException("登录有效期已过,请重新登录！");
-        }
-        //是否多处登录
-        String s = redisUtils.lGetIndex(claim.getSubject() + "SESSION", 0).toString();
-        String id = request.getSession().getId();
-        if (id.compareTo(s) != 0) {
-            throw new AuthenticationException("账号在其他地方登录,请重新登录！");
         }
         JWTToken token = new JWTToken(authorization);
         // 提交给realm进行登入，如果错误他会抛出异常并被捕获
         Subject subject = SecurityUtils.getSubject();
         try {
             subject.login(token);
+            //是否多处登录
+            String tokenBefore = redisUtils.lGetIndex(claim.getSubject() + "token", 0).toString();
+            if (authorization.compareTo(tokenBefore) != 0) {
+                throw new AuthenticationException("账号在其他地方登录,请重新登录！");
+            }
         } catch (Exception e) {
             throw new AuthenticationException(e.getMessage());
         }
