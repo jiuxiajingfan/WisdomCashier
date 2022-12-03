@@ -19,6 +19,6 @@ public interface ShopService extends IService<Shop> {
      * 获取用户相关店铺
      * @return
      */
-   R<List<ShopVo>> getUserShop();
+   R<List<ShopVo>> getUserShop(String shopName);
 
 }

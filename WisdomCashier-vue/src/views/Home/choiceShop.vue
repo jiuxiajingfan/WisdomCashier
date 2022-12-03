@@ -1,17 +1,41 @@
 <template>
   <div class="back">
+    <div class="header">
+      <el-menu
+        :default-active="activeIndex"
+        class="el-menu-demo"
+        mode="horizontal"
+        :ellipsis="false"
+        @select="handleSelect"
+      >
+        <div class="flex-grow" />
+        <el-sub-menu index="2">
+          <template #title>用户中心</template>
+          <el-menu-item index="2-1">item one</el-menu-item>
+          <el-menu-item index="2-2">item two</el-menu-item>
+          <el-menu-item index="2-3">item three</el-menu-item>
+          <el-sub-menu index="2-4">
+            <template #title>item four</template>
+            <el-menu-item index="2-4-1">item one</el-menu-item>
+            <el-menu-item index="2-4-2">item two</el-menu-item>
+            <el-menu-item index="2-4-3">item three</el-menu-item>
+          </el-sub-menu>
+        </el-sub-menu>
+      </el-menu>
+    </div>
     <div class="title">
       <h1>请选择店铺</h1>
     </div>
     <div class="box">
       <dev class="searchBox">
         <el-input
-          placeholder="请输入内容"
-          v-model="input"
+          placeholder="请输入要搜索的店铺名"
+          v-model="searchText"
           class="input-with-select"
+          @keyup.enter="searchShop"
         >
           <template #append>
-            <el-button icon="Search" />
+            <el-button icon="Search" @click="searchShop" />
           </template>
         </el-input>
       </dev>
@@ -19,10 +43,15 @@
       <br />
       <br />
       <div class="table">
-        <el-table :data="shops" style="width: 100%" :show-header="false">
+        <el-table
+          :data="shops"
+          style="width: 100%"
+          :show-header="false"
+          :height="tableheight"
+        >
           <el-table-column label="Operations" align="center">
             <template v-slot="scope">
-              <el-button link type="primary" size="large" @click="handleClick">
+              <el-button link type="primary" size="large">
                 {{ scope.row.shopName }}
               </el-button>
             </template>
@@ -38,16 +67,25 @@ import { onMounted } from "vue";
 import { ref } from "vue";
 import api from "@/api/api";
 const shops = ref([]);
+const tableheight = document.documentElement.clientHeight * 0.32;
+const searchText = ref("");
 onMounted(() => {
-  api
-    .get("choiceShop/getUserShop")
-    .then((res) => {
-      let date = res.data.data;
-      shops.value = date;
-      console.log(date);
-    })
-    .catch();
+  api.get("choiceShop/getUserShop").then((res) => {
+    shops.value = res.data.data;
+  });
 });
+const searchShop = () => {
+  console.log(searchText.value);
+  api
+    .get("choiceShop/getUserShop", {
+      params: {
+        shopName: searchText.value,
+      },
+    })
+    .then((res) => {
+      shops.value = res.data.data;
+    });
+};
 </script>
 
 <style scoped lang="scss">
@@ -96,12 +134,28 @@ onMounted(() => {
       --el-table-row-hover-bg-color: #2abd2a73;
       font-size: 19px;
     }
+
     .el-button.is-link {
       color: #ffffff;
     }
+
     .el-button {
       font-size: 19px;
     }
+
+    .el-table__empty-block {
+      color: #ffffff;
+    }
+  }
+}
+.header {
+  .el-menu {
+    background-color: transparent !important;
+    border-bottom: transparent !important;
+    --el-menu-text-color: #fff !important;
+  }
+  .flex-grow {
+    flex-grow: 1;
   }
 }
 </style>

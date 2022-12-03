@@ -35,7 +35,7 @@ public class JwtUtils {
         Date nowDate = new Date();
         //过期时间
         Date expireDate = new Date(nowDate.getTime() + expire * 1000);
-
+        log.info("{}过期时间为{}",userId,expireDate);
         String token = Jwts.builder()
                 .setHeaderParam("type", "JWT")
                 .setSubject(userId)

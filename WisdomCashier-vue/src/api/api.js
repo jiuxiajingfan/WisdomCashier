@@ -55,6 +55,8 @@ api.interceptors.response.use(
         case 401:
           if (error.response.data.msg) {
             utils.showErrMessage(error.response.data.msg);
+          } else {
+            utils.showErrMessage("账号已过期，请重新登录！");
           }
           localStorage.removeItem("token");
           store.setToken(null);

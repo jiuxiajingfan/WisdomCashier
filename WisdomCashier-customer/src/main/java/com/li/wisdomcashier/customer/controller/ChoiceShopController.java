@@ -30,8 +30,8 @@ public class ChoiceShopController {
 
     @ApiOperation(value = "获取用户相关店铺信息")
     @GetMapping("/getUserShop")
-    private R<List<ShopVo>> getUserShop(){
-        return shopService.getUserShop();
+    private R<List<ShopVo>> getUserShop(String shopName){
+        return shopService.getUserShop(shopName);
     }
 
 }

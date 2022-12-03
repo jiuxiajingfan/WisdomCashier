@@ -9,6 +9,7 @@
             class="form__input"
             type="text"
             placeholder="账号"
+            @keyup.enter="this.$refs['passwordInput'].focus()"
           />
         </el-form-item>
         <el-form-item prop="password">
@@ -17,6 +18,8 @@
             class="form__input"
             type="password"
             placeholder="密码"
+            ref="passwordInput"
+            @keyup.enter="this.$refs['emailInput'].focus()"
           />
         </el-form-item>
         <el-form-item prop="email">
@@ -25,6 +28,9 @@
             class="form__input"
             type="text"
             placeholder="邮箱"
+            ref="emailInput"
+            @keyup.enter="this.$refs['codeInput'].focus()"
+            @keydown.enter="getCode"
           />
         </el-form-item>
         <el-row>
@@ -35,6 +41,8 @@
                 class="form__code"
                 type="text"
                 placeholder="验证码"
+                ref="codeInput"
+                @keyup.enter="register"
               />
             </el-form-item>
           </el-col>
@@ -62,6 +70,7 @@
             type="text"
             placeholder="账号"
             v-model="loginFormData.name"
+            @keyup.enter="this.$refs['loginPWDInput'].focus()"
           />
         </el-form-item>
         <el-form-item prop="password">
@@ -69,7 +78,9 @@
             class="form__input"
             type="password"
             placeholder="密码"
+            ref="loginPWDInput"
             v-model="loginFormData.password"
+            @keyup.enter="useVerify"
           />
         </el-form-item>
         <div class="primary-btn" @click="useVerify">登录</div>
@@ -297,10 +308,6 @@ export default {
             router.push("/choiceShop");
             utils.showMessage(res.data.code, "登录成功，欢迎回来！");
           }
-        })
-        .catch((err) => {
-          console.log(err);
-          utils.showErrMessage(err.response.data.msg);
         });
     },
     useVerify() {
