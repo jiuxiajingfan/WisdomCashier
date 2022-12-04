@@ -3,6 +3,7 @@ package com.li.wisdomcashier.base.service;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.po.Shop;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.li.wisdomcashier.base.entity.vo.ShopVo;
 
 import java.util.List;
 

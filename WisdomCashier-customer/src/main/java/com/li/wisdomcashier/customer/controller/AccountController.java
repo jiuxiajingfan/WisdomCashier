@@ -19,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.valueextraction.UnwrapByDefault;
 
 /**
@@ -30,7 +31,7 @@ import javax.validation.valueextraction.UnwrapByDefault;
  */
 @RestController
 @RequestMapping(value = {"/account"})
-@Api(tags = {"账户相关"})
+@Api(tags = {"登录相关"})
 @Slf4j
 public class AccountController {
     @Resource
@@ -88,6 +89,14 @@ public class AccountController {
     public R<String> login2(@Validated  @RequestBody LoginDto loginDto){
         return userService.login2(loginDto);
     }
+
+    @ApiOperation(value = "注销登录")
+    @PostMapping("/loginOut")
+    public R<String> loginOut(HttpServletRequest httpServletRequest){
+        return userService.loginOut(httpServletRequest);
+    }
+
+
 
 
 }

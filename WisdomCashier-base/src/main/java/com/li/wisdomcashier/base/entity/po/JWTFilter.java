@@ -64,7 +64,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
     protected boolean executeLogin(ServletRequest httpServletRequest, ServletResponse httpServletResponse) throws AuthenticationException{
         log.info("JwtFilter.executeLogin");
         HttpServletRequest request = (HttpServletRequest) httpServletRequest;
-        HttpServletResponse response = (HttpServletResponse) httpServletResponse;
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
         JwtUtils jwtUtils = getBean(JwtUtils.class, request);
         RedisUtils redisUtils = getBean(RedisUtils.class, request);

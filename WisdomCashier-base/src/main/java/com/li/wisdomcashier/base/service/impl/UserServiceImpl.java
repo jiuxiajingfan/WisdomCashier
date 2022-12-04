@@ -1,6 +1,7 @@
 package com.li.wisdomcashier.base.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
+import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.cglib.CglibUtil;
 import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
@@ -13,6 +14,7 @@ import com.li.wisdomcashier.base.entity.dto.SignUpDto;
 import com.li.wisdomcashier.base.entity.po.JWTToken;
 import com.li.wisdomcashier.base.entity.po.Role;
 import com.li.wisdomcashier.base.entity.po.User;
+import com.li.wisdomcashier.base.entity.vo.UserVo;
 import com.li.wisdomcashier.base.mapper.PermissionMapper;
 import com.li.wisdomcashier.base.mapper.RoleMapper;
 import com.li.wisdomcashier.base.mapper.UserMapper;
@@ -22,15 +24,19 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.CodeUtils;
 import com.li.wisdomcashier.base.util.JwtUtils;
 import com.li.wisdomcashier.base.util.RedisUtils;
+import com.li.wisdomcashier.base.util.UserUtils;
+import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -187,6 +193,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
            return R.error("账号或密码错误！登录失败");
        }
    }
+
+    @Override
+    public R<String> loginOut(HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader(HttpHeaders.AUTHORIZATION);
+        if(StrUtil.isBlank(token))
+            return R.error("请先登录");
+        Claims claimByToken = jwtUtils.getClaimByToken(token);
+        if(claimByToken == null)
+            return R.error("请先登录");
+        else{
+            if(redisUtils.lGetListSize(claimByToken.getSubject()+"token")>0){
+                redisUtils.lLPop(claimByToken.getSubject()+"token");
+            }
+        }
+        return R.ok("账户退出成功");
+    }
+
+    @Override
+    public R<UserVo> getUser() {
+        UserVo copy = CglibUtil.copy(UserUtils.getUser(), UserVo.class);
+        return R.ok(copy);
+    }
 
 
 }

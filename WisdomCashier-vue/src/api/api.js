@@ -1,7 +1,7 @@
 import axios from "axios";
 import utils from "@/utils/utils";
 import router from "@/router";
-import { useAuthStore } from "../store/index";
+import { useAuthStore } from "../store/auth";
 import pinia from "@/store/store";
 import { Vue } from "vue-class-component";
 const store = useAuthStore(pinia);

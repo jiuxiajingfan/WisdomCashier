@@ -2,24 +2,25 @@
   <div class="back">
     <div class="header">
       <el-menu
-        :default-active="activeIndex"
         class="el-menu-demo"
         mode="horizontal"
         :ellipsis="false"
         @select="handleSelect"
       >
         <div class="flex-grow" />
+        <div class="photo">
+          <el-avatar :src="imagePath" />
+        </div>
         <el-sub-menu index="2">
-          <template #title>用户中心</template>
-          <el-menu-item index="2-1">item one</el-menu-item>
-          <el-menu-item index="2-2">item two</el-menu-item>
-          <el-menu-item index="2-3">item three</el-menu-item>
-          <el-sub-menu index="2-4">
-            <template #title>item four</template>
-            <el-menu-item index="2-4-1">item one</el-menu-item>
-            <el-menu-item index="2-4-2">item two</el-menu-item>
-            <el-menu-item index="2-4-3">item three</el-menu-item>
-          </el-sub-menu>
+          <template #title>{{ userNickName }}</template>
+          <el-menu-item index="2-1">
+            <el-icon><User /></el-icon>
+            <span>个人中心</span>
+          </el-menu-item>
+          <el-menu-item index="2-2">
+            <el-icon><SwitchButton /></el-icon>
+            <span>退出登录</span>
+          </el-menu-item>
         </el-sub-menu>
       </el-menu>
     </div>
@@ -58,20 +59,42 @@
           </el-table-column>
         </el-table>
       </div>
+      <br />
+      <br />
+      <div class="foot"></div>
     </div>
   </div>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { onBeforeMount, onMounted } from "vue";
 import { ref } from "vue";
 import api from "@/api/api";
+import utils from "@/utils/utils";
+import router from "@/router";
+import { useAuthStore } from "@/store/auth";
+import pinia from "@/store/store";
+import { useUserStore } from "@/store/user";
+
+const store = useAuthStore(pinia);
+const user = useUserStore(pinia);
 const shops = ref([]);
-const tableheight = document.documentElement.clientHeight * 0.32;
+const tableheight = ref(document.documentElement.clientHeight * 0.32);
 const searchText = ref("");
-onMounted(() => {
+const imagePath = ref("null");
+const userNickName = ref("");
+onBeforeMount(() => {
   api.get("choiceShop/getUserShop").then((res) => {
     shops.value = res.data.data;
+  });
+  api.post("/user/getUser").then((res) => {
+    let data = res.data.data;
+    user.setId(data.id);
+    user.setImage(data.image);
+    user.setName(data.userName);
+    user.setNickName(data.userNickname);
+    imagePath.value = data.image;
+    userNickName.value = data.userNickname;
   });
 });
 const searchShop = () => {
@@ -85,6 +108,22 @@ const searchShop = () => {
     .then((res) => {
       shops.value = res.data.data;
     });
+};
+window.onresize = () => {
+  tableheight.value = document.documentElement.clientHeight * 0.32;
+  console.log(tableheight.value);
+};
+const handleSelect = (key, keyPath) => {
+  console.log(key, keyPath);
+  if (key === "2-1") {
+    router.push("/home");
+  } else if (key === "2-2") {
+    api.post("/account/loginOut").then(() => {
+      utils.showMessage(200, "账户退出成功！");
+      store.setToken("null");
+      router.push("/login");
+    });
+  }
 };
 </script>
 
@@ -148,14 +187,21 @@ const searchShop = () => {
     }
   }
 }
+
 .header {
   .el-menu {
     background-color: transparent !important;
     border-bottom: transparent !important;
     --el-menu-text-color: #fff !important;
   }
+
   .flex-grow {
     flex-grow: 1;
+  }
+
+  .photo {
+    display: flex;
+    margin-top: 10px;
   }
 }
 </style>

@@ -62,5 +62,8 @@ public class User implements Serializable {
     @TableField("phone")
     private String phone;
 
+    @TableField("image")
+    private String image;
+
 
 }

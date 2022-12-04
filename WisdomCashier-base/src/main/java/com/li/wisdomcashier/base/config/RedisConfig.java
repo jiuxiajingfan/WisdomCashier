@@ -1,4 +1,4 @@
-package com.li.wisdomcashier.customer.config;
+package com.li.wisdomcashier.base.config;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

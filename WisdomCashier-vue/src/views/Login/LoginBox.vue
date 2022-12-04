@@ -260,7 +260,7 @@ const register = () => {
 import Verify from "@/components/verifition/Verify";
 import api from "@/api/api";
 import utils from "@/utils/utils";
-import { useAuthStore } from "@/store";
+import { useAuthStore } from "@/store/auth";
 import router from "@/router";
 export default {
   name: "loginBox",

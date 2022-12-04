@@ -2,9 +2,8 @@ package com.li.wisdomcashier.customer.controller;
 
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.service.ShopService;
-import com.li.wisdomcashier.base.service.ShopVo;
+import com.li.wisdomcashier.base.entity.vo.ShopVo;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +19,7 @@ import java.util.List;
  * @Date 2022/12/2 14:08
  * @Version 1.0
  */
-@Api(tags = {"选择店铺"})
+@Api(tags = {"店铺相关"})
 @RestController
 @RequestMapping("/choiceShop")
 public class ChoiceShopController {

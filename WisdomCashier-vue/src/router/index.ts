@@ -2,7 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import Login from "../views/Login/Login.vue";
 import choiceShop from "../views/Home/choiceShop.vue";
 import pinia from "@/store/store";
-import { useAuthStore } from "../store/index";
+import { useAuthStore } from "../store/auth";
 import { ElMessage } from "element-plus";
 const store = useAuthStore(pinia);
 const routes: Array<RouteRecordRaw> = [
@@ -33,14 +33,14 @@ router.beforeEach((to, from, next) => {
   } else {
     const token = store.getToken;
     if (to.path === "/login") {
-      if (token && token != "") {
-        console.log("有token登录");
+      if (token && token != "null") {
+        console.log("有token登录" + token);
         next("/choiceShop");
       } else {
         next();
       }
     } else {
-      console.log(token);
+      console.log(token + "无token");
       if (token === null || token === "") {
         next("/login");
         ElMessage({

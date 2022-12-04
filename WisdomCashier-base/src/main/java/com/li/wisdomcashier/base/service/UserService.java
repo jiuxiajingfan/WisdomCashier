@@ -4,9 +4,11 @@ import com.li.wisdomcashier.base.bean.UserBean;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
-import com.li.wisdomcashier.base.entity.po.JWTToken;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.li.wisdomcashier.base.entity.vo.UserVo;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * <p>
@@ -36,7 +38,20 @@ public interface UserService extends IService<User> {
      */
     UserBean getUser(String username);
 
+    /**
+     * 登录
+     * @param loginDto
+     * @return
+     */
     R<String> login(LoginDto loginDto);
 
     R<String> login2(LoginDto loginDto);
+
+    /**
+     * 注销登录
+     * @return
+     */
+    R<String> loginOut(HttpServletRequest httpServletRequest);
+
+    R<UserVo> getUser();
 }

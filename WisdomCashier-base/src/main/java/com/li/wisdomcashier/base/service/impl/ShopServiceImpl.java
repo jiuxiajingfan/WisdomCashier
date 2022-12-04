@@ -2,7 +2,6 @@ package com.li.wisdomcashier.base.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.cglib.CglibUtil;
-import com.baomidou.mybatisplus.core.toolkit.BeanUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.po.Role;
@@ -11,10 +10,8 @@ import com.li.wisdomcashier.base.mapper.RoleMapper;
 import com.li.wisdomcashier.base.mapper.ShopMapper;
 import com.li.wisdomcashier.base.service.ShopService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.li.wisdomcashier.base.service.ShopVo;
-import com.li.wisdomcashier.base.service.UserService;
+import com.li.wisdomcashier.base.entity.vo.ShopVo;
 import com.li.wisdomcashier.base.util.UserUtils;
-import io.netty.util.internal.StringUtil;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -41,7 +38,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
 
     @Override
     public R<List<ShopVo>> getUserShop(String shopName) {
-        List<Role> roles = roleMapper.selectList(Wrappers.lambdaQuery(Role.class).eq(Role::getUserId, UserUtils.getUserId()));
+        List<Role> roles = roleMapper.selectList(Wrappers.lambdaQuery(Role.class).eq(Role::getUserId, UserUtils.getUser().getId()));
         if(roles.isEmpty()){
             return R.ok(new ArrayList<>());
         }
@@ -53,4 +50,6 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
         List<ShopVo> shopVos = shops.stream().map(e -> CglibUtil.copy(e, ShopVo.class)).collect(Collectors.toList());
         return R.ok(shopVos);
     }
+
+
 }
