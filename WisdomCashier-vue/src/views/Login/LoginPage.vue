@@ -2,18 +2,13 @@
   <div class="login-page">
     <div class="login-header"></div>
     <div class="login-box">
-      <login-box></login-box>
+      <LoginBox></LoginBox>
     </div>
   </div>
 </template>
 
-<script>
+<script setup>
 import LoginBox from "@/views/Login/LoginBox";
-export default {
-  // eslint-disable-next-line vue/multi-word-component-names
-  name: "Login",
-  components: { LoginBox },
-};
 </script>
 <style scoped>
 .login-page {

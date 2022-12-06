@@ -1,28 +1,54 @@
 <template>
   <div class="back">
     <div class="header">
-      <el-menu
-        class="el-menu-demo"
-        mode="horizontal"
-        :ellipsis="false"
-        @select="handleSelect"
-      >
-        <div class="flex-grow" />
-        <div class="photo">
-          <el-avatar :src="imagePath" />
-        </div>
-        <el-sub-menu index="2">
-          <template #title>{{ userNickName }}</template>
-          <el-menu-item index="2-1">
-            <el-icon><User /></el-icon>
-            <span>个人中心</span>
-          </el-menu-item>
-          <el-menu-item index="2-2">
-            <el-icon><SwitchButton /></el-icon>
-            <span>退出登录</span>
-          </el-menu-item>
-        </el-sub-menu>
-      </el-menu>
+      <!--      <el-menu-->
+      <!--        class="el-menu-demo"-->
+      <!--        mode="horizontal"-->
+      <!--        :ellipsis="false"-->
+      <!--        @select="handleSelect"-->
+      <!--      >-->
+      <!--        <div class="flex-grow" />-->
+      <!--        <div class="photo">-->
+      <!--          <el-avatar :src="imagePath" />-->
+      <!--        </div>-->
+      <!--        <el-sub-menu index="2">-->
+      <!--          <template #title>{{ userNickName }}</template>-->
+      <!--          <el-menu-item index="2-1">-->
+      <!--            <el-icon><User /></el-icon>-->
+      <!--            <span>个人中心</span>-->
+      <!--          </el-menu-item>-->
+      <!--          <el-menu-item index="2-2">-->
+      <!--            <el-icon><SwitchButton /></el-icon>-->
+      <!--            <span>退出登录</span>-->
+      <!--          </el-menu-item>-->
+      <!--        </el-sub-menu>-->
+      <!--      </el-menu>-->
+      <el-header style="text-align: right; font-size: 12px">
+        <el-dropdown @command="handleCommand">
+          <span class="el-dropdown-link">
+            <div class="photo">
+              <el-avatar :src="imagePath" />
+              <el-icon class="el-icon--right"><CaretBottom /></el-icon>
+            </div>
+          </span>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item command="a">
+                <el-icon>
+                  <User />
+                </el-icon>
+                <span>个人中心</span>
+              </el-dropdown-item>
+              <el-dropdown-item command="b">
+                <el-icon>
+                  <SwitchButton />
+                </el-icon>
+                <span>退出登录</span>
+              </el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </el-header>
     </div>
     <div class="title">
       <h1>请选择店铺</h1>
@@ -75,6 +101,7 @@ import router from "@/router";
 import { useAuthStore } from "@/store/auth";
 import pinia from "@/store/store";
 import { useUserStore } from "@/store/user";
+import { ElMessage, ElMessageBox } from "element-plus";
 
 const store = useAuthStore(pinia);
 const user = useUserStore(pinia);
@@ -113,15 +140,20 @@ window.onresize = () => {
   tableheight.value = document.documentElement.clientHeight * 0.32;
   console.log(tableheight.value);
 };
-const handleSelect = (key, keyPath) => {
-  console.log(key, keyPath);
-  if (key === "2-1") {
-    router.push("/home");
-  } else if (key === "2-2") {
-    api.post("/account/loginOut").then(() => {
-      utils.showMessage(200, "账户退出成功！");
-      store.setToken("null");
-      router.push("/login");
+const handleCommand = (command) => {
+  if (command === "a") {
+    router.push("/userCenter");
+  } else if (command === "b") {
+    ElMessageBox.confirm("您确定要退出登录吗？", "", {
+      confirmButtonText: "确定",
+      cancelButtonText: "取消",
+      type: "warning",
+    }).then(() => {
+      api.post("/account/loginOut").then(() => {
+        utils.showMessage(200, "账户退出成功！");
+        store.setToken("null");
+        router.push("/login");
+      });
     });
   }
 };
@@ -189,19 +221,13 @@ const handleSelect = (key, keyPath) => {
 }
 
 .header {
-  .el-menu {
-    background-color: transparent !important;
-    border-bottom: transparent !important;
-    --el-menu-text-color: #fff !important;
-  }
-
-  .flex-grow {
-    flex-grow: 1;
-  }
-
   .photo {
-    display: flex;
-    margin-top: 10px;
+    .el-avatar {
+      margin-top: 10px;
+    }
+  }
+  .el-icon {
+    color: #ffffff;
   }
 }
 </style>

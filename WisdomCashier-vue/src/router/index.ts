@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
-import Login from "../views/Login/Login.vue";
+import loginPage from "../views/Login/LoginPage.vue";
 import choiceShop from "../views/Home/choiceShop.vue";
+import userCenter from "../views/Home/UserCenter.vue";
 import pinia from "@/store/store";
 import { useAuthStore } from "../store/auth";
 import { ElMessage } from "element-plus";
@@ -9,12 +10,20 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: "/login",
     name: "login",
-    component: Login,
+    component: loginPage,
   },
   {
     path: "/choiceShop",
     name: "choiceShop",
     component: choiceShop,
+    meta: {
+      auth: true,
+    },
+  },
+  {
+    path: "/userCenter",
+    name: "userCenter",
+    component: userCenter,
     meta: {
       auth: true,
     },
@@ -40,8 +49,8 @@ router.beforeEach((to, from, next) => {
         next();
       }
     } else {
-      console.log(token + "无token");
       if (token === null || token === "") {
+        debugger;
         next("/login");
         ElMessage({
           showClose: true,
