@@ -1,114 +1,95 @@
 <template>
   <el-container class="layout-container-demo" style="height: 500px">
-    <el-aside width="200px">
-      <el-scrollbar>
-        <el-menu :default-openeds="['1', '3']">
-          <el-sub-menu index="1">
-            <template #title>
-              <el-icon>
-                <message />
-              </el-icon>
-              Navigator One
-            </template>
-            <el-menu-item-group>
-              <template #title>Group 1</template>
-              <el-menu-item index="1-1">Option 1</el-menu-item>
-              <el-menu-item index="1-2">Option 2</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="Group 2">
-              <el-menu-item index="1-3">Option 3</el-menu-item>
-            </el-menu-item-group>
-            <el-sub-menu index="1-4">
-              <template #title>Option4</template>
-              <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
-            </el-sub-menu>
-          </el-sub-menu>
-          <el-sub-menu index="2">
-            <template #title>
-              <el-icon>
-                <icon-menu />
-              </el-icon>
-              Navigator Two
-            </template>
-            <el-menu-item-group>
-              <template #title>Group 1</template>
-              <el-menu-item index="2-1">Option 1</el-menu-item>
-              <el-menu-item index="2-2">Option 2</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="Group 2">
-              <el-menu-item index="2-3">Option 3</el-menu-item>
-            </el-menu-item-group>
-            <el-sub-menu index="2-4">
-              <template #title>Option 4</template>
-              <el-menu-item index="2-4-1">Option 4-1</el-menu-item>
-            </el-sub-menu>
-          </el-sub-menu>
-          <el-sub-menu index="3">
-            <template #title>
-              <el-icon>
-                <setting />
-              </el-icon>
-              Navigator Three
-            </template>
-            <el-menu-item-group>
-              <template #title>Group 1</template>
-              <el-menu-item index="3-1">Option 1</el-menu-item>
-              <el-menu-item index="3-2">Option 2</el-menu-item>
-            </el-menu-item-group>
-            <el-menu-item-group title="Group 2">
-              <el-menu-item index="3-3">Option 3</el-menu-item>
-            </el-menu-item-group>
-            <el-sub-menu index="3-4">
-              <template #title>Option 4</template>
-              <el-menu-item index="3-4-1">Option 4-1</el-menu-item>
-            </el-sub-menu>
-          </el-sub-menu>
-        </el-menu>
-      </el-scrollbar>
-    </el-aside>
-
+    <el-header style="text-align: right; font-size: 12px">
+      <div class="toolbar">
+        <HeaderBar></HeaderBar>
+      </div>
+      <i class="el-icon-s-fold" style="font-size: 20px"></i>
+    </el-header>
     <el-container>
-      <el-header style="text-align: right; font-size: 12px">
-        <div class="toolbar">
-          <HeaderBar></HeaderBar>
-        </div>
-      </el-header>
-
-      <el-main>
-        <el-scrollbar>
-          <el-table :data="tableData">
-            <el-table-column prop="date" label="Date" width="140" />
-            <el-table-column prop="name" label="Name" width="120" />
-            <el-table-column prop="address" label="Address" />
-          </el-table>
+      <el-aside width="auto">
+        <el-scrollbar :height="screenHeight">
+          <el-menu
+            default-active="2"
+            class="el-menu-vertical-demo"
+            :collapse="isCollapse"
+            @open="handleOpen"
+            @close="handleClose"
+          >
+            <el-menu-item index="1">
+              <el-icon v-show="isCollapse === true"><ArrowRightBold /></el-icon>
+              <el-icon v-show="isCollapse === false"><ArrowLeftBold /></el-icon>
+            </el-menu-item>
+            <el-sub-menu index="2">
+              <template #title>
+                <el-icon><location /></el-icon>
+                <span>Navigator One</span>
+              </template>
+              <el-menu-item-group>
+                <template #title><span>Group One</span></template>
+                <el-menu-item index="1-1">item one</el-menu-item>
+                <el-menu-item index="1-2">item two</el-menu-item>
+              </el-menu-item-group>
+              <el-menu-item-group title="Group Two">
+                <el-menu-item index="1-3">item three</el-menu-item>
+              </el-menu-item-group>
+              <el-sub-menu index="1-4">
+                <template #title><span>item four</span></template>
+                <el-menu-item index="1-4-1">item one</el-menu-item>
+              </el-sub-menu>
+            </el-sub-menu>
+            <el-menu-item index="3">
+              <el-icon><icon-menu /></el-icon>
+              <template #title>Navigator Two</template>
+            </el-menu-item>
+            <el-menu-item index="4" disabled>
+              <el-icon><document /></el-icon>
+              <template #title>Navigator Three</template>
+            </el-menu-item>
+            <el-menu-item index="5">
+              <el-icon><setting /></el-icon>
+              <template #title>Navigator Four</template>
+            </el-menu-item>
+          </el-menu>
         </el-scrollbar>
+      </el-aside>
+      <el-main>
+        <el-scrollbar> </el-scrollbar>
       </el-main>
     </el-container>
   </el-container>
 </template>
 
-<script lang="ts" setup>
+<script setup>
 import { ref } from "vue";
 import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
 import HeaderBar from "@/views/Home/HeaderBar.vue";
-const item = {
-  date: "2016-05-02",
-  name: "Tom",
-  address: "No. 189, Grove St, Los Angeles",
+import utils from "@/utils/utils";
+
+const screenHeight = ref(document.documentElement.clientHeight - 60);
+window.onresize = () => {
+  screenHeight.value = document.documentElement.clientHeight - 60;
 };
-const tableData = ref(Array.from({ length: 20 }).fill(item));
+const isCollapse = ref(true);
+const handleOpen = (key, keyPath) => {
+  console.log(key, keyPath);
+};
+const handleClose = (key, keyPath) => {
+  utils.showMessage(200, key);
+};
 </script>
 
 <style scoped lang="scss">
 .layout-container-demo .el-header {
   position: relative;
   background-color: #24292f;
-  color: var(--el-text-color-primary);
+  height: 60px !important;
+  //color: var(--el-text-color-primary);
+  //display: flex;
+  //justify-content: space-between;
 }
 
 .layout-container-demo .el-aside {
-  color: var(--el-text-color-primary);
-  background: var(--el-color-primary-light-8);
 }
 
 .layout-container-demo .el-menu {
@@ -117,6 +98,7 @@ const tableData = ref(Array.from({ length: 20 }).fill(item));
 
 .layout-container-demo .el-main {
   padding: 0;
+  background-color: #f6f8fa;
 }
 
 .layout-container-demo .toolbar {
@@ -125,5 +107,21 @@ const tableData = ref(Array.from({ length: 20 }).fill(item));
   justify-content: center;
   height: 100%;
   right: 20px;
+}
+.layout-container-demo .el-scrollbar ::-webkit-scrollbar {
+  /* 设置竖向滚动条的宽度 */
+  width: 5px;
+  /* 设置横向滚动条的高度 */
+  height: 5px;
+}
+.layout-container-demo .el-scrollbar ::-webkit-scrollbar-thumb {
+  /*滚动条的背景色*/
+  background-color: rgba(144, 147, 153, 0.3);
+  border-radius: 35px;
+  position: relative;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
 }
 </style>
