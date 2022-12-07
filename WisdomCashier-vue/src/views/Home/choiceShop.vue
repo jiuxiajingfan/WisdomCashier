@@ -1,33 +1,12 @@
 <template>
   <div class="back">
     <div class="header">
-      <!--      <el-menu-->
-      <!--        class="el-menu-demo"-->
-      <!--        mode="horizontal"-->
-      <!--        :ellipsis="false"-->
-      <!--        @select="handleSelect"-->
-      <!--      >-->
-      <!--        <div class="flex-grow" />-->
-      <!--        <div class="photo">-->
-      <!--          <el-avatar :src="imagePath" />-->
-      <!--        </div>-->
-      <!--        <el-sub-menu index="2">-->
-      <!--          <template #title>{{ userNickName }}</template>-->
-      <!--          <el-menu-item index="2-1">-->
-      <!--            <el-icon><User /></el-icon>-->
-      <!--            <span>个人中心</span>-->
-      <!--          </el-menu-item>-->
-      <!--          <el-menu-item index="2-2">-->
-      <!--            <el-icon><SwitchButton /></el-icon>-->
-      <!--            <span>退出登录</span>-->
-      <!--          </el-menu-item>-->
-      <!--        </el-sub-menu>-->
-      <!--      </el-menu>-->
       <el-header style="text-align: right; font-size: 12px">
+        <el-avatar :src="imagePath" />
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
             <div class="photo">
-              <el-avatar :src="imagePath" />
+              <span> {{ userNickName }}</span>
               <el-icon class="el-icon--right"><CaretBottom /></el-icon>
             </div>
           </span>
@@ -221,12 +200,21 @@ const handleCommand = (command) => {
 }
 
 .header {
-  .photo {
-    .el-avatar {
-      margin-top: 10px;
-    }
-  }
   .el-icon {
+    color: #ffffff;
+  }
+  .el-avatar {
+    margin-right: 10px;
+    margin-top: 10px;
+  }
+  .el-header {
+    background-color: transparent !important;
+    height: 60px !important;
+  }
+  .photo {
+    text-align: center;
+    margin-top: 22px;
+    font-size: revert;
     color: #ffffff;
   }
 }

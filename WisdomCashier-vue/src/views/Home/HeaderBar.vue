@@ -1,10 +1,13 @@
 <template>
   <div class="header">
+    <el-avatar :src="imagePath" />
     <el-dropdown @command="handleCommand">
       <el-dropdown-link>
         <div class="name">
-          <el-avatar :src="imagePath" />
-          <el-icon class="el-icon--right"><CaretBottom /></el-icon>
+          <span>{{ nickName }}</span>
+          <el-icon class="el-icon--right">
+            <CaretBottom />
+          </el-icon>
         </div>
       </el-dropdown-link>
       <template #dropdown>
@@ -64,5 +67,15 @@ const handleCommand = (command) => {
   .el-icon {
     color: #ffffff;
   }
+  .el-avatar {
+    margin-right: 10px;
+  }
+}
+
+.name {
+  text-align: center;
+  margin-top: 13px;
+  font-size: revert;
+  color: #ffffff;
 }
 </style>
