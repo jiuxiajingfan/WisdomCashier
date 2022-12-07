@@ -1,29 +1,29 @@
 <template>
   <div class="header">
-    <div class="header">
-      <el-dropdown @command="handleCommand">
-        <span class="el-dropdown-link">
+    <el-dropdown @command="handleCommand">
+      <el-dropdown-link>
+        <div class="name">
           <el-avatar :src="imagePath" />
           <el-icon class="el-icon--right"><CaretBottom /></el-icon>
-        </span>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item command="a">
-              <el-icon>
-                <User />
-              </el-icon>
-              <span>个人中心</span>
-            </el-dropdown-item>
-            <el-dropdown-item command="b">
-              <el-icon>
-                <SwitchButton />
-              </el-icon>
-              <span>退出登录</span>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
-    </div>
+        </div>
+      </el-dropdown-link>
+      <template #dropdown>
+        <el-dropdown-menu>
+          <el-dropdown-item command="a">
+            <el-icon>
+              <User />
+            </el-icon>
+            <span>个人中心</span>
+          </el-dropdown-item>
+          <el-dropdown-item command="b">
+            <el-icon>
+              <SwitchButton />
+            </el-icon>
+            <span>退出登录</span>
+          </el-dropdown-item>
+        </el-dropdown-menu>
+      </template>
+    </el-dropdown>
   </div>
 </template>
 
@@ -39,6 +39,7 @@ import { ElMessageBox } from "element-plus";
 const user = useUserStore(pinia);
 const store = useAuthStore(pinia);
 const imagePath = user.getImage;
+const nickName = user.getNickName;
 const handleCommand = (command) => {
   if (command === "a") {
     router.push("/userCenter");
@@ -60,11 +61,6 @@ const handleCommand = (command) => {
 
 <style scoped lang="scss">
 .header {
-  .photo {
-    .el-avatar {
-      margin-top: 10px;
-    }
-  }
   .el-icon {
     color: #ffffff;
   }

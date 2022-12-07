@@ -1,61 +1,42 @@
 <template>
-  <div class="menu">
-    <el-scrollbar>
-      <el-menu :default-openeds="['1', '3']">
-        <el-sub-menu index="1">
-          <template #title>
-            <el-icon><message /></el-icon>Navigator One
-          </template>
-          <el-menu-item-group>
-            <template #title>Group 1</template>
-            <el-menu-item index="1-1">Option 1</el-menu-item>
-            <el-menu-item index="1-2">Option 2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="Group 2">
-            <el-menu-item index="1-3">Option 3</el-menu-item>
-          </el-menu-item-group>
-          <el-sub-menu index="1-4">
-            <template #title>Option4</template>
-            <el-menu-item index="1-4-1">Option 4-1</el-menu-item>
-          </el-sub-menu>
-        </el-sub-menu>
-        <el-sub-menu index="2">
-          <template #title>
-            <el-icon><icon-menu /></el-icon>Navigator Two
-          </template>
-          <el-menu-item-group>
-            <template #title>Group 1</template>
-            <el-menu-item index="2-1">Option 1</el-menu-item>
-            <el-menu-item index="2-2">Option 2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="Group 2">
-            <el-menu-item index="2-3">Option 3</el-menu-item>
-          </el-menu-item-group>
-          <el-sub-menu index="2-4">
-            <template #title>Option 4</template>
-            <el-menu-item index="2-4-1">Option 4-1</el-menu-item>
-          </el-sub-menu>
-        </el-sub-menu>
-        <el-sub-menu index="3">
-          <template #title>
-            <el-icon><setting /></el-icon>Navigator Three
-          </template>
-          <el-menu-item-group>
-            <template #title>Group 1</template>
-            <el-menu-item index="3-1">Option 1</el-menu-item>
-            <el-menu-item index="3-2">Option 2</el-menu-item>
-          </el-menu-item-group>
-          <el-menu-item-group title="Group 2">
-            <el-menu-item index="3-3">Option 3</el-menu-item>
-          </el-menu-item-group>
-          <el-sub-menu index="3-4">
-            <template #title>Option 4</template>
-            <el-menu-item index="3-4-1">Option 4-1</el-menu-item>
-          </el-sub-menu>
-        </el-sub-menu>
-      </el-menu>
-    </el-scrollbar>
-  </div>
+  <el-menu class="el-menu-vertical-demo" :collapse="isCollapse">
+    <div class="receive">
+      <el-button @click="contraction" type="text" style="width: 100%">
+        <el-icon v-if="isCollapse === true">
+          <ArrowRightBold />
+        </el-icon>
+        <el-icon v-if="isCollapse === false">
+          <ArrowLeftBold />
+        </el-icon>
+      </el-button>
+    </div>
+    <el-sub-menu index="">
+      <template #title>
+        <el-icon><Avatar /></el-icon>
+        <span>账号设置</span>
+      </template>
+      <el-menu-item index="2-1">
+        <el-icon><User /></el-icon>
+        我的信息
+      </el-menu-item>
+      <el-menu-item index="2-2">
+        <el-icon><Key /></el-icon>
+        密码修改
+      </el-menu-item>
+    </el-sub-menu>
+    <el-menu-item index="3">
+      <el-icon>
+        <icon-menu />
+      </el-icon>
+      <template #title>Navigator Two</template>
+    </el-menu-item>
+    <el-menu-item index="5">
+      <el-icon>
+        <setting />
+      </el-icon>
+      <template #title>Navigator Four</template>
+    </el-menu-item>
+  </el-menu>
 </template>
 
 <script setup>
@@ -65,12 +46,34 @@ import {
   Location,
   Setting,
 } from "@element-plus/icons-vue";
-const handleOpen = (key, keyPath) => {
-  console.log(key, keyPath);
-};
-const handleClose = (key, keyPath) => {
-  console.log(key, keyPath);
+import { ref } from "vue";
+const isCollapse = ref(false);
+const buttonWidth = ref("200px");
+const contraction = () => {
+  isCollapse.value = !isCollapse.value;
+  if (isCollapse.value) {
+    buttonWidth.value = "62px";
+  } else {
+    buttonWidth.value = "200px";
+  }
 };
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+.layout-container-demo .el-menu {
+  border-right: none;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
+}
+.receive {
+  .el-button {
+    height: 56px;
+    min-width: 62px;
+  }
+  .el-button--text {
+    color: #606266;
+  }
+}
+</style>
