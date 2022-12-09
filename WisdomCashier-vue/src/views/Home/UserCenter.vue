@@ -9,11 +9,65 @@
     <el-container>
       <el-aside width="auto">
         <el-scrollbar :height="screenHeight">
-          <MenuBar></MenuBar>
+          <el-menu class="el-menu-vertical-demo" :collapse="isCollapse">
+            <div class="receive">
+              <el-button @click="contraction" type="text" style="width: 100%">
+                <el-icon v-if="isCollapse === true">
+                  <ArrowRightBold />
+                </el-icon>
+                <el-icon v-if="isCollapse === false">
+                  <ArrowLeftBold />
+                </el-icon>
+              </el-button>
+            </div>
+            <el-sub-menu index="">
+              <template #title>
+                <el-icon><Avatar /></el-icon>
+                <span>账号设置</span>
+              </template>
+              <el-menu-item index="2-1" @click="addTab(editableTabsValue)">
+                <el-icon><User /></el-icon>
+                我的信息
+              </el-menu-item>
+              <el-menu-item index="2-2">
+                <el-icon><Key /></el-icon>
+                密码修改
+              </el-menu-item>
+            </el-sub-menu>
+            <el-menu-item index="3">
+              <el-icon>
+                <icon-menu />
+              </el-icon>
+              <template #title>Navigator Two</template>
+            </el-menu-item>
+            <el-menu-item index="5">
+              <el-icon>
+                <setting />
+              </el-icon>
+              <template #title>Navigator Four</template>
+            </el-menu-item>
+          </el-menu>
         </el-scrollbar>
       </el-aside>
       <el-main>
-        <el-scrollbar></el-scrollbar>
+        <el-scrollbar>
+          <el-tabs
+            v-model="editableTabsValue"
+            type="card"
+            class="demo-tabs"
+            closable
+            @tab-remove="removeTab"
+          >
+            <el-tab-pane
+              v-for="item in editableTabs"
+              :key="item.name"
+              :label="item.title"
+              :name="item.name"
+            >
+            </el-tab-pane>
+            <component v-bind:is="myMessage"></component>
+          </el-tabs>
+        </el-scrollbar>
       </el-main>
     </el-container>
   </el-container>
@@ -23,11 +77,61 @@
 import { ref } from "vue";
 import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
 import HeaderBar from "@/views/Home/HeaderBar.vue";
-import MenuBar from "@/views/Home/MenuBar";
-
+import myMessage from "../../components/userCenter/myMessage.vue";
+const isCollapse = ref(false);
+const buttonWidth = ref("200px");
+const contraction = () => {
+  isCollapse.value = !isCollapse.value;
+  if (isCollapse.value) {
+    buttonWidth.value = "62px";
+  } else {
+    buttonWidth.value = "200px";
+  }
+};
 const screenHeight = ref(document.documentElement.clientHeight - 60);
 window.onresize = () => {
   screenHeight.value = document.documentElement.clientHeight - 60;
+};
+let tabIndex = 2;
+const editableTabsValue = ref("2");
+const editableTabs = ref([
+  {
+    title: "Tab 1",
+    name: "1",
+    content: "Tab 1 content",
+  },
+  {
+    title: "Tab 2",
+    name: "2",
+    content: "Tab 2 content",
+  },
+]);
+
+const addTab = (targetName) => {
+  const newTabName = `${++tabIndex}`;
+  editableTabs.value.push({
+    title: "New Tab",
+    name: newTabName,
+    content: "New Tab content",
+  });
+  editableTabsValue.value = newTabName;
+};
+const removeTab = (targetName) => {
+  const tabs = editableTabs.value;
+  let activeName = editableTabsValue.value;
+  if (activeName === targetName) {
+    tabs.forEach((tab, index) => {
+      if (tab.name === targetName) {
+        const nextTab = tabs[index + 1] || tabs[index - 1];
+        if (nextTab) {
+          activeName = nextTab.name;
+        }
+      }
+    });
+  }
+
+  editableTabsValue.value = activeName;
+  editableTabs.value = tabs.filter((tab) => tab.name !== targetName);
 };
 </script>
 
@@ -65,5 +169,21 @@ window.onresize = () => {
   justify-content: center;
   height: 100%;
   right: 20px;
+}
+.layout-container-demo .el-menu {
+  border-right: none;
+}
+.el-menu-vertical-demo:not(.el-menu--collapse) {
+  width: 200px;
+  min-height: 400px;
+}
+.receive {
+  .el-button {
+    height: 56px;
+    min-width: 62px;
+  }
+  .el-button--text {
+    color: #606266;
+  }
 }
 </style>
