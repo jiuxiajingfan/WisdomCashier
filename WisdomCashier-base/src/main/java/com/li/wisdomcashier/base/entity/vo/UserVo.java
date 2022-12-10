@@ -15,4 +15,6 @@ public class UserVo {
     private String userName;
     private String userNickname;
     private String image;
+    private String phone;
+    private String email;
 }

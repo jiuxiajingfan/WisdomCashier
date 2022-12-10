@@ -1,5 +1,6 @@
 package com.li.wisdomcashier.base.service.impl;
 
+import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.cglib.CglibUtil;
@@ -213,6 +214,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public R<UserVo> getUser() {
         UserVo copy = CglibUtil.copy(UserUtils.getUser(), UserVo.class);
+        if(!StrUtil.isBlank(copy.getPhone()))
+        {
+            copy.setPhone(DesensitizedUtil.mobilePhone(copy.getPhone()));
+        }
+        else
+            copy.setPhone("");
+        copy.setEmail(DesensitizedUtil.email(copy.getEmail()));
         return R.ok(copy);
     }
 

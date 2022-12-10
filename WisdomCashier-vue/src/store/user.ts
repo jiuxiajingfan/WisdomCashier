@@ -5,11 +5,15 @@ export const useUserStore = defineStore("user", {
     const userIds = localStorage.getItem("userId");
     const userNicknames = localStorage.getItem("userNickname");
     const image = localStorage.getItem("image");
+    const phone = localStorage.getItem("phone");
+    const email = localStorage.getItem("email");
     return {
       userName: userNames,
       userId: userIds,
       userNickName: userNicknames,
       image: image,
+      phone: phone,
+      email: email,
     };
   },
   getters: {
@@ -17,6 +21,8 @@ export const useUserStore = defineStore("user", {
     getNickName: (state) => state.userNickName,
     getId: (state) => state.userId,
     getImage: (state) => state.image,
+    getPhone: (state) => state.phone,
+    getEmail: (state) => state.email,
   },
   actions: {
     setName(name: string) {
@@ -34,6 +40,14 @@ export const useUserStore = defineStore("user", {
     setImage(path: string) {
       localStorage.setItem("image", path);
       this.image = path;
+    },
+    setPhone(path: string) {
+      localStorage.setItem("phone", path);
+      this.phone = path;
+    },
+    setEmail(path: string) {
+      localStorage.setItem("email", path);
+      this.email = path;
     },
   },
 });

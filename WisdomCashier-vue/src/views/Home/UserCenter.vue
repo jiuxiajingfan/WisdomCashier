@@ -50,7 +50,7 @@
         </el-scrollbar>
       </el-aside>
       <el-main>
-        <el-scrollbar>
+        <el-scrollbar :height="screenHeight">
           <el-tabs
             v-model="editableTabsValue"
             type="card"

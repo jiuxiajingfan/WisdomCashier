@@ -99,6 +99,8 @@ onBeforeMount(() => {
     user.setImage(data.image);
     user.setName(data.userName);
     user.setNickName(data.userNickname);
+    user.setPhone(data.phone);
+    user.setEmail(data.email);
     imagePath.value = data.image;
     userNickName.value = data.userNickname;
   });
