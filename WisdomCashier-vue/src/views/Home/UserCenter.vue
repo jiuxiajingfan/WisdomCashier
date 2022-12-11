@@ -50,24 +50,24 @@
         </el-scrollbar>
       </el-aside>
       <el-main>
-        <el-scrollbar :height="screenHeight">
-          <el-tabs
-            v-model="editableTabsValue"
-            type="card"
-            class="demo-tabs"
-            closable
-            @tab-remove="removeTab"
+        <el-tabs
+          v-model="editableTabsValue"
+          type="card"
+          class="demo-tabs"
+          closable
+          @tab-remove="removeTab"
+        >
+          <el-tab-pane
+            v-for="item in editableTabs"
+            :key="item.name"
+            :label="item.title"
+            :name="item.name"
           >
-            <el-tab-pane
-              v-for="item in editableTabs"
-              :key="item.name"
-              :label="item.title"
-              :name="item.name"
-            >
-            </el-tab-pane>
+          </el-tab-pane>
+          <el-scrollbar :height="screenHeight">
             <component v-bind:is="myMessage"></component>
-          </el-tabs>
-        </el-scrollbar>
+          </el-scrollbar>
+        </el-tabs>
       </el-main>
     </el-container>
   </el-container>

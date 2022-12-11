@@ -56,9 +56,9 @@ export default {
   background-color: #ffffff;
   height: 200px;
   .el-button {
-    position: absolute;
-    left: calc(50% - 54px);
-    margin-top: 158px;
+    position: relative;
+    left: -129px;
+    margin-top: 67px;
   }
 }
 </style>
