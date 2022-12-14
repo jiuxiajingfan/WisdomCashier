@@ -50,71 +50,49 @@
                 v-model="userModel.name"
               ></el-input>
             </el-form-item>
-            <el-button>确定修改</el-button>
+            <el-button @click="changeName">确定</el-button>
           </el-form>
         </el-card>
         <el-card style="width: 600px; height: auto">
           <template #header>
             <div class="card-header">
               <span>邮箱修改</span>
-              <el-switch v-model="userModel.change" />
+              <el-switch v-model="emailButton" />
             </div>
           </template>
-          <el-form
-            :model="userModel"
-            label-width="120px"
-            v-show="userModel.change"
-          >
+          <el-form :model="userModel" label-width="120px" v-show="emailButton">
             <el-form-item label="新邮箱 :">
-              <el-input
-                type="text"
-                :disabled="!userModel.change"
-                v-model="userModel.phone"
-              ></el-input>
+              <el-input type="text" v-model="userModel.phone"></el-input>
             </el-form-item>
             <el-form-item label="验证码 :">
-              <el-input
-                type="text"
-                :disabled="!userModel.change"
-                v-model="userModel.name"
-              ></el-input>
+              <el-input type="text" v-model="userModel.name"></el-input>
               <el-button>发送</el-button>
             </el-form-item>
+            <el-button>确定</el-button>
           </el-form>
         </el-card>
         <el-card style="width: 600px; height: auto">
           <template #header>
             <div class="card-header">
               <span>密码修改</span>
-              <el-switch v-model="userModel.change" />
+              <el-switch v-model="passwordButton" />
             </div>
           </template>
           <el-form
             :model="userModel"
             label-width="120px"
-            v-show="userModel.change"
+            v-show="passwordButton"
           >
             <el-form-item label="原密码 :">
-              <el-input
-                type="password"
-                :disabled="!userModel.change"
-                v-model="userModel.name"
-              ></el-input>
+              <el-input type="password" v-model="userModel.name"></el-input>
             </el-form-item>
             <el-form-item label="新密码 :">
-              <el-input
-                type="password"
-                :disabled="!userModel.change"
-                v-model="userModel.phone"
-              ></el-input>
+              <el-input type="password" v-model="userModel.phone"></el-input>
             </el-form-item>
             <el-form-item label="确认密码 :">
-              <el-input
-                type="password"
-                :disabled="!userModel.change"
-                v-model="userModel.email"
-              ></el-input>
+              <el-input type="password" v-model="userModel.email"></el-input>
             </el-form-item>
+            <el-button>确定</el-button>
           </el-form>
         </el-card>
       </el-space>
@@ -127,15 +105,18 @@ import { useUserStore } from "@/store/user";
 import pinia from "@/store/store";
 import avatarUpload from "@/components/userCenter/avatar-upload";
 import { onMounted, reactive, ref } from "vue";
+import api from "@/api/api";
+import utils from "@/utils/utils";
 const user = useUserStore(pinia);
-const screenHeight = document.documentElement.clientHeight - 101 + "px";
 const userModel = reactive({
   id: user.getId,
-  name: user.getNickName,
+  name: "",
   phone: user.getPhone,
   email: user.getEmail,
   change: false,
 });
+const passwordButton = ref(false);
+const emailButton = ref(false);
 const form = reactive({
   name: "",
   region: "",
@@ -146,7 +127,20 @@ const form = reactive({
   resource: "",
   desc: "",
 });
-
+const changeName = () => {
+  api
+    .get("/user/changeUserNickName", {
+      params: {
+        name: userModel.name,
+      },
+    })
+    .then((res) => {
+      utils.showMessage(res.data.code, res.data.msg);
+      user.setNickName(userModel.name);
+      userModel.change = false;
+      userModel.name = "";
+    });
+};
 const onSubmit = () => {
   console.log("submit!");
 };

@@ -53,5 +53,15 @@ public interface UserService extends IService<User> {
      */
     R<String> loginOut(HttpServletRequest httpServletRequest);
 
+    /**
+     * 获取用户信息
+     * @return
+     */
     R<UserVo> getUser();
+
+    /**
+     * 用户名修改
+     * @return
+     */
+    R<String> changeUserNickName(String name);
 }

@@ -7,6 +7,8 @@ import cn.hutool.extra.cglib.CglibUtil;
 import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.li.wisdomcashier.base.bean.UserBean;
 import com.li.wisdomcashier.base.common.R;
@@ -222,6 +224,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             copy.setPhone("");
         copy.setEmail(DesensitizedUtil.email(copy.getEmail()));
         return R.ok(copy);
+    }
+
+    @Override
+    public R<String> changeUserNickName(String name) {
+        User user = UserUtils.getUser();
+        int update = userMapper.update(null,new LambdaUpdateWrapper<User>().eq(User::getId, user.getId()).set(User::getUserNickname, name));
+        return R.ok("修改成功！");
     }
 
 
