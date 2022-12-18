@@ -49,8 +49,7 @@ router.beforeEach((to, from, next) => {
         next();
       }
     } else {
-      if (token === null || token === "") {
-        debugger;
+      if (token === null || token === "" || token === "null") {
         next("/login");
         ElMessage({
           showClose: true,

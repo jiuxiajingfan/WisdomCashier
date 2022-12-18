@@ -62,13 +62,16 @@
           </template>
           <el-form :model="userModel" label-width="120px" v-show="emailButton">
             <el-form-item label="新邮箱 :">
-              <el-input type="text" v-model="userModel.phone"></el-input>
+              <el-input type="text" v-model="userModel.email"></el-input>
             </el-form-item>
             <el-form-item label="验证码 :">
-              <el-input type="text" v-model="userModel.name"></el-input>
-              <el-button>发送</el-button>
+              <el-input type="text" v-model="userModel.code">
+                <template #append>
+                  <el-button @click="getEmailCode">发送</el-button>
+                </template>
+              </el-input>
             </el-form-item>
-            <el-button>确定</el-button>
+            <el-button @click="changeEmail">确定</el-button>
           </el-form>
         </el-card>
         <el-card style="width: 600px; height: auto">
@@ -112,21 +115,12 @@ const userModel = reactive({
   id: user.getId,
   name: "",
   phone: user.getPhone,
-  email: user.getEmail,
+  email: "",
   change: false,
+  code: "",
 });
 const passwordButton = ref(false);
 const emailButton = ref(false);
-const form = reactive({
-  name: "",
-  region: "",
-  date1: "",
-  date2: "",
-  delivery: false,
-  type: [],
-  resource: "",
-  desc: "",
-});
 const changeName = () => {
   api
     .get("/user/changeUserNickName", {
@@ -141,8 +135,30 @@ const changeName = () => {
       userModel.name = "";
     });
 };
-const onSubmit = () => {
-  console.log("submit!");
+const getEmailCode = () => {
+  api
+    .get("/account/getcodeAuth", {
+      // get请求使用params传参,并且最后会拼接到url后面
+      params: {
+        type: 1,
+      },
+    })
+    .then((res) => {
+      utils.showMessage(
+        res.data.code,
+        res.data.code == 0 ? res.data.data : res.data.msg
+      );
+    });
+};
+const changeEmail = () => {
+  api
+    .post("/changeUserEmail", {
+      email: userModel.email,
+      code: userModel.code,
+    })
+    .then((res) => {
+      utils.showMessage(res.data.code, res.data.msg);
+    });
 };
 </script>
 

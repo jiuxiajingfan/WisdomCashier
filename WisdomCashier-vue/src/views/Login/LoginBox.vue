@@ -148,6 +148,7 @@ const getCode = () => {
       // get请求使用params传参,并且最后会拼接到url后面
       params: {
         email: registerFormData.email,
+        type: 0,
       },
     })
     .then((res) => {

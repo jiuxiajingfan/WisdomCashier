@@ -18,12 +18,12 @@ public class EmailUtils {
     private static final String content = "这是邮件的主内容";
 
     // 纯文本邮件
-    public static SimpleMailMessage simple(String from, String to,String code){
+    public static SimpleMailMessage simple(String from, String to,String code,String title){
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
         message.setTo(to);
-        message.setSubject("欢迎xxx");
-        message.setText(code);
+        message.setSubject(title);
+        message.setText("您的验证码为："+code+",请在5分钟内使用");
         return message;
     }
 

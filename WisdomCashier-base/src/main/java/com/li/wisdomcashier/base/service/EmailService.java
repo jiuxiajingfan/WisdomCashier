@@ -29,8 +29,8 @@ public class EmailService {
     private String mailFrom;
 
     @Async("threadPool")
-    public void sendSimpleMail(String to,String code) {
-        SimpleMailMessage message = EmailUtils.simple(mailFrom, to,code);
+    public void sendSimpleMail(String to,String code,String title) {
+        SimpleMailMessage message = EmailUtils.simple(mailFrom, to,code,title);
         mailSender.send(message);
     }
 

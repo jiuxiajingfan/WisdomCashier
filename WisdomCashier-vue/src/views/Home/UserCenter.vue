@@ -65,7 +65,9 @@
           >
           </el-tab-pane>
           <el-scrollbar :height="screenHeight">
-            <component v-bind:is="myMessage"></component>
+            <div class="cop">
+              <component v-bind:is="myMessage"></component>
+            </div>
           </el-scrollbar>
         </el-tabs>
       </el-main>
@@ -185,5 +187,8 @@ const removeTab = (targetName) => {
   .el-button--text {
     color: #606266;
   }
+}
+.cop {
+  position: relative;
 }
 </style>

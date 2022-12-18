@@ -2,6 +2,7 @@ package com.li.wisdomcashier.base.service;
 
 import com.li.wisdomcashier.base.bean.UserBean;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.EmailDto;
 import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
 import com.li.wisdomcashier.base.entity.po.User;
@@ -27,8 +28,20 @@ public interface UserService extends IService<User> {
      */
     R<String> signUp(SignUpDto signUpDto);
 
-    R<String> getCode(String email);
+    /**
+     * 邮箱服务
+     * @param email 邮箱
+     * @param type 邮件类型 {@link com.li.wisdomcashier.base.service.impl.EmailTypeEnum}
+     * @return
+     */
+    R<String> getCode(String email,int type);
 
+    /**
+     * 邮箱服务
+     * @param type 邮件类型 {@link com.li.wisdomcashier.base.service.impl.EmailTypeEnum}
+     * @return
+     */
+    R<String> getCodeAuth(int type);
     R<User> test();
 
     /**
@@ -64,4 +77,8 @@ public interface UserService extends IService<User> {
      * @return
      */
     R<String> changeUserNickName(String name);
+
+
+    R<String> changeUserEmail(EmailDto emailDto);
+
 }

@@ -5,6 +5,7 @@ import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.common.UnCheck;
+import com.li.wisdomcashier.base.entity.dto.EmailDto;
 import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
 import com.li.wisdomcashier.base.entity.po.JWTToken;
@@ -50,8 +51,14 @@ public class AccountController {
     @ApiOperation(value = "邮箱验证码服务")
     @GetMapping("/getcode")
     @UnCheck
-    public R<String> getCode(String email){
-        return userService.getCode(email);
+    public R<String> getCode(String email,int type){
+        return userService.getCode(email,type);
+    }
+
+    @ApiOperation(value = "邮箱验证码服务需验证")
+    @GetMapping("/getcodeAuth")
+    public R<String> getCodeAuth(int type){
+        return userService.getCodeAuth(type);
     }
 
     @ApiOperation(value = "Ping")
@@ -96,7 +103,11 @@ public class AccountController {
         return userService.loginOut(httpServletRequest);
     }
 
-
+    @ApiOperation(value = "修改绑定邮箱")
+    @PostMapping("/changeUserEmail")
+    public R<String> changeUserEmail(@RequestBody @Validated EmailDto emailDto){
+        return userService.changeUserEmail(emailDto);
+    }
 
 
 }
