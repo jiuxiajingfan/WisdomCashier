@@ -8,6 +8,11 @@ import { ElMessage } from "element-plus";
 const store = useAuthStore(pinia);
 const routes: Array<RouteRecordRaw> = [
   {
+    path: "/",
+    name: "login",
+    component: loginPage,
+  },
+  {
     path: "/login",
     name: "login",
     component: loginPage,

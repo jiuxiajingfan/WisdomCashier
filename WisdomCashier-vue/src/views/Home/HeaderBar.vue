@@ -1,10 +1,10 @@
 <template>
   <div class="header">
-    <el-avatar :src="imagePath" />
+    <el-avatar :src="image" />
     <el-dropdown @command="handleCommand">
       <el-dropdown-link>
         <div class="name">
-          <span>{{ nickName }}</span>
+          <span>{{ userNickName }}</span>
           <el-icon class="el-icon--right">
             <CaretBottom />
           </el-icon>
@@ -38,11 +38,11 @@ import api from "@/api/api";
 import utils from "@/utils/utils";
 import { useAuthStore } from "@/store/auth";
 import { ElMessageBox } from "element-plus";
+import { storeToRefs } from "pinia/dist/pinia";
 
 const user = useUserStore(pinia);
 const store = useAuthStore(pinia);
-const imagePath = user.getImage;
-const nickName = user.getNickName;
+const { image, userNickName } = storeToRefs(user);
 const handleCommand = (command) => {
   if (command === "a") {
     router.push("/userCenter");

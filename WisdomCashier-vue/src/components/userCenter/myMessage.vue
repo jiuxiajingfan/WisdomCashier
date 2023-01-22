@@ -87,13 +87,16 @@
             v-show="passwordButton"
           >
             <el-form-item label="原密码 :">
-              <el-input type="password" v-model="userModel.name"></el-input>
+              <el-input
+                type="password"
+                v-model="userModel.pwdOriginal"
+              ></el-input>
             </el-form-item>
             <el-form-item label="新密码 :">
-              <el-input type="password" v-model="userModel.phone"></el-input>
+              <el-input type="password" v-model="userModel.pwdNew"></el-input>
             </el-form-item>
             <el-form-item label="确认密码 :">
-              <el-input type="password" v-model="userModel.email"></el-input>
+              <el-input type="password" v-model="userModel.pwdNew2"></el-input>
             </el-form-item>
             <el-button>确定</el-button>
           </el-form>
@@ -118,6 +121,9 @@ const userModel = reactive({
   email: "",
   change: false,
   code: "",
+  pwdOriginal: "",
+  pwdNew: "",
+  pwdNew2: "",
 });
 const passwordButton = ref(false);
 const emailButton = ref(false);
