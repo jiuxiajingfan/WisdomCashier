@@ -22,17 +22,17 @@ import javax.validation.constraints.Pattern;
 public class SignUpDto {
     @ApiModelProperty(value = "用户账户")
     @NotBlank(message = "账号不能为空")
-    @Length(min = 5,max = 20,message = "账号长度必须在5-20位之间！")
+    @Length(min = 5, max = 20, message = "账号长度必须在5-20位之间！")
     String userName;
 
-//   长度在6~18之间，只能包含字符、数字和下划线
     @ApiModelProperty(value = "密码")
     @NotBlank(message = "密码不能为空")
+    @Pattern(regexp = "^(?![a-zA-Z]+$)(?!\\d+$)(?![^\\da-zA-Z\\s]+$).{8,30}$", message = "密码必须包含数字、字母、特殊符号中的两种，长度为8-30位！")
     String userPwd;
 
     @ApiModelProperty(value = "邮箱")
     @NotBlank(message = "邮箱不能为空")
-    @Pattern(regexp = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$",message = "邮箱格式不正确！")
+    @Pattern(regexp = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$", message = "邮箱格式不正确！")
     String email;
 
 //    @ApiModelProperty(value = "手机号")
@@ -40,6 +40,6 @@ public class SignUpDto {
 //    String phone;
 
     @ApiModelProperty(value = "验证码")
-    @Length(min = 6,max = 6,message = "验证码错误！")
+    @Length(min = 6, max = 6, message = "验证码错误！")
     String code;
 }

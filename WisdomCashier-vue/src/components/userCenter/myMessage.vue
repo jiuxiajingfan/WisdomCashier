@@ -90,13 +90,22 @@
               <el-input
                 type="password"
                 v-model="userModel.pwdOriginal"
+                show-password
               ></el-input>
             </el-form-item>
             <el-form-item label="新密码 :">
-              <el-input type="password" v-model="userModel.pwdNew"></el-input>
+              <el-input
+                type="password"
+                v-model="userModel.pwdNew"
+                show-password
+              ></el-input>
             </el-form-item>
             <el-form-item label="确认密码 :">
-              <el-input type="password" v-model="userModel.pwdNew2"></el-input>
+              <el-input
+                type="password"
+                v-model="userModel.pwdNew2"
+                show-password
+              ></el-input>
             </el-form-item>
             <el-button>确定</el-button>
           </el-form>

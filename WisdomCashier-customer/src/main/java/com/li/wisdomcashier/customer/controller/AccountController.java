@@ -5,12 +5,10 @@ import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.common.UnCheck;
-import com.li.wisdomcashier.base.entity.dto.EmailDto;
+import com.li.wisdomcashier.base.entity.dto.ChangeEmailDto;
 import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
-import com.li.wisdomcashier.base.entity.po.JWTToken;
 import com.li.wisdomcashier.base.entity.po.User;
-import com.li.wisdomcashier.base.enums.ResultStatus;
 import com.li.wisdomcashier.base.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.valueextraction.UnwrapByDefault;
 
 /**
  * @ClassName AccountController
@@ -105,8 +102,8 @@ public class AccountController {
 
     @ApiOperation(value = "修改绑定邮箱")
     @PostMapping("/changeUserEmail")
-    public R<String> changeUserEmail(@RequestBody @Validated EmailDto emailDto){
-        return userService.changeUserEmail(emailDto);
+    public R<String> changeUserEmail(@RequestBody @Validated ChangeEmailDto changeEmailDto){
+        return userService.changeUserEmail(changeEmailDto);
     }
 
 

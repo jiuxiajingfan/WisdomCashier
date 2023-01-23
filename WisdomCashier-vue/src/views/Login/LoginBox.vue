@@ -178,11 +178,13 @@ const checkEmail = (rule, value, callback) => {
 };
 const checkPassword = (rule, value, callback) => {
   //验证密码的正则表达式
-  const regEmail = /\w{6,18}$/;
+  const regEmail = /^(?![a-zA-Z]+$)(?!\d+$)(?![^\da-zA-Z\s]+$).{8,30}$/;
   if (regEmail.test(value)) {
     return callback();
   }
-  callback(new Error("请输入正确格式的密码"));
+  callback(
+    new Error("密码必须包含数字、字母、特殊符号中的两种，长度为8-30位！")
+  );
 };
 const checkCode = (rule, value, callback) => {
   //验证验证码的正则表达式
@@ -206,9 +208,9 @@ const rules = reactive({
     { required: true, message: "请输入密码", trigger: "blur" },
     {
       validator: checkPassword,
-      min: 6,
-      max: 18,
-      message: "密码必须长度在6~18之间，只能包含字符、数字和下划线",
+      min: 8,
+      max: 30,
+      message: "密码必须包含数字、字母、特殊符号中的两种，长度为8-30位！",
       trigger: "blur",
     },
   ],

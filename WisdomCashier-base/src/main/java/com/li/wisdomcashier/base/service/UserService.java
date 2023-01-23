@@ -2,7 +2,8 @@ package com.li.wisdomcashier.base.service;
 
 import com.li.wisdomcashier.base.bean.UserBean;
 import com.li.wisdomcashier.base.common.R;
-import com.li.wisdomcashier.base.entity.dto.EmailDto;
+import com.li.wisdomcashier.base.entity.dto.ChangeEmailDto;
+import com.li.wisdomcashier.base.entity.dto.ChangePwdDto;
 import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
 import com.li.wisdomcashier.base.entity.po.User;
@@ -79,6 +80,18 @@ public interface UserService extends IService<User> {
     R<String> changeUserNickName(String name);
 
 
-    R<String> changeUserEmail(EmailDto emailDto);
+    /**
+     * 用户邮箱修改
+     * @param changeEmailDto
+     * @return
+     */
+    R<String> changeUserEmail(ChangeEmailDto changeEmailDto);
+
+    /**
+     * 用户密码修改
+     * @param changePwdDto
+     * @return
+     */
+    R<String> changePwd(ChangePwdDto changePwdDto);
 
 }

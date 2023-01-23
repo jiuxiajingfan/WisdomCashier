@@ -8,18 +8,17 @@ import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.li.wisdomcashier.base.bean.UserBean;
 import com.li.wisdomcashier.base.common.R;
-import com.li.wisdomcashier.base.entity.dto.EmailDto;
+import com.li.wisdomcashier.base.entity.dto.ChangeEmailDto;
+import com.li.wisdomcashier.base.entity.dto.ChangePwdDto;
 import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
 import com.li.wisdomcashier.base.entity.po.JWTToken;
 import com.li.wisdomcashier.base.entity.po.Role;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.entity.vo.UserVo;
-import com.li.wisdomcashier.base.mapper.PermissionMapper;
 import com.li.wisdomcashier.base.mapper.RoleMapper;
 import com.li.wisdomcashier.base.mapper.UserMapper;
 import com.li.wisdomcashier.base.service.EmailService;
@@ -30,11 +29,9 @@ import com.li.wisdomcashier.base.util.JwtUtils;
 import com.li.wisdomcashier.base.util.RedisUtils;
 import com.li.wisdomcashier.base.util.UserUtils;
 import io.jsonwebtoken.Claims;
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -44,7 +41,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * <p>
@@ -84,11 +80,13 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!signUpDto.getCode().equals(redisUtils.get(signUpDto.getEmail()))) {
             return R.error("验证码错误！");
         }
-        List<User> users = userMapper.selectList(Wrappers.lambdaQuery(User.class).eq(User::getEmail, signUpDto.getEmail()));
+        List<User> users = userMapper.selectList(Wrappers.lambdaQuery(User.class)
+                .eq(User::getEmail, signUpDto.getEmail()));
         if (!users.isEmpty()) {
             return R.error("该邮箱已被注册！请勿重复注册。");
         }
-        List<User> users2 = userMapper.selectList(Wrappers.lambdaQuery(User.class).eq(User::getUserName, signUpDto.getUserName()));
+        List<User> users2 = userMapper.selectList(Wrappers.lambdaQuery(User.class)
+                .eq(User::getUserName, signUpDto.getUserName()));
         if (!users2.isEmpty()) {
             return R.error("该账号已被注册！请勿重复注册。");
         }
@@ -101,7 +99,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public R<String> getCode(String email,int type) {
+    public R<String> getCode(String email, int type) {
         log.info("调用邮箱服务：{}", email);
         if (redisUtils.hasKey(email)) {
             return R.error("请勿重复调用~");
@@ -121,7 +119,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public R<String> getCodeAuth(int type) {
         String email = UserUtils.getUser().getEmail();
-        log.info("调用邮箱服务,类型:{},邮箱:{}",type,email);
+        log.info("调用邮箱服务,类型:{},邮箱:{}", type, email);
         if (redisUtils.hasKey(email)) {
             return R.error("请勿重复调用~");
         } else {
@@ -141,23 +139,27 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public R<User> test() {
-        User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getEmail, "1475549985@qq.com"));
+        User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class)
+                .eq(User::getEmail, "1475549985@qq.com"));
         return R.ok(user);
 
     }
 
     @Override
     public UserBean getUser(String username) {
-        User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getUserName, username));
+        User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class)
+                .eq(User::getUserName, username));
         if (user == null) {
             return null;
         }
         List<String> roleList = new ArrayList<>();
         List<String> permissionList = new ArrayList<>();
         UserBean userBean = new UserBean();
+        userBean.setId(user.getId());
         userBean.setPassword(user.getUserPwd());
         userBean.setUsername(user.getUserName());
-        List<Role> roles = roleMapper.selectList(Wrappers.lambdaQuery(Role.class).eq(Role::getUserId, user.getId()));
+        List<Role> roles = roleMapper.selectList(Wrappers.lambdaQuery(Role.class)
+                .eq(Role::getUserId, user.getId()));
         for (Role role : roles) {
             //超级管理员
             if (role.getRole() == 1) {
@@ -189,40 +191,40 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (verification.getRepCode().compareTo(ResponseModel.success().getRepCode()) != 0) {
             return R.error(verification.getRepMsg());
         }
-        //获取当前用户
-        Subject subject = SecurityUtils.getSubject();
-        //封装用户的登录数据
-        JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()));
-        try {
-            subject.login(jwtToken);
+        User userBean = userMapper.selectOne(Wrappers.lambdaQuery(User.class)
+                .eq(User::getUserName, loginDto.getUserName()));
+        if (null == userBean) {
+            return R.error("不存在该用户！");
+        }
+        if (userBean.getUserPwd().equals(loginDto.getUserPwd())) {
+            //封装用户的登录数据
+            JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()));
             //限制多处登录
             redisUtils.lSet(loginDto.getUserName() + "token", jwtToken.getPrincipal(), 14400);
             if (redisUtils.lGetListSize(loginDto.getUserName() + "token") > 1) {
                 redisUtils.lLPop(loginDto.getUserName() + "token");
             }
             return R.ok(jwtToken.getPrincipal().toString());
-        } catch (AuthenticationException e) {
-            log.info(e.getMessage());
-            return R.error("账号或密码错误！登录失败");
         }
+        return R.error("密码错误！请重试！");
     }
 
     public R<String> login2(LoginDto loginDto) {
-        Subject subject = SecurityUtils.getSubject();
-        //封装用户的登录数据
-        JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()));
-        try {
-            subject.login(jwtToken);
+        User userBean = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getUserName,loginDto.getUserName()));
+        if (null == userBean) {
+            return R.error("不存在该用户！");
+        }
+        if (userBean.getUserPwd().equals(loginDto.getUserPwd())) {
+            //封装用户的登录数据
+            JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()));
             //限制多处登录
             redisUtils.lSet(loginDto.getUserName() + "token", jwtToken.getPrincipal(), 14400);
             if (redisUtils.lGetListSize(loginDto.getUserName() + "token") > 1) {
                 redisUtils.lLPop(loginDto.getUserName() + "token");
             }
             return R.ok(jwtToken.getPrincipal().toString());
-        } catch (AuthenticationException e) {
-            log.info(e.getMessage());
-            return R.error("账号或密码错误！登录失败");
         }
+        return R.error("密码错误！请重试！");
     }
 
     @Override
@@ -255,24 +257,50 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public R<String> changeUserNickName(String name) {
         User user = UserUtils.getUser();
-        int update = userMapper.update(null, new LambdaUpdateWrapper<User>().eq(User::getId, user.getId()).set(User::getUserNickname, name));
+        userMapper.update(null, new LambdaUpdateWrapper<User>()
+                .eq(User::getId, user.getId()).set(User::getUserNickname, name));
         return R.ok("修改成功！");
     }
 
     @Override
-    public R<String> changeUserEmail(EmailDto emailDto) {
+    public R<String> changeUserEmail(ChangeEmailDto changeEmailDto) {
 
         User user = UserUtils.getUser();
-        if (!emailDto.getCode().equals(redisUtils.get(user.getEmail()))) {
+        if (!changeEmailDto.getCode().equals(redisUtils.get(user.getEmail()))) {
             return R.error("验证码错误！");
         }
-        Integer count = userMapper.selectCount(Wrappers.lambdaQuery(User.class).eq(User::getEmail, emailDto.getEmail()));
-        if (count>0) {
+        Integer count = userMapper.selectCount(Wrappers.lambdaQuery(User.class)
+                .eq(User::getEmail, changeEmailDto.getEmail()));
+        if (count > 0) {
             return R.error("该邮箱已被绑定！");
         }
-        userMapper.update(null,Wrappers.lambdaUpdate(User.class).eq(User::getId,user.getId()).set(User::getEmail,emailDto.getEmail()));
+        userMapper.update(null, Wrappers.lambdaUpdate(User.class)
+                .eq(User::getId, user.getId())
+                .set(User::getEmail, changeEmailDto.getEmail()));
         redisUtils.del(user.getEmail());
         return R.ok("修改绑定邮箱成功！");
+    }
+
+    @Override
+    public R<String> changePwd(ChangePwdDto changePwdDto) {
+        Subject subject = SecurityUtils.getSubject();
+        Claims claimByToken = jwtUtils.getClaimByToken(subject.getPrincipal().toString());
+        User userBean = userMapper.selectOne(Wrappers.lambdaQuery(User.class)
+                .eq(User::getUserName, claimByToken.getSubject()));
+        if(userBean == null)
+            return R.error("不存在该用户！");
+        if(userBean.getUserPwd().equals(changePwdDto.getPwdOriginal())){
+            if(changePwdDto.getPwdNew().equals(changePwdDto.getPwdConfirm())){
+                userMapper.update(null,Wrappers.lambdaUpdate(User.class)
+                        .eq(User::getId,userBean.getId())
+                        .set(User::getUserPwd,changePwdDto.getPwdNew()));
+                return R.ok("修改成功！");
+            }
+            else {
+                R.error("两次密码不一致，请重新确认！");
+            }
+        }
+        return R.error("原密码错误！请重试！");
     }
 
 

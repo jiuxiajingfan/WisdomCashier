@@ -2,7 +2,7 @@
   <div class="back">
     <div class="header">
       <el-header style="text-align: right; font-size: 12px">
-        <el-avatar :src="imagePath" />
+        <el-avatar :src="image" />
         <el-dropdown @command="handleCommand">
           <span class="el-dropdown-link">
             <div class="photo">
@@ -81,14 +81,15 @@ import { useAuthStore } from "@/store/auth";
 import pinia from "@/store/store";
 import { useUserStore } from "@/store/user";
 import { ElMessage, ElMessageBox } from "element-plus";
+import { storeToRefs } from "pinia/dist/pinia";
 
 const store = useAuthStore(pinia);
 const user = useUserStore(pinia);
 const shops = ref([]);
 const tableheight = ref(document.documentElement.clientHeight * 0.32);
 const searchText = ref("");
-const imagePath = ref("null");
-const userNickName = ref("");
+const { image, userNickName } = storeToRefs(user);
+
 onBeforeMount(() => {
   api.get("choiceShop/getUserShop").then((res) => {
     shops.value = res.data.data;
@@ -101,8 +102,6 @@ onBeforeMount(() => {
     user.setNickName(data.userNickname);
     user.setPhone(data.phone);
     user.setEmail(data.email);
-    imagePath.value = data.image;
-    userNickName.value = data.userNickname;
   });
 });
 const searchShop = () => {

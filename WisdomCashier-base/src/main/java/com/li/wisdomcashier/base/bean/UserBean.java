@@ -14,6 +14,8 @@ import java.util.List;
  */
 @Data
 public class UserBean {
+    private Long id;
+
     private String username;
 
     private String password;
