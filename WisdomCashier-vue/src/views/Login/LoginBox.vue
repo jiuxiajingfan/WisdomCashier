@@ -244,7 +244,7 @@ const register = () => {
           code: registerFormData.code,
           email: registerFormData.email,
           userName: registerFormData.name,
-          userPwd: md5(registerFormData.password),
+          userPwd: md5(registerFormData.password + registerFormData.name),
         })
         .then((res) => {
           utils.showMessage(

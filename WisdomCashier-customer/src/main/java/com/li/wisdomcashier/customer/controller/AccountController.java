@@ -6,6 +6,7 @@ import com.anji.captcha.service.CaptchaService;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.common.UnCheck;
 import com.li.wisdomcashier.base.entity.dto.ChangeEmailDto;
+import com.li.wisdomcashier.base.entity.dto.ChangePwdDto;
 import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
 import com.li.wisdomcashier.base.entity.po.User;
@@ -106,5 +107,10 @@ public class AccountController {
         return userService.changeUserEmail(changeEmailDto);
     }
 
+    @ApiOperation(value = "修改用户密码")
+    @PostMapping("/changePwd")
+    public R<String> changePwd(@RequestBody @Validated ChangePwdDto changePwdDto){
+        return userService.changePwd(changePwdDto);
+    }
 
 }
