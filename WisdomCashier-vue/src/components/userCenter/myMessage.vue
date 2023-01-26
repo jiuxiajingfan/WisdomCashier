@@ -219,6 +219,15 @@ const rules = reactive({
       trigger: "blur",
     },
   ],
+  name: [
+    { required: true, message: "请输入新用户名", trigger: "blur" },
+    {
+      min: 1,
+      max: 0,
+      message: "请输入新用户名，长度为1-20位！",
+      trigger: "blur",
+    },
+  ],
 });
 const changePasswordModel = ref();
 const changePassword = () => {

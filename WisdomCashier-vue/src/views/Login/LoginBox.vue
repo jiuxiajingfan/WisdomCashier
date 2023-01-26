@@ -299,7 +299,7 @@ export default {
       api
         .post("account/login", {
           userName: this.loginFormData.name,
-          userPwd: md5(this.loginFormData.password),
+          userPwd: md5(this.loginFormData.password + this.loginFormData.name),
           verification: params.captchaVerification,
         })
         .then((res) => {

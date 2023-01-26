@@ -30,8 +30,8 @@ import com.li.wisdomcashier.base.util.RedisUtils;
 import com.li.wisdomcashier.base.util.UserUtils;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -210,7 +210,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     public R<String> login2(LoginDto loginDto) {
-        User userBean = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getUserName,loginDto.getUserName()));
+        User userBean = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getUserName, loginDto.getUserName()));
         if (null == userBean) {
             return R.error("不存在该用户！");
         }
@@ -256,6 +256,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public R<String> changeUserNickName(String name) {
+        if (StringUtils.isBlank(name)) {
+            return R.error("请输入新用户名");
+        }
+        if (name.length() > 30) {
+            return R.error("用户名过长！");
+        }
         User user = UserUtils.getUser();
         userMapper.update(null, new LambdaUpdateWrapper<User>()
                 .eq(User::getId, user.getId()).set(User::getUserNickname, name));
@@ -287,17 +293,16 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Claims claimByToken = jwtUtils.getClaimByToken(subject.getPrincipal().toString());
         User userBean = userMapper.selectOne(Wrappers.lambdaQuery(User.class)
                 .eq(User::getUserName, claimByToken.getSubject()));
-        if(userBean == null)
+        if (userBean == null)
             return R.error("不存在该用户！");
-        if(userBean.getUserPwd().equals(changePwdDto.getPwdOriginal())){
-            if(changePwdDto.getPwdNew().equals(changePwdDto.getPwdConfirm())){
-                userMapper.update(null,Wrappers.lambdaUpdate(User.class)
-                        .eq(User::getId,userBean.getId())
-                        .set(User::getUserPwd,changePwdDto.getPwdNew()));
+        if (userBean.getUserPwd().equals(changePwdDto.getPwdOriginal())) {
+            if (changePwdDto.getPwdNew().equals(changePwdDto.getPwdConfirm())) {
+                userMapper.update(null, Wrappers.lambdaUpdate(User.class)
+                        .eq(User::getId, userBean.getId())
+                        .set(User::getUserPwd, changePwdDto.getPwdNew()));
                 return R.ok("修改成功！");
-            }
-            else {
-                R.error("两次密码不一致，请重新确认！");
+            } else {
+                return R.error("两次密码不一致，请重新确认！");
             }
         }
         return R.error("原密码错误！请重试！");
