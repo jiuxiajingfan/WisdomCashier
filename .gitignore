@@ -101,3 +101,4 @@ hs_err_pid*
 /WisdomCashier-customer/src/main/resources/application-dev.yaml
 /WisdomCashier-admin/src/main/resources/application-prod.yaml
 /WisdomCashier-customer/src/main/resources/application-prod.yaml
+/WisdomCashier-base/src/main/java/com/li/wisdomcashier/base/util/CodeGenerator.java

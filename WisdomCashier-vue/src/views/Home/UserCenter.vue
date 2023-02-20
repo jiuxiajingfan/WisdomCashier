@@ -25,13 +25,13 @@
                 <el-icon><Avatar /></el-icon>
                 <span>账号设置</span>
               </template>
-              <el-menu-item index="2-1" @click="addTab(editableTabsValue)">
+              <el-menu-item
+                index="2-1"
+                @click="addTab(editableTabsValue)"
+                title="myMessage"
+              >
                 <el-icon><User /></el-icon>
                 我的信息
-              </el-menu-item>
-              <el-menu-item index="2-2">
-                <el-icon><Key /></el-icon>
-                密码修改
               </el-menu-item>
             </el-sub-menu>
             <el-menu-item index="3">
@@ -98,9 +98,9 @@ let tabIndex = 2;
 const editableTabsValue = ref("2");
 const editableTabs = ref([
   {
-    title: "Tab 1",
-    name: "1",
-    content: "Tab 1 content",
+    title: "我的信息",
+    name: "myMessage",
+    content: "myMessage",
   },
   {
     title: "Tab 2",
@@ -111,6 +111,7 @@ const editableTabs = ref([
 
 const addTab = (targetName) => {
   const newTabName = `${++tabIndex}`;
+  console.log(targetName);
   editableTabs.value.push({
     title: "New Tab",
     name: newTabName,

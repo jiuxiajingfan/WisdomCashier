@@ -16,7 +16,14 @@
           <el-form :model="userModel" label-width="120px">
             <el-form-item label="用户标识 :">
               {{ user.getId }}
-              <el-icon style="margin-left: 5px"><CopyDocument /></el-icon>
+              <el-button
+                type="text"
+                :icon="CopyDocument"
+                style="margin-left: 5px"
+                class="copyBtn"
+                @click="copy"
+                circle
+              />
             </el-form-item>
             <el-form-item label="用户名 :">
               {{ user.getNickName }}
@@ -121,10 +128,12 @@
 import { useUserStore } from "@/store/user";
 import pinia from "@/store/store";
 import avatarUpload from "@/components/userCenter/avatar-upload";
+import { CopyDocument } from "@element-plus/icons-vue";
 import { onMounted, reactive, ref } from "vue";
 import api from "@/api/api";
 import utils from "@/utils/utils";
 import md5 from "js-md5";
+import ClipboardJS from "clipboard";
 const user = useUserStore(pinia);
 const userModel = reactive({
   id: user.getId,
@@ -137,6 +146,22 @@ const userModel = reactive({
   pwdNew: "",
   pwdNew2: "",
 });
+const copy = () => {
+  let text = new ClipboardJS(".copyBtn", {
+    text: function (trigger) {
+      //alert("ok");
+      return user.getId;
+    },
+  });
+  text.on("success", () => {
+    utils.showMessage(200, "复制成功！");
+    text.destroy();
+  });
+  text.on("error", () => {
+    utils.showMessage(400, "复制失败！");
+    text.destroy();
+  });
+};
 const passwordButton = ref(false);
 const emailButton = ref(false);
 const changeName = () => {
@@ -255,5 +280,8 @@ const changePassword = () => {
 .mm {
   background-color: #ffffff;
   min-height: v-bind(screenHeight);
+}
+.copyBtn {
+  --el-color-white: #000000;
 }
 </style>
