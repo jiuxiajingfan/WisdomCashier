@@ -9,6 +9,7 @@ import com.li.wisdomcashier.base.entity.dto.ChangeEmailDto;
 import com.li.wisdomcashier.base.entity.dto.ChangePwdDto;
 import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
+import com.li.wisdomcashier.base.entity.po.SysMenu;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.service.UserService;
 import io.swagger.annotations.Api;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @ClassName AccountController
@@ -114,4 +116,9 @@ public class AccountController {
     }
 
 
+    @ApiOperation(value = "请求菜单")
+    @GetMapping("getUserCenterMenu")
+    public  R<List<SysMenu>> getUserCenterMenu(){
+        return userService.getUserCenterMenu();
+    }
 }

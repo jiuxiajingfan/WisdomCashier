@@ -17,10 +17,13 @@ import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
 import com.li.wisdomcashier.base.entity.po.JWTToken;
 import com.li.wisdomcashier.base.entity.po.Role;
+import com.li.wisdomcashier.base.entity.po.SysMenu;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.entity.vo.UserVo;
+import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.RoleMapper;
 import com.li.wisdomcashier.base.mapper.UserMapper;
+import com.li.wisdomcashier.base.mapper.SysMenuMapper;
 import com.li.wisdomcashier.base.service.EmailService;
 import com.li.wisdomcashier.base.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -41,6 +44,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -74,6 +78,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Value("${tokenTime}")
     private Long tokenTime;
+
+    @Resource
+    private SysMenuMapper sysMenuMapper;
 
     @Override
     public R<String> signUp(SignUpDto signUpDto) {
@@ -178,7 +185,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
         }
         userBean.setPermission(permissionList);
-        userBean.setRole(roleList);
+        userBean.setRole(roleList.stream().distinct().collect(Collectors.toList()));
         return userBean;
     }
 
@@ -306,6 +313,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             }
         }
         return R.error("原密码错误！请重试！");
+    }
+
+    @Override
+    public R<List<SysMenu>> getUserCenterMenu() {
+        Subject subject = SecurityUtils.getSubject();
+        List<SysMenu> userCenterMenu = new ArrayList<>();
+        Integer role;
+        if (subject.hasRole("admin")) {
+            role = RoleEnum.ADMIN.getCode();
+        } else if (subject.hasRole("shopadmin")) {
+            role = RoleEnum.SHOPADMIN.getCode();
+        } else {
+            role = RoleEnum.SHOP.getCode();
+        }
+        userCenterMenu = sysMenuMapper.getUserCenterMenu(role);
+        for (SysMenu centerMenu : userCenterMenu) {
+            centerMenu.setChildren(sysMenuMapper.getChildrens(role, centerMenu.getMenuId()));
+        }
+        return R.ok(userCenterMenu);
     }
 
 

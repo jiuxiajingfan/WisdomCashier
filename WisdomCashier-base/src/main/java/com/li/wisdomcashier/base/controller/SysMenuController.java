@@ -1,4 +1,4 @@
-package com.li.WisdomCashier.base.controller;
+package com.li.wisdomcashier.base.controller;
 
 
 import org.springframework.web.bind.annotation.RequestMapping;

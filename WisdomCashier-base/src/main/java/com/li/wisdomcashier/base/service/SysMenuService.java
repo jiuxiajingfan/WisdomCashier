@@ -1,6 +1,6 @@
-package com.li.WisdomCashier.base.service;
+package com.li.wisdomcashier.base.service;
 
-import com.li.WisdomCashier.base.entity.SysMenu;
+import com.li.wisdomcashier.base.entity.po.SysMenu;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**

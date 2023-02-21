@@ -1,8 +1,8 @@
-package com.li.WisdomCashier.base.service.impl;
+package com.li.wisdomcashier.base.service.impl;
 
-import com.li.WisdomCashier.base.entity.SysMenu;
-import com.li.WisdomCashier.base.mapper.SysMenuMapper;
-import com.li.WisdomCashier.base.service.SysMenuService;
+import com.li.wisdomcashier.base.entity.po.SysMenu;
+import com.li.wisdomcashier.base.mapper.SysMenuMapper;
+import com.li.wisdomcashier.base.service.SysMenuService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 

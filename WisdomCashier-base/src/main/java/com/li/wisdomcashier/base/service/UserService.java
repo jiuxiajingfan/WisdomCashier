@@ -6,11 +6,13 @@ import com.li.wisdomcashier.base.entity.dto.ChangeEmailDto;
 import com.li.wisdomcashier.base.entity.dto.ChangePwdDto;
 import com.li.wisdomcashier.base.entity.dto.LoginDto;
 import com.li.wisdomcashier.base.entity.dto.SignUpDto;
+import com.li.wisdomcashier.base.entity.po.SysMenu;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.base.entity.vo.UserVo;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * <p>
@@ -94,4 +96,9 @@ public interface UserService extends IService<User> {
      */
     R<String> changePwd(ChangePwdDto changePwdDto);
 
+    /**
+     * 获取用户中心菜单
+     * @return
+     */
+    R<List<SysMenu>> getUserCenterMenu();
 }

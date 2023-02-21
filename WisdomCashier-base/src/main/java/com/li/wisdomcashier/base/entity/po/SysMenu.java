@@ -1,4 +1,4 @@
-package com.li.WisdomCashier.base.entity;
+package com.li.wisdomcashier.base.entity.po;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotation.Version;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
+import java.util.List;
+
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -54,5 +56,6 @@ public class SysMenu implements Serializable {
     @TableField("status")
     private Integer status;
 
+    private List<SysMenu> children;
 
 }

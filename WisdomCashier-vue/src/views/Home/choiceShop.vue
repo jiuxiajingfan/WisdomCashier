@@ -94,6 +94,7 @@ onBeforeMount(() => {
   api.get("choiceShop/getUserShop").then((res) => {
     shops.value = res.data.data;
   });
+  console.log(shops.value);
   api.post("/user/getUser").then((res) => {
     let data = res.data.data;
     user.setId(data.id);

@@ -50,6 +50,7 @@ public class UserRealm extends AuthorizingRealm {
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         simpleAuthorizationInfo.addRoles(user.getRole());
         simpleAuthorizationInfo.addStringPermissions(user.getPermission());
+        log.info("拥有权限{}",user.getRole());
         return simpleAuthorizationInfo;
     }
 

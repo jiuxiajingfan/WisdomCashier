@@ -8,46 +8,69 @@
     </el-header>
     <el-container>
       <el-aside width="auto">
-        <el-scrollbar :height="screenHeight">
-          <el-menu class="el-menu-vertical-demo" :collapse="isCollapse">
-            <div class="receive">
-              <el-button @click="contraction" type="text" style="width: 100%">
-                <el-icon v-if="isCollapse === true">
-                  <ArrowRightBold />
-                </el-icon>
-                <el-icon v-if="isCollapse === false">
-                  <ArrowLeftBold />
-                </el-icon>
-              </el-button>
-            </div>
-            <el-sub-menu index="">
-              <template #title>
-                <el-icon><Avatar /></el-icon>
-                <span>账号设置</span>
+        <!--        <el-scrollbar :height="screenHeight">-->
+        <!--          <el-menu class="el-menu-vertical-demo" :collapse="isCollapse">-->
+        <!--            <div class="receive">-->
+        <!--              <el-button @click="contraction" type="text" style="width: 100%">-->
+        <!--                <el-icon v-if="isCollapse === true">-->
+        <!--                  <ArrowRightBold />-->
+        <!--                </el-icon>-->
+        <!--                <el-icon v-if="isCollapse === false">-->
+        <!--                  <ArrowLeftBold />-->
+        <!--                </el-icon>-->
+        <!--              </el-button>-->
+        <!--            </div>-->
+        <!--            <el-sub-menu index="">-->
+        <!--              <template #title>-->
+        <!--                <el-icon><Avatar /></el-icon>-->
+        <!--                <span>账号设置</span>-->
+        <!--              </template>-->
+        <!--              <el-menu-item-->
+        <!--                index="2-1"-->
+        <!--                @click="addTab(editableTabsValue)"-->
+        <!--                title="myMessage"-->
+        <!--              >-->
+        <!--                <el-icon><User /></el-icon>-->
+        <!--                我的信息-->
+        <!--              </el-menu-item>-->
+        <!--            </el-sub-menu>-->
+        <!--            <el-menu-item index="3">-->
+        <!--              <el-icon>-->
+        <!--                <icon-menu />-->
+        <!--              </el-icon>-->
+        <!--              <template #title>Navigator Two</template>-->
+        <!--            </el-menu-item>-->
+        <!--            <el-menu-item index="5">-->
+        <!--              <el-icon>-->
+        <!--                <setting />-->
+        <!--              </el-icon>-->
+        <!--              <template #title>Navigator Four</template>-->
+        <!--            </el-menu-item>-->
+        <!--          </el-menu>-->
+        <!--        </el-scrollbar>-->
+        <el-menu class="el-menu-vertical-demo" :collapse="isCollapse">
+          <template v-for="(item, index) in menuData" :key="index">
+            <el-sub-menu :index="index">
+              <template v-slot:title>
+                <el-icon><component :is="item.icon"></component></el-icon>
+                <span>{{ item.name }}</span>
+                <template v-if="item.children.length > 0">
+                  <!--                  <template-->
+                  <!--                    v-for="(item2, index2) in item.children"-->
+                  <!--                    :key="index2"-->
+                  <!--                  >-->
+                  <!--                    <el-menu-item :index="index2">-->
+                  <!--                      <el-icon-->
+                  <!--                        ><component :is="item2.icon"></component-->
+                  <!--                      ></el-icon>-->
+                  <!--                      <span>{{ item2.name }}</span>-->
+                  <!--                    </el-menu-item>-->
+                  <!--                  </template>-->
+                </template>
               </template>
-              <el-menu-item
-                index="2-1"
-                @click="addTab(editableTabsValue)"
-                title="myMessage"
-              >
-                <el-icon><User /></el-icon>
-                我的信息
-              </el-menu-item>
             </el-sub-menu>
-            <el-menu-item index="3">
-              <el-icon>
-                <icon-menu />
-              </el-icon>
-              <template #title>Navigator Two</template>
-            </el-menu-item>
-            <el-menu-item index="5">
-              <el-icon>
-                <setting />
-              </el-icon>
-              <template #title>Navigator Four</template>
-            </el-menu-item>
-          </el-menu>
-        </el-scrollbar>
+          </template>
+        </el-menu>
       </el-aside>
       <el-main>
         <el-tabs
@@ -76,10 +99,18 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
 import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
 import HeaderBar from "@/views/Home/HeaderBar.vue";
 import myMessage from "../../components/userCenter/myMessage.vue";
+import api from "@/api/api";
+const menuData = ref([]);
+onBeforeMount(() => {
+  api.get("account/getUserCenterMenu").then((res) => {
+    menuData.value = res.data.data;
+  });
+  console.log(menuData.value);
+});
 const isCollapse = ref(false);
 const buttonWidth = ref("200px");
 const contraction = () => {
