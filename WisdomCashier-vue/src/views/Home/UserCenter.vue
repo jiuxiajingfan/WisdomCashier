@@ -48,24 +48,50 @@
         <!--            </el-menu-item>-->
         <!--          </el-menu>-->
         <!--        </el-scrollbar>-->
-        <el-menu class="el-menu-vertical-demo" :collapse="isCollapse">
+        <el-menu
+          class="el-menu-vertical-demo"
+          :collapse="isCollapse"
+          :default-openeds="openeds"
+        >
+          <div class="receive">
+            <el-button @click="contraction" type="text" style="width: 100%">
+              <el-icon v-if="isCollapse === true">
+                <ArrowRightBold />
+              </el-icon>
+              <el-icon v-if="isCollapse === false">
+                <ArrowLeftBold />
+              </el-icon>
+            </el-button>
+          </div>
           <template v-for="(item, index) in menuData" :key="index">
-            <el-sub-menu :index="index">
+            <el-sub-menu
+              v-if="item.hidden == 0"
+              :index="index"
+              :disabled="item.status == 0"
+            >
               <template v-slot:title>
-                <el-icon><component :is="item.icon"></component></el-icon>
+                <el-icon>
+                  <component :is="item.icon"></component>
+                </el-icon>
                 <span>{{ item.name }}</span>
-                <template v-if="item.children.length > 0">
-                  <!--                  <template-->
-                  <!--                    v-for="(item2, index2) in item.children"-->
-                  <!--                    :key="index2"-->
-                  <!--                  >-->
-                  <!--                    <el-menu-item :index="index2">-->
-                  <!--                      <el-icon-->
-                  <!--                        ><component :is="item2.icon"></component-->
-                  <!--                      ></el-icon>-->
-                  <!--                      <span>{{ item2.name }}</span>-->
-                  <!--                    </el-menu-item>-->
-                  <!--                  </template>-->
+              </template>
+              <template v-if="item.children.length > 0">
+                <template
+                  v-for="(item2, index2) in item.children"
+                  :key="index2"
+                >
+                  <el-menu-item
+                    :index="item2.component"
+                    @click="
+                      addTab(editableTabsValue, item2.component, item2.name)
+                    "
+                    :disabled="item2.status == 0"
+                  >
+                    <el-icon>
+                      <component :is="item2.icon"></component>
+                    </el-icon>
+                    <span>{{ item2.name }}</span>
+                  </el-menu-item>
                 </template>
               </template>
             </el-sub-menu>
@@ -86,12 +112,15 @@
             :label="item.title"
             :name="item.name"
           >
+            <component :is="map.get(item.content)"></component>
           </el-tab-pane>
-          <el-scrollbar :height="screenHeight">
-            <div class="cop">
-              <component v-bind:is="myMessage"></component>
-            </div>
-          </el-scrollbar>
+          <component v-show="cnt == 0" :is="myMessage"></component>
+
+          <!--          <el-scrollbar :height="screenHeight">-->
+          <!--            <div class="cop">-->
+          <!--              <component v-bind:is="myMessage"></component>-->
+          <!--            </div>-->
+          <!--          -->
         </el-tabs>
       </el-main>
     </el-container>
@@ -99,17 +128,40 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from "vue";
+import {
+  defineAsyncComponent,
+  onBeforeMount,
+  onMounted,
+  reactive,
+  ref,
+} from "vue";
 import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
 import HeaderBar from "@/views/Home/HeaderBar.vue";
-import myMessage from "../../components/userCenter/myMessage.vue";
 import api from "@/api/api";
+const cnt = ref(0);
 const menuData = ref([]);
-onBeforeMount(() => {
+const map = new Map();
+const menuData2 = [];
+let myMessage = defineAsyncComponent(() =>
+  import("../../components/userCenter/myMessage")
+);
+const openeds = [0];
+let HH = defineAsyncComponent(() => import("../../components/userCenter/h1"));
+onMounted(() => {
   api.get("account/getUserCenterMenu").then((res) => {
     menuData.value = res.data.data;
+    menuData2.push(res.data.data);
+    for (let i = 0; i < menuData2[0].length; i++) {
+      if (menuData2[0][i].children.length > 0) {
+        for (let j = 0; j < menuData2[0][i].children.length; j++) {
+          map.set(
+            menuData2[0][i].children[j].component,
+            eval(menuData2[0][i].children[j].component)
+          );
+        }
+      }
+    }
   });
-  console.log(menuData.value);
 });
 const isCollapse = ref(false);
 const buttonWidth = ref("200px");
@@ -133,20 +185,15 @@ const editableTabs = ref([
     name: "myMessage",
     content: "myMessage",
   },
-  {
-    title: "Tab 2",
-    name: "2",
-    content: "Tab 2 content",
-  },
 ]);
-
-const addTab = (targetName) => {
+const addTab = (targetName, component, title) => {
+  cnt.value = cnt.value + 1;
   const newTabName = `${++tabIndex}`;
   console.log(targetName);
   editableTabs.value.push({
-    title: "New Tab",
+    title: title,
     name: newTabName,
-    content: "New Tab content",
+    content: component,
   });
   editableTabsValue.value = newTabName;
 };
@@ -197,6 +244,7 @@ const removeTab = (targetName) => {
   border-radius: 35px;
   position: relative;
 }
+
 .layout-container-demo .toolbar {
   display: inline-flex;
   align-items: center;
@@ -204,22 +252,27 @@ const removeTab = (targetName) => {
   height: 100%;
   right: 20px;
 }
+
 .layout-container-demo .el-menu {
   border-right: none;
 }
+
 .el-menu-vertical-demo:not(.el-menu--collapse) {
   width: 200px;
   min-height: 400px;
 }
+
 .receive {
   .el-button {
     height: 56px;
     min-width: 62px;
   }
+
   .el-button--text {
     color: #606266;
   }
 }
+
 .cop {
   position: relative;
 }
