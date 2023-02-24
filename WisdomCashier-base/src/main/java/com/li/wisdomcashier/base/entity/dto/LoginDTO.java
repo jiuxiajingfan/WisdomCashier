@@ -5,7 +5,6 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 
 /**
  * @ClassName LoginDto
@@ -15,7 +14,7 @@ import javax.validation.constraints.Pattern;
  * @Version 1.0
  */
 @Data
-public class LoginDto {
+public class LoginDTO {
     @ApiModelProperty(value = "用户账户")
     @NotBlank(message = "账号密码错误！登录失败！")
     @Length(min = 5, max = 20, message = "账号密码错误！登录失败！")

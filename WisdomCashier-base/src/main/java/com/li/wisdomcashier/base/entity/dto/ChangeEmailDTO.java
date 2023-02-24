@@ -14,7 +14,7 @@ import javax.validation.constraints.Pattern;
  * @Version 1.0
  */
 @Data
-public class ChangeEmailDto {
+public class ChangeEmailDTO {
     @NotBlank(message = "必须填写新邮箱")
     @Pattern(regexp = "^\\w+([-+.]\\w+)*@\\w+([-.]\\w+)*\\.\\w+([-.]\\w+)*$",message = "邮箱格式不正确！")
     String email;

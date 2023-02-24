@@ -14,7 +14,7 @@ import javax.validation.constraints.Pattern;
  * @Version 1.0
  */
 @Data
-public class ChangePwdDto {
+public class ChangePwdDTO {
     @NotBlank(message = "原密码不能为空")
     @ApiModelProperty(value = "原始密码")
     String pwdOriginal;

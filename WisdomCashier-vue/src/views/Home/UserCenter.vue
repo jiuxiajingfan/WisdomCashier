@@ -146,8 +146,10 @@ let myMessage = defineAsyncComponent(() =>
   import("../../components/userCenter/myMessage")
 );
 const openeds = [0];
-let HH = defineAsyncComponent(() => import("../../components/userCenter/h1"));
-onMounted(() => {
+let myShop = defineAsyncComponent(() =>
+  import("../../components/userCenter/myShop")
+);
+onBeforeMount(() => {
   api.get("account/getUserCenterMenu").then((res) => {
     menuData.value = res.data.data;
     menuData2.push(res.data.data);

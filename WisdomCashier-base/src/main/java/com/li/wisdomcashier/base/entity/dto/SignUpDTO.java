@@ -3,10 +3,8 @@ package com.li.wisdomcashier.base.entity.dto;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import lombok.Data;
-import lombok.NonNull;
 import org.hibernate.validator.constraints.Length;
 
-import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
@@ -19,7 +17,7 @@ import javax.validation.constraints.Pattern;
  */
 @ApiOperation(value = "注册dto")
 @Data
-public class SignUpDto {
+public class SignUpDTO {
     @ApiModelProperty(value = "用户账户")
     @NotBlank(message = "账号不能为空")
     @Length(min = 5, max = 20, message = "账号长度必须在5-20位之间！")

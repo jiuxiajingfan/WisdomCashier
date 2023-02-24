@@ -11,10 +11,10 @@ import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.li.wisdomcashier.base.bean.UserBean;
 import com.li.wisdomcashier.base.common.R;
-import com.li.wisdomcashier.base.entity.dto.ChangeEmailDto;
-import com.li.wisdomcashier.base.entity.dto.ChangePwdDto;
-import com.li.wisdomcashier.base.entity.dto.LoginDto;
-import com.li.wisdomcashier.base.entity.dto.SignUpDto;
+import com.li.wisdomcashier.base.entity.dto.ChangeEmailDTO;
+import com.li.wisdomcashier.base.entity.dto.ChangePwdDTO;
+import com.li.wisdomcashier.base.entity.dto.LoginDTO;
+import com.li.wisdomcashier.base.entity.dto.SignUpDTO;
 import com.li.wisdomcashier.base.entity.po.JWTToken;
 import com.li.wisdomcashier.base.entity.po.Role;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
@@ -83,7 +83,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     private SysMenuMapper sysMenuMapper;
 
     @Override
-    public R<String> signUp(SignUpDto signUpDto) {
+    public R<String> signUp(SignUpDTO signUpDto) {
         if (!signUpDto.getCode().equals(redisUtils.get(signUpDto.getEmail()))) {
             return R.error("验证码错误！");
         }
@@ -190,7 +190,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public R<String> login(LoginDto loginDto) {
+    public R<String> login(LoginDTO loginDto) {
         CaptchaVO captchaVO = new CaptchaVO();
         captchaVO.setCaptchaVerification(loginDto.getVerification());
         ResponseModel verification = captchaService.verification(captchaVO);
@@ -216,7 +216,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return R.error("密码错误！请重试！");
     }
 
-    public R<String> login2(LoginDto loginDto) {
+    public R<String> login2(LoginDTO loginDto) {
         User userBean = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getUserName, loginDto.getUserName()));
         if (null == userBean) {
             return R.error("不存在该用户！");
@@ -276,7 +276,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public R<String> changeUserEmail(ChangeEmailDto changeEmailDto) {
+    public R<String> changeUserEmail(ChangeEmailDTO changeEmailDto) {
 
         User user = UserUtils.getUser();
         if (!changeEmailDto.getCode().equals(redisUtils.get(user.getEmail()))) {
@@ -295,7 +295,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
-    public R<String> changePwd(ChangePwdDto changePwdDto) {
+    public R<String> changePwd(ChangePwdDTO changePwdDto) {
         Subject subject = SecurityUtils.getSubject();
         Claims claimByToken = jwtUtils.getClaimByToken(subject.getPrincipal().toString());
         User userBean = userMapper.selectOne(Wrappers.lambdaQuery(User.class)

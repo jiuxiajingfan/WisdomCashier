@@ -5,10 +5,10 @@ import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.common.UnCheck;
-import com.li.wisdomcashier.base.entity.dto.ChangeEmailDto;
-import com.li.wisdomcashier.base.entity.dto.ChangePwdDto;
-import com.li.wisdomcashier.base.entity.dto.LoginDto;
-import com.li.wisdomcashier.base.entity.dto.SignUpDto;
+import com.li.wisdomcashier.base.entity.dto.ChangeEmailDTO;
+import com.li.wisdomcashier.base.entity.dto.ChangePwdDTO;
+import com.li.wisdomcashier.base.entity.dto.LoginDTO;
+import com.li.wisdomcashier.base.entity.dto.SignUpDTO;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.service.UserService;
@@ -44,7 +44,7 @@ public class AccountController {
     @ApiOperation(value = "注册")
     @PostMapping("/signup")
     @UnCheck
-    public R<String> signUp(@Validated  @RequestBody SignUpDto signUpDto){
+    public R<String> signUp(@Validated  @RequestBody SignUpDTO signUpDto){
         return userService.signUp(signUpDto);
     }
 
@@ -71,7 +71,7 @@ public class AccountController {
     @ApiOperation(value = "登录")
     @PostMapping("/login")
     @UnCheck
-    public R<String> login(@Validated  @RequestBody LoginDto loginDto){
+    public R<String> login(@Validated  @RequestBody LoginDTO loginDto){
         return userService.login(loginDto);
     }
 
@@ -93,7 +93,7 @@ public class AccountController {
     @ApiOperation(value = "快捷登录")
     @PostMapping("/login2")
     @UnCheck
-    public R<String> login2(@Validated  @RequestBody LoginDto loginDto){
+    public R<String> login2(@Validated  @RequestBody LoginDTO loginDto){
         return userService.login2(loginDto);
     }
 
@@ -105,13 +105,13 @@ public class AccountController {
 
     @ApiOperation(value = "修改绑定邮箱")
     @PostMapping("/changeUserEmail")
-    public R<String> changeUserEmail(@RequestBody @Validated ChangeEmailDto changeEmailDto){
+    public R<String> changeUserEmail(@RequestBody @Validated ChangeEmailDTO changeEmailDto){
         return userService.changeUserEmail(changeEmailDto);
     }
 
     @ApiOperation(value = "修改用户密码")
     @PostMapping("/changePwd")
-    public R<String> changePwd(@RequestBody @Validated ChangePwdDto changePwdDto){
+    public R<String> changePwd(@RequestBody @Validated ChangePwdDTO changePwdDto){
         return userService.changePwd(changePwdDto);
     }
 

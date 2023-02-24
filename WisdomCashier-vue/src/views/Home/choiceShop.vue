@@ -91,7 +91,7 @@ const searchText = ref("");
 const { image, userNickName } = storeToRefs(user);
 
 onBeforeMount(() => {
-  api.get("choiceShop/getUserShop").then((res) => {
+  api.get("Shop/getUserShop").then((res) => {
     shops.value = res.data.data;
   });
   console.log(shops.value);
@@ -106,9 +106,8 @@ onBeforeMount(() => {
   });
 });
 const searchShop = () => {
-  console.log(searchText.value);
   api
-    .get("choiceShop/getUserShop", {
+    .get("Shop/getUserShop", {
       params: {
         shopName: searchText.value,
       },

@@ -1,5 +1,6 @@
 package com.li.wisdomcashier.base.entity.vo;
 
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -10,7 +11,9 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
-public class ShopVo {
+public class ShopVO {
     Long id;
     String shopName;
+    @ApiModelProperty(value = "权限")
+    Integer role;
 }

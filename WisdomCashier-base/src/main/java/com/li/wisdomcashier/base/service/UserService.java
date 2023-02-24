@@ -2,10 +2,10 @@ package com.li.wisdomcashier.base.service;
 
 import com.li.wisdomcashier.base.bean.UserBean;
 import com.li.wisdomcashier.base.common.R;
-import com.li.wisdomcashier.base.entity.dto.ChangeEmailDto;
-import com.li.wisdomcashier.base.entity.dto.ChangePwdDto;
-import com.li.wisdomcashier.base.entity.dto.LoginDto;
-import com.li.wisdomcashier.base.entity.dto.SignUpDto;
+import com.li.wisdomcashier.base.entity.dto.ChangeEmailDTO;
+import com.li.wisdomcashier.base.entity.dto.ChangePwdDTO;
+import com.li.wisdomcashier.base.entity.dto.LoginDTO;
+import com.li.wisdomcashier.base.entity.dto.SignUpDTO;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -29,7 +29,7 @@ public interface UserService extends IService<User> {
      * @param signUpDto
      * @return
      */
-    R<String> signUp(SignUpDto signUpDto);
+    R<String> signUp(SignUpDTO signUpDto);
 
     /**
      * 邮箱服务
@@ -59,9 +59,9 @@ public interface UserService extends IService<User> {
      * @param loginDto
      * @return
      */
-    R<String> login(LoginDto loginDto);
+    R<String> login(LoginDTO loginDto);
 
-    R<String> login2(LoginDto loginDto);
+    R<String> login2(LoginDTO loginDto);
 
     /**
      * 注销登录
@@ -87,14 +87,14 @@ public interface UserService extends IService<User> {
      * @param changeEmailDto
      * @return
      */
-    R<String> changeUserEmail(ChangeEmailDto changeEmailDto);
+    R<String> changeUserEmail(ChangeEmailDTO changeEmailDto);
 
     /**
      * 用户密码修改
      * @param changePwdDto
      * @return
      */
-    R<String> changePwd(ChangePwdDto changePwdDto);
+    R<String> changePwd(ChangePwdDTO changePwdDto);
 
     /**
      * 获取用户中心菜单
