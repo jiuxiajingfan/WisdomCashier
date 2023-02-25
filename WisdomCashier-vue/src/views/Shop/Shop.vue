@@ -8,46 +8,6 @@
     </el-header>
     <el-container>
       <el-aside width="auto">
-        <!--        <el-scrollbar :height="screenHeight">-->
-        <!--          <el-menu class="el-menu-vertical-demo" :collapse="isCollapse">-->
-        <!--            <div class="receive">-->
-        <!--              <el-button @click="contraction" type="text" style="width: 100%">-->
-        <!--                <el-icon v-if="isCollapse === true">-->
-        <!--                  <ArrowRightBold />-->
-        <!--                </el-icon>-->
-        <!--                <el-icon v-if="isCollapse === false">-->
-        <!--                  <ArrowLeftBold />-->
-        <!--                </el-icon>-->
-        <!--              </el-button>-->
-        <!--            </div>-->
-        <!--            <el-sub-menu index="">-->
-        <!--              <template #title>-->
-        <!--                <el-icon><Avatar /></el-icon>-->
-        <!--                <span>账号设置</span>-->
-        <!--              </template>-->
-        <!--              <el-menu-item-->
-        <!--                index="2-1"-->
-        <!--                @click="addTab(editableTabsValue)"-->
-        <!--                title="myMessage"-->
-        <!--              >-->
-        <!--                <el-icon><User /></el-icon>-->
-        <!--                我的信息-->
-        <!--              </el-menu-item>-->
-        <!--            </el-sub-menu>-->
-        <!--            <el-menu-item index="3">-->
-        <!--              <el-icon>-->
-        <!--                <icon-menu />-->
-        <!--              </el-icon>-->
-        <!--              <template #title>Navigator Two</template>-->
-        <!--            </el-menu-item>-->
-        <!--            <el-menu-item index="5">-->
-        <!--              <el-icon>-->
-        <!--                <setting />-->
-        <!--              </el-icon>-->
-        <!--              <template #title>Navigator Four</template>-->
-        <!--            </el-menu-item>-->
-        <!--          </el-menu>-->
-        <!--        </el-scrollbar>-->
         <el-menu
           class="el-menu-vertical-demo"
           :collapse="isCollapse"
@@ -128,42 +88,36 @@
 </template>
 
 <script setup>
-import {
-  defineAsyncComponent,
-  onBeforeMount,
-  onMounted,
-  reactive,
-  ref,
-} from "vue";
-import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
+import { onBeforeMount, ref } from "vue";
 import HeaderBar from "@/views/Home/HeaderBar.vue";
 import api from "@/api/api";
 const cnt = ref(0);
 const menuData = ref([]);
 const map = new Map();
 const menuData2 = [];
-let myMessage = defineAsyncComponent(() =>
-  import("../../components/userCenter/myMessage")
-);
-const openeds = [0];
-let myShop = defineAsyncComponent(() =>
-  import("../../components/userCenter/myShop")
-);
+import { useRouter } from "vue-router";
+const router = useRouter();
 onBeforeMount(() => {
-  api.get("account/getUserCenterMenu").then((res) => {
-    menuData.value = res.data.data;
-    menuData2.push(res.data.data);
-    for (let i = 0; i < menuData2[0].length; i++) {
-      if (menuData2[0][i].children.length > 0) {
-        for (let j = 0; j < menuData2[0][i].children.length; j++) {
-          map.set(
-            menuData2[0][i].children[j].component,
-            eval(menuData2[0][i].children[j].component)
-          );
+  api
+    .get("Shop/getShopMenu", {
+      params: {
+        shopId: router.currentRoute.value.query.id,
+      },
+    })
+    .then((res) => {
+      menuData.value = res.data.data;
+      menuData2.push(res.data.data);
+      for (let i = 0; i < menuData2[0].length; i++) {
+        if (menuData2[0][i].children.length > 0) {
+          for (let j = 0; j < menuData2[0][i].children.length; j++) {
+            map.set(
+              menuData2[0][i].children[j].component,
+              eval(menuData2[0][i].children[j].component)
+            );
+          }
         }
       }
-    }
-  });
+    });
 });
 const isCollapse = ref(false);
 const buttonWidth = ref("200px");

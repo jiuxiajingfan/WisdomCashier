@@ -2,6 +2,7 @@ package com.li.wisdomcashier.base.util;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.li.wisdomcashier.base.entity.po.User;
+import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.UserMapper;
 import io.jsonwebtoken.Claims;
 import org.apache.shiro.SecurityUtils;
@@ -40,5 +41,16 @@ public class UserUtils {
         User user = userUtils.userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getUserName, claimByToken.getSubject()));
         System.out.println("hello");
         return  user;
+    }
+
+    /**
+     * 验证用户是否拥有相印权限访问接口
+     * @param shopId 店铺ID
+     * @param level 用户级别 {@link com.li.wisdomcashier.base.enums.RoleEnum}
+     * @return true/false
+     */
+    public static Boolean hasPermissions(Long shopId,Integer level){
+        Subject subject = SecurityUtils.getSubject();
+        return subject.isPermitted(shopId.toString()+level);
     }
 }

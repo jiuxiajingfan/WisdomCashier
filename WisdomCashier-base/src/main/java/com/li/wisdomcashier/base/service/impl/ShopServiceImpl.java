@@ -10,12 +10,19 @@ import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.ShopQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Role;
 import com.li.wisdomcashier.base.entity.po.Shop;
+import com.li.wisdomcashier.base.entity.po.SysMenu;
+import com.li.wisdomcashier.base.enums.MenuEnum;
+import com.li.wisdomcashier.base.enums.ResultStatus;
+import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.RoleMapper;
 import com.li.wisdomcashier.base.mapper.ShopMapper;
+import com.li.wisdomcashier.base.mapper.SysMenuMapper;
 import com.li.wisdomcashier.base.service.ShopService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.entity.vo.ShopVO;
 import com.li.wisdomcashier.base.util.UserUtils;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -41,6 +48,9 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     @Resource
     private RoleMapper roleMapper;
 
+    @Resource
+    private SysMenuMapper sysMenuMapper;
+
     @Override
     public R<List<ShopVO>> getUserShop(String shopName) {
         List<Role> roles = roleMapper.selectList(Wrappers.lambdaQuery(Role.class).eq(Role::getUserId, UserUtils.getUser().getId()));
@@ -64,7 +74,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
         //存储用户在某一店铺最高权限
         HashMap<Long, Integer> roleMap = new HashMap<>();
         List<Long> shopList = roles.stream().map(e -> {
-            if(roleMap.getOrDefault(e.getShopId(),4)>e.getRole()){
+            if(roleMap.getOrDefault(e.getShopId(),RoleEnum.GUEST.getCode())>e.getRole()){
                 roleMap.put(e.getShopId(),e.getRole());
             }
            return e.getShopId();
@@ -79,6 +89,26 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
             return copy;
         });
         return R.ok(result);
+    }
+
+    @Override
+    public R<List<SysMenu>> getMenu(Long shopId) {
+        if(!UserUtils.hasPermissions(shopId,RoleEnum.SHOP.getCode())){
+            return R.error(ResultStatus.ACCESS_DENIED);
+        }
+        Subject subject = SecurityUtils.getSubject();
+        List<SysMenu> userCenterMenu = new ArrayList<>();
+        Integer role;
+        if (subject.hasRole("shopadmin")) {
+            role = RoleEnum.SHOPADMIN.getCode();
+        } else {
+            role = RoleEnum.SHOP.getCode();
+        }
+        userCenterMenu = sysMenuMapper.getUserCenterMenu(role, MenuEnum.SHOPMENU.getCode());
+        for (SysMenu centerMenu : userCenterMenu) {
+            centerMenu.setChildren(sysMenuMapper.getChildrens(role, centerMenu.getMenuId(),MenuEnum.SHOPMENU.getCode()));
+        }
+        return R.ok(userCenterMenu);
     }
 
 

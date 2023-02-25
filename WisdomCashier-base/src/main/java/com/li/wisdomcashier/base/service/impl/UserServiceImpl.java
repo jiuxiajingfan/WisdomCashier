@@ -20,6 +20,7 @@ import com.li.wisdomcashier.base.entity.po.Role;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.entity.vo.UserVo;
+import com.li.wisdomcashier.base.enums.MenuEnum;
 import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.RoleMapper;
 import com.li.wisdomcashier.base.mapper.UserMapper;
@@ -176,12 +177,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             //店铺管理员
             else if (role.getRole() == 2) {
                 roleList.add("shopadmin");
-                permissionList.add(role.getShopId().toString() + "shopadmin");
+                permissionList.add(role.getShopId().toString() + "2");
             }
             //店员
             else if (role.getRole() == 3) {
                 roleList.add("shop");
-                permissionList.add(role.getShopId().toString() + "shop");
+                permissionList.add(role.getShopId().toString() + "3");
             }
         }
         userBean.setPermission(permissionList);
@@ -327,9 +328,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         } else {
             role = RoleEnum.SHOP.getCode();
         }
-        userCenterMenu = sysMenuMapper.getUserCenterMenu(role);
+        userCenterMenu = sysMenuMapper.getUserCenterMenu(role, MenuEnum.USERCENTER.getCode());
         for (SysMenu centerMenu : userCenterMenu) {
-            centerMenu.setChildren(sysMenuMapper.getChildrens(role, centerMenu.getMenuId()));
+            centerMenu.setChildren(sysMenuMapper.getChildrens(role, centerMenu.getMenuId(), MenuEnum.USERCENTER.getCode()));
         }
         return R.ok(userCenterMenu);
     }

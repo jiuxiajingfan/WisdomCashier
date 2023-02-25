@@ -4,22 +4,17 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 /**
- * @ClassName RoleEnum
+ * @ClassName MenuEnum
  * @Description TODO
  * @Author Nine
- * @Date 2023/2/21 14:09
+ * @Date 2023/2/25 20:41
  * @Version 1.0
  */
 @Getter
 @AllArgsConstructor
-public enum RoleEnum {
-    ADMIN(1,"系统管理员"),
-    SHOPADMIN(2,"店铺管理员"),
-    SHOP(3,"店铺用户"),
-
-    GUEST(4,"普通用户");
-
-
+public enum MenuEnum {
+    USERCENTER(1,"个人中心"),
+    SHOPMENU(2,"店铺菜单");
     private int code;
 
     private String description;
