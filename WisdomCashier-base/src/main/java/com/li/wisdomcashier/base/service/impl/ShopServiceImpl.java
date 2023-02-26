@@ -22,6 +22,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.entity.vo.ShopVO;
 import com.li.wisdomcashier.base.util.UserUtils;
 import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
 
@@ -93,13 +94,15 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
 
     @Override
     public R<List<SysMenu>> getMenu(Long shopId) {
+        if(shopId == null)
+            return R.error("参数错误！");
         if(!UserUtils.hasPermissions(shopId,RoleEnum.SHOP.getCode())){
-            return R.error(ResultStatus.ACCESS_DENIED);
+            throw new AuthorizationException("无权操作！");
         }
         Subject subject = SecurityUtils.getSubject();
         List<SysMenu> userCenterMenu = new ArrayList<>();
         Integer role;
-        if (subject.hasRole("shopadmin")) {
+        if (subject.isPermitted(shopId.toString()+"2")) {
             role = RoleEnum.SHOPADMIN.getCode();
         } else {
             role = RoleEnum.SHOP.getCode();

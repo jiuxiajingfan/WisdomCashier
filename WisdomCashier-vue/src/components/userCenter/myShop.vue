@@ -105,8 +105,8 @@ const taskSizeChange = (ps) => {
 };
 const go = (id) => {
   router.push({
-    path: "shop",
-    params: {
+    path: "/shop",
+    query: {
       id: id,
     },
   });

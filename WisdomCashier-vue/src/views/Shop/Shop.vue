@@ -117,6 +117,9 @@ onBeforeMount(() => {
           }
         }
       }
+    })
+    .catch(() => {
+      router.go(-1);
     });
 });
 const isCollapse = ref(false);
