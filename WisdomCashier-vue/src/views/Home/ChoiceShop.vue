@@ -57,7 +57,12 @@
         >
           <el-table-column label="Operations" align="center">
             <template v-slot="scope">
-              <el-button link type="primary" size="large">
+              <el-button
+                link
+                type="primary"
+                size="large"
+                @click="go(scope.row.id)"
+              >
                 {{ scope.row.shopName }}
               </el-button>
             </template>
@@ -105,6 +110,14 @@ onBeforeMount(() => {
     user.setEmail(data.email);
   });
 });
+const go = (id) => {
+  router.push({
+    path: "/shop",
+    query: {
+      id: id,
+    },
+  });
+};
 const searchShop = () => {
   api
     .get("Shop/getUserShop", {

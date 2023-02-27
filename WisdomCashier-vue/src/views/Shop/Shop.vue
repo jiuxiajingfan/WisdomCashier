@@ -88,7 +88,7 @@
 </template>
 
 <script setup>
-import { onBeforeMount, ref } from "vue";
+import { defineAsyncComponent, onBeforeMount, ref } from "vue";
 import HeaderBar from "@/views/Home/HeaderBar.vue";
 import api from "@/api/api";
 const cnt = ref(0);
@@ -96,6 +96,9 @@ const menuData = ref([]);
 const map = new Map();
 const menuData2 = [];
 import { useRouter } from "vue-router";
+let GoodsList = defineAsyncComponent(() =>
+  import("../../components/Goods/GoodsList")
+);
 const router = useRouter();
 onBeforeMount(() => {
   api

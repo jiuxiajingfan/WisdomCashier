@@ -1,6 +1,7 @@
 <template>
   <dev class="searchBox">
     <el-input
+      style="width: 80%"
       placeholder="请输入要搜索的店铺名"
       v-model="searchText"
       class="input-with-select"
