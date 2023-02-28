@@ -61,7 +61,7 @@ import api from "@/api/api";
 const shops = ref([]);
 let current = ref(1);
 let total = ref(0);
-let pageSize = ref(10);
+let pageSize = ref(20);
 let searchText = ref("");
 let currentText = "";
 import { useRouter } from "vue-router";
@@ -70,7 +70,7 @@ onBeforeMount(() => {
   api
     .post("Shop/getUserShopPage", {
       current: 1,
-      pageSize: 10,
+      pageSize: 20,
       name: searchText.value,
     })
     .then((res) => {

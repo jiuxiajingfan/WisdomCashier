@@ -105,7 +105,7 @@
     <h1>未找到该商品信息，是否需要添加该商品？</h1>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialogFormVisible2 = false"> 离开 </el-button>
+        <el-button @click="leave"> 离开 </el-button>
         <el-button type="primary" @click="openadd2">添加</el-button>
       </span>
     </template>
@@ -123,7 +123,7 @@ const formLabelWidth = "140px";
 let good = ref([]);
 let current = ref(1);
 let total = ref(0);
-let pageSize = ref(10);
+let pageSize = ref(20);
 let searchText = ref("");
 let currentText = "";
 let sid = ref(1);
@@ -175,6 +175,10 @@ const del = () => {
   form.date = "";
   form.metrology = "";
   form.profit = 0;
+};
+const leave = () => {
+  dialogFormVisible2.value = false;
+  del();
 };
 onBeforeMount(() => {
   queryTaskList();
