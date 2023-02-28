@@ -29,7 +29,7 @@ public class GoodsController {
     private GoodsService goodsService;
 
     @GetMapping("/reqGood")
-    @ApiOperation(value = "根据条形码查询商品信息")
+    @ApiOperation(value = "根据条形码查询商品信息（爬虫）")
     public R<Goods> reqGood(String gid) {
         return goodsService.reqGood(gid);
     }

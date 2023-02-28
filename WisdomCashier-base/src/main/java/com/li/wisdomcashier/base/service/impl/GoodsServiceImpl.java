@@ -91,9 +91,9 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         {
             good.setDate(LocalDate.now());
         }
+        copy.setProfit(Double.parseDouble(String.format("%.2f",good.getProfit())));
         copy.setDeadline(good.getDate().plusDays(good.getShelfLife()));
-        goodsMapper.insert(copy);
-        return R.ok("新增商品成功！");
+        return goodsMapper.insert(copy)==1?R.ok("添加成功"):R.error("添加失败,请联系管理员查看问题");
     }
 
 
@@ -135,7 +135,6 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             good.setDate(LocalDate.now());
         }
         copy.setDeadline(good.getDate().plusDays(good.getShelfLife()));
-        goodsMapper.updateById(copy);
-        return R.ok("更新成功！");
+        return goodsMapper.updateById(copy)==1?R.ok("更新成功！"):R.error("更新失败,请联系管理员查看问题");
     }
 }

@@ -101,4 +101,11 @@ public interface UserService extends IService<User> {
      * @return
      */
     R<List<SysMenu>> getUserCenterMenu();
+
+    /**
+     * 更改用户头像
+     * @param url base64图片
+     * @return
+     */
+    R<String> changeIcon(String url);
 }

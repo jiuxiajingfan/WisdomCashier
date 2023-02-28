@@ -179,6 +179,10 @@ import language from "./utils/language.js";
 import mimes from "./utils/mimes.js";
 import data2blob from "./utils/data2blob.js";
 import effectRipple from "./utils/effectRipple.js";
+import utils from "@/utils/utils";
+import { useUserStore } from "@/store/user";
+import pinia from "@/store/store";
+const user = useUserStore(pinia);
 export default {
   props: {
     // 域，上传文件name，触发事件会带上（如果一个页面多个图片上传控件，可以做区分
@@ -199,7 +203,7 @@ export default {
     // 上传地址
     url: {
       type: String,
-      default: "",
+      default: "/file/upload",
     },
     // 其他要上传文件附带的数据，对象格式
     params: {
@@ -208,8 +212,7 @@ export default {
     },
     // Add custom headers
     headers: {
-      type: Object,
-      default: null,
+      "Content-Type": "multipart/form-data",
     },
     // 剪裁图片的宽
     width: {
@@ -814,10 +817,17 @@ export default {
       this.loading = 1;
       this.setStep(3);
       api
-        .post(url, { fmData })
+        .post("/account/changeIcon", { url: this.createImgUrl })
         .then((resData) => {
-          this.loading = 2;
-          this.$emit("crop-upload-success", resData.data);
+          if (resData.data.code === 200) {
+            this.loading = 2;
+            user.setImage(resData.data.msg);
+            utils.showMessage(200, "头像更改成功！");
+          } else {
+            this.loading = 3;
+            this.hasError = true;
+            this.errorMsg = lang.fail;
+          }
         })
         .catch((err) => {
           if (this.value) {

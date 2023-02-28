@@ -117,8 +117,14 @@ public class AccountController {
 
 
     @ApiOperation(value = "请求菜单")
-    @GetMapping("getUserCenterMenu")
+    @GetMapping("/getUserCenterMenu")
     public  R<List<SysMenu>> getUserCenterMenu(){
         return userService.getUserCenterMenu();
+    }
+
+    @ApiOperation(value = "修改用户头像")
+    @PostMapping("/changeIcon")
+    public R<String> changeIcon(@RequestBody String url){
+        return userService.changeIcon(url);
     }
 }

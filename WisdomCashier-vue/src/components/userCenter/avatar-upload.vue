@@ -26,7 +26,9 @@ import ImageCropper from "@/components/ImageCropper";
 import PanThumb from "@/components/PanThumb";
 import pinia from "@/store/store";
 import { useUserStore } from "@/store/user";
+import { storeToRefs } from "pinia/dist/pinia";
 const user = useUserStore(pinia);
+const { image } = storeToRefs(user);
 const buttonWeight = 108;
 export default {
   name: "AvatarUploadDemo",
@@ -35,7 +37,7 @@ export default {
     return {
       imagecropperShow: false,
       imagecropperKey: 0,
-      image: user.getImage,
+      image: image,
     };
   },
   methods: {

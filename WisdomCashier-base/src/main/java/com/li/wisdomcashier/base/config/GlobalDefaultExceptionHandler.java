@@ -160,6 +160,7 @@ public class GlobalDefaultExceptionHandler {
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public R<Void> handleHttpMessageNotReadableException(
             HttpMessageNotReadableException e) {
+        log.error(e.getMessage());
         return R.error("参数解析失败", ResultStatus.FAIL);
     }
 

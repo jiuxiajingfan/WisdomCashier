@@ -28,10 +28,7 @@ import com.li.wisdomcashier.base.mapper.SysMenuMapper;
 import com.li.wisdomcashier.base.service.EmailService;
 import com.li.wisdomcashier.base.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.li.wisdomcashier.base.util.CodeUtils;
-import com.li.wisdomcashier.base.util.JwtUtils;
-import com.li.wisdomcashier.base.util.RedisUtils;
-import com.li.wisdomcashier.base.util.UserUtils;
+import com.li.wisdomcashier.base.util.*;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -77,12 +74,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Resource
     private CaptchaService captchaService;
 
+    @Resource
+    private MinioUtils minioUtils;
+
     @Value("${tokenTime}")
     private Long tokenTime;
 
     @Resource
     private SysMenuMapper sysMenuMapper;
 
+    @Value("${minio.endpoint}")
+    private String address;
+
+    @Value("${minio.bucketName}")
+    private String bucketName;
     @Override
     public R<String> signUp(SignUpDTO signUpDto) {
         if (!signUpDto.getCode().equals(redisUtils.get(signUpDto.getEmail()))) {
@@ -103,7 +108,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         convert.setUserNickname("用户" + RandomUtil.randomString(6));
         convert.setStatus(0);
         userMapper.insert(convert);
-        return R.ok("注册成功！");
+        return userMapper.insert(convert)==1?R.ok("注册成功！"):R.error("注册失败，请联系管理员！");
     }
 
     @Override
@@ -271,9 +276,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return R.error("用户名过长！");
         }
         User user = UserUtils.getUser();
-        userMapper.update(null, new LambdaUpdateWrapper<User>()
-                .eq(User::getId, user.getId()).set(User::getUserNickname, name));
-        return R.ok("修改成功！");
+        return userMapper.update(null, new LambdaUpdateWrapper<User>()
+                .eq(User::getId, user.getId()).set(User::getUserNickname, name))==1?R.ok("修改成功！"):R.error("修改失败，请联系管理员！");
     }
 
     @Override
@@ -288,11 +292,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (count > 0) {
             return R.error("该邮箱已被绑定！");
         }
-        userMapper.update(null, Wrappers.lambdaUpdate(User.class)
+        int update = userMapper.update(null, Wrappers.lambdaUpdate(User.class)
                 .eq(User::getId, user.getId())
                 .set(User::getEmail, changeEmailDto.getEmail()));
-        redisUtils.del(user.getEmail());
-        return R.ok("修改绑定邮箱成功！");
+        if(update==1)redisUtils.del(user.getEmail());
+        return update==1?R.ok("修改绑定邮箱成功！"):R.error("修改失败，请联系管理员！");
     }
 
     @Override
@@ -305,10 +309,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             return R.error("不存在该用户！");
         if (userBean.getUserPwd().equals(changePwdDto.getPwdOriginal())) {
             if (changePwdDto.getPwdNew().equals(changePwdDto.getPwdConfirm())) {
-                userMapper.update(null, Wrappers.lambdaUpdate(User.class)
+                return userMapper.update(null, Wrappers.lambdaUpdate(User.class)
                         .eq(User::getId, userBean.getId())
-                        .set(User::getUserPwd, changePwdDto.getPwdNew()));
-                return R.ok("修改成功！");
+                        .set(User::getUserPwd, changePwdDto.getPwdNew()))==1?R.ok("修改成功！"):R.error("修改失败，请联系管理员！");
             } else {
                 return R.error("两次密码不一致，请重新确认！");
             }
@@ -333,6 +336,19 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             centerMenu.setChildren(sysMenuMapper.getChildrens(role, centerMenu.getMenuId(), MenuEnum.USERCENTER.getCode()));
         }
         return R.ok(userCenterMenu);
+    }
+
+    @Override
+    public R<String> changeIcon(String url) {
+        try {
+            String imageUrl = minioUtils.base64ConvertPNG(url);
+            userMapper.update(null, Wrappers.lambdaUpdate(User.class)
+                    .eq(User::getId, UserUtils.getUser().getId())
+                    .set(User::getImage, imageUrl));
+            return R.ok(address+"/"+bucketName+"/"+imageUrl);
+        } catch (Exception e) {
+            return R.error("上传失败！");
+        }
     }
 
 

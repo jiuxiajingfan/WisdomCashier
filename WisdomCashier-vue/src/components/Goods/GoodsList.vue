@@ -50,43 +50,49 @@
     >
       <div>
         <el-form-item label="商品名" :label-width="formLabelWidth">
-          <el-input v-model="form.name" />
+          <el-input style="width: 190px" v-model="form.name" />
         </el-form-item>
         <el-form-item label="商品条码" :label-width="formLabelWidth">
-          <el-input v-model="form.gid" />
+          <el-input style="width: 190px" v-model="form.gid" />
         </el-form-item>
       </div>
       <div>
         <el-form-item label="进价" :label-width="formLabelWidth">
-          <el-input v-model="form.price_in" />
+          <el-input style="width: 190px" v-model="form.price_in" />
         </el-form-item>
         <el-form-item label="售价" :label-width="formLabelWidth">
-          <el-input v-model="form.price_out" />
+          <el-input style="width: 190px" v-model="form.price_out" />
         </el-form-item>
       </div>
       <div>
         <el-form-item label="数量" :label-width="formLabelWidth">
-          <el-input v-model="form.num" />
+          <el-input style="width: 190px" v-model="form.num" />
         </el-form-item>
         <el-form-item label="单位" :label-width="formLabelWidth">
-          <el-input v-model="form.metrology" />
+          <el-input style="width: 190px" v-model="form.metrology" />
         </el-form-item>
       </div>
       <div>
         <el-form-item label="生产日期" :label-width="formLabelWidth">
-          <el-input v-model="form.date" />
+          <div class="block">
+            <el-date-picker
+              v-model="form.date"
+              type="date"
+              placeholder="请选择生产日期"
+              style="width: 190px"
+              value-format="YYYY-MM-DD"
+            />
+          </div>
         </el-form-item>
         <el-form-item label="保质期(天)" :label-width="formLabelWidth">
-          <el-input v-model="form.shelfLife" />
+          <el-input style="width: 190px" v-model="form.shelfLife" />
         </el-form-item>
       </div>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogFormVisible = false">离开</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">
-          保存
-        </el-button>
+        <el-button type="primary" @click="save"> 保存 </el-button>
       </span>
     </template>
   </el-dialog>
@@ -100,14 +106,7 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogFormVisible2 = false"> 离开 </el-button>
-        <el-button
-          type="primary"
-          @click="
-            dialogFormVisible = true;
-            dialogFormVisible2 = false;
-          "
-          >添加</el-button
-        >
+        <el-button type="primary" @click="openadd2">添加</el-button>
       </span>
     </template>
   </el-dialog>
@@ -117,7 +116,8 @@
 import { onBeforeMount, reactive, ref } from "vue";
 import api from "@/api/api";
 import { useRouter } from "vue-router/dist/vue-router";
-const dialogFormVisible = ref(false);
+import Utils from "@/utils/utils";
+let dialogFormVisible = ref(false);
 const dialogFormVisible2 = ref(false);
 const formLabelWidth = "140px";
 let good = ref([]);
@@ -133,14 +133,49 @@ const form = reactive({
   name: "",
   metrology: "",
   gid: "",
-  price_in: "",
-  price_out: "",
+  price_in: 0,
+  price_out: 0,
   sid: router.currentRoute.value.query.id,
   date: "",
-  profit: "",
+  profit: 0,
   shelfLife: "",
-  num: "",
+  num: 0,
 });
+const save = () => {
+  api
+    .post("/Goods/addGood", {
+      name: form.name,
+      gid: form.gid,
+      priceIn: form.price_in,
+      priceOut: form.price_out,
+      sid: form.sid,
+      date: form.date,
+      shelfLife: form.shelfLife,
+      num: form.num,
+      profit: form.price_out - form.price_in,
+      metrology: form.metrology,
+    })
+    .then((res) => {
+      Utils.showMessage(res.data.code, res.data.msg);
+      if (res.data.code === 200) {
+        dialogFormVisible.value = false;
+        del();
+        searchText.value = "";
+        queryTaskList();
+      }
+    });
+};
+const del = () => {
+  form.name = "";
+  form.gid = "";
+  form.price_in = 0;
+  form.price_out = 0;
+  form.num = 0;
+  form.shelfLife = "";
+  form.date = "";
+  form.metrology = "";
+  form.profit = 0;
+};
 onBeforeMount(() => {
   queryTaskList();
 });
@@ -172,9 +207,26 @@ const taskSizeChange = (ps) => {
   pageSize.value = ps;
   queryTaskList();
 };
+const openadd2 = () => {
+  dialogFormVisible2.value = false;
+  openadd();
+};
 const openadd = () => {
   if (reg.test(searchText.value)) {
-    form.gid = searchText.value;
+    api
+      .get("/Goods/reqGood", {
+        params: {
+          gid: searchText.value.toString(),
+        },
+      })
+      .then((res) => {
+        form.name = res.data.data.name;
+        form.gid = res.data.data.gid;
+        form.price_out = res.data.data.priceOut;
+        form.num = 1;
+        form.metrology = res.data.data.metrology;
+        console.log(form);
+      });
   } else {
     form.name = searchText.value;
   }
