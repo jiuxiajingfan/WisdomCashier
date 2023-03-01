@@ -2,7 +2,7 @@
   <div class="common-layout">
     <el-container>
       <el-container>
-        <el-aside width="400px" class="aside">
+        <el-aside width="600px" class="aside">
           <el-scrollbar class="scr1">
             <el-input
               placeholder="请输入要搜索的商品名或条形码"
@@ -28,7 +28,51 @@
           </el-scrollbar>
         </el-aside>
         <el-container>
-          <el-main>Main</el-main>
+          <el-main>
+            <div v-if="data2.length != 0">
+              <div class="demo-fit">
+                <el-avatar
+                  shape="square"
+                  :size="200"
+                  fit="fit"
+                  :src="lastData.picUrl"
+                  style="margin-top: 30px"
+                />
+              </div>
+              <div class="h2">
+                <div style="margin-top: 100px">
+                  <h2 style="font-size: 30px">
+                    {{ lastData.name }}
+                  </h2>
+                </div>
+                <div>
+                  <h2>
+                    {{ lastData.metrology }}
+                  </h2>
+                </div>
+                <div style="margin-top: 20px">
+                  <label>数量:</label>
+                  <el-input-number
+                    style="margin-left: 20px"
+                    v-model="lastData.num"
+                    :min="1"
+                    :max="100"
+                  />
+                </div>
+                <div style="margin-top: 20px">
+                  <label>价格:</label>
+                  <el-input-number
+                    style="margin-left: 20px"
+                    v-model="lastData.num"
+                    :min="1"
+                    :max="100"
+                    :precision="2"
+                  />
+                </div>
+              </div>
+            </div>
+            <el-empty v-else image-size="400" description="暂无商品" />
+          </el-main>
           <el-footer>Footer</el-footer>
         </el-container>
       </el-container>
@@ -52,6 +96,14 @@ let data = reactive({
   gid: "",
 });
 let dataMap = reactive(new Map());
+let lastData = reactive({
+  name: "777777777",
+  num: 1,
+  price_out: "",
+  picUrl: "",
+  metrology: "",
+  gid: "",
+});
 const queryTaskList = () => {
   var newVar = dataMap.get(searchText.value);
   if (newVar === undefined) {
@@ -80,6 +132,12 @@ const queryTaskList = () => {
             gid: data.gid,
           });
           searchText.value = "";
+          lastData.num = 1;
+          lastData.name = res.data.data.name;
+          lastData.metrology = res.data.data.metrology;
+          lastData.picUrl = res.data.data.picUrl;
+          lastData.price_out = res.data.data.priceOut;
+          lastData.gid = searchText.value;
           data2.value = [];
           for (let key of dataMap.keys()) {
             data2.value.push(dataMap.get(key));
@@ -106,6 +164,12 @@ const queryTaskList = () => {
     });
     data.num = 1;
     searchText.value = "";
+    lastData.num = newVar.num + 1;
+    lastData.name = newVar.name;
+    lastData.metrology = newVar.metrology;
+    lastData.picUrl = newVar.picUrl;
+    lastData.price_out = newVar.price_out;
+    lastData.gid = searchText.value;
     data2.value = [];
     for (let key of dataMap.keys()) {
       data2.value.push(dataMap.get(key));
