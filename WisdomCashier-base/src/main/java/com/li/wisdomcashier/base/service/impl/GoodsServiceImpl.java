@@ -137,4 +137,17 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         copy.setDeadline(good.getDate().plusDays(good.getShelfLife()));
         return goodsMapper.updateById(copy)==1?R.ok("更新成功！"):R.error("更新失败,请联系管理员查看问题");
     }
+
+    @Override
+    public R<GoodsVO> getGood(String gid, Long sid) {
+        if(!UserUtils.hasPermissions(sid, RoleEnum.SHOP.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
+        List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, gid).eq(Goods::getSid, sid));
+        if(CollectionUtils.isEmpty(goods)){
+            return R.error("不存在该商品！");
+        }
+        GoodsVO copy = CglibUtil.copy(goods.get(0), GoodsVO.class);
+        return R.ok(copy);
+    }
 }

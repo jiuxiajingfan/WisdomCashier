@@ -1,5 +1,8 @@
 package com.li.wisdomcashier.base.entity.po;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import lombok.Data;
+
 /**
  * @ClassName GoodsVO
  * @Description TODO
@@ -7,7 +10,15 @@ package com.li.wisdomcashier.base.entity.po;
  * @Date 2023/2/26 16:22
  * @Version 1.0
  */
-
+@Data
 public class GoodsVO {
+    private String name;
 
+    private String gid;
+
+    private Double priceOut;
+
+    private String picUrl;
+
+    private String metrology;
 }

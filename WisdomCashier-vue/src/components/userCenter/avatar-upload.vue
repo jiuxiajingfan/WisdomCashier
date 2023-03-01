@@ -1,6 +1,6 @@
 <template>
   <div class="components-container">
-    <pan-thumb :image="image" />
+    <pan-thumb :image="image + '?' + new Date().getTime()" />
     <image-cropper
       v-show="imagecropperShow"
       :key="imagecropperKey"

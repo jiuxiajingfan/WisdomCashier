@@ -1,6 +1,6 @@
 <template>
   <div class="header">
-    <el-avatar :src="image" />
+    <el-avatar :src="image + '?' + new Date().getTime()" />
     <el-dropdown @command="handleCommand">
       <el-dropdown-link>
         <div class="name">

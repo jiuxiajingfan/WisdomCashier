@@ -344,7 +344,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             String imageUrl = minioUtils.base64ConvertPNG(url);
             userMapper.update(null, Wrappers.lambdaUpdate(User.class)
                     .eq(User::getId, UserUtils.getUser().getId())
-                    .set(User::getImage, imageUrl));
+                    .set(User::getImage, address+"/"+bucketName+"/"+imageUrl));
             return R.ok(address+"/"+bucketName+"/"+imageUrl);
         } catch (Exception e) {
             return R.error("上传失败！");

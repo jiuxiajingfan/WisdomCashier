@@ -45,4 +45,12 @@ public interface GoodsService extends IService<Goods> {
      * @return
      */
     R<String> updateGood(GoodDTO good);
+
+    /**
+     * 条形码获取商品信息
+     * @param gid
+     * @param sid
+     * @return
+     */
+    R<GoodsVO> getGood(String gid,Long sid);
 }

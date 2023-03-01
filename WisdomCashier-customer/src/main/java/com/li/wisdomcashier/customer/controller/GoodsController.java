@@ -6,6 +6,7 @@ import com.li.wisdomcashier.base.common.UnCheck;
 import com.li.wisdomcashier.base.entity.dto.GoodDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Goods;
+import com.li.wisdomcashier.base.entity.po.GoodsVO;
 import com.li.wisdomcashier.base.service.GoodsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -41,7 +42,7 @@ public class GoodsController {
     }
 
     @PostMapping("/getGoodPage")
-    @ApiOperation(value = "根据条形码获取商品信息")
+    @ApiOperation(value = "根据条形码获取商品信息(分页）")
     public R<IPage<Goods>> getGoodPage(@Validated @RequestBody GoodQueryDTO goodQueryDTO) {
         return goodsService.getGoodPage(goodQueryDTO);
     }
@@ -50,6 +51,12 @@ public class GoodsController {
     @ApiOperation(value = "更新商品")
     public R<String> updateGood(@Validated @RequestBody GoodDTO good) {
         return goodsService.updateGood(good);
+    }
+
+    @GetMapping("/getGood")
+    @ApiOperation(value = "根据条形码查询商品信息")
+    public R<GoodsVO> getGood(String gid, Long sid) {
+        return goodsService.getGood(gid, sid);
     }
 
 }

@@ -9,7 +9,6 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
 /**
  * <p>
@@ -20,7 +19,6 @@ import lombok.EqualsAndHashCode;
  * @since 2023-02-26
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @TableName("t_goods")
 @ApiModel(value="Goods对象", description="")
 public class Goods implements Serializable {

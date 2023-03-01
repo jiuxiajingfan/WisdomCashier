@@ -20,6 +20,30 @@
   </dev>
   <div class="table">
     <el-table :data="good">
+      <el-table-column prop="pic" label="图片">
+        <template v-slot="scope">
+          <el-upload
+            class="avatar-uploader"
+            action="up"
+            :show-file-list="false"
+            accept=".jpg,.jpeg,.JPG,.JPEG"
+            data="multipartFile"
+            :auto-upload="false"
+          >
+            <el-icon
+              v-if="scope.row.picUrl == null"
+              class="avatar-uploader-icon"
+              ><Plus
+            /></el-icon>
+            <el-image
+              v-else-if="scope.row.picUrl != null"
+              style="width: 100px; height: 100px"
+              :src="scope.row.picUrl"
+              fit="fit"
+            />
+          </el-upload>
+        </template>
+      </el-table-column>
       <el-table-column prop="name" label="商品名" width="auto" />
       <el-table-column prop="metrology" label="单位" width="auto" />
       <el-table-column prop="priceIn" label="进价" width="auto" />
@@ -243,5 +267,14 @@ const openadd = () => {
   .el-input {
     width: 60%;
   }
+}
+.el-icon.avatar-uploader-icon {
+  font-size: 28px;
+  color: #8c939d;
+  width: 90px;
+  height: 90px;
+  text-align: center;
+  border: 1px dashed var(--el-border-color);
+  border-radius: 6px;
 }
 </style>
