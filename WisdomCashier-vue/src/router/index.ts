@@ -12,8 +12,7 @@ const store = useAuthStore(pinia);
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
-    name: "login",
-    component: loginPage,
+    redirect: "/login",
   },
   {
     path: "/login",
