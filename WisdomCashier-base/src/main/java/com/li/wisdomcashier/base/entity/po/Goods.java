@@ -47,7 +47,7 @@ public class Goods implements Serializable {
     private LocalDate deadline;
 
     @TableField("num")
-    private Long num;
+    private Integer num;
 
     @TableField("pic_url")
     private String picUrl;

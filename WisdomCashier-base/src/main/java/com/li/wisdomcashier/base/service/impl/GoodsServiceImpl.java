@@ -9,15 +9,20 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.BuyGoodDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Goods;
 import com.li.wisdomcashier.base.entity.po.GoodsVO;
+import com.li.wisdomcashier.base.entity.po.Trade;
+import com.li.wisdomcashier.base.entity.po.TradeGoods;
 import com.li.wisdomcashier.base.entity.pojo.GoodsApi;
 import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.GoodsMapper;
+import com.li.wisdomcashier.base.mapper.TradeMapper;
 import com.li.wisdomcashier.base.service.GoodsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.li.wisdomcashier.base.service.TradeGoodsService;
 import com.li.wisdomcashier.base.util.UserUtils;
 import javafx.print.Collation;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +30,18 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -54,6 +63,12 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Resource
     private GoodsMapper goodsMapper;
+
+    @Resource
+    private TradeGoodsService tradeGoodsService;
+
+    @Resource
+    private TradeMapper tradeMapper;
     @Override
     public R<Goods> reqGood(String gid) {
         if(StringUtils.isBlank(gid)){
@@ -149,5 +164,34 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         }
         GoodsVO copy = CglibUtil.copy(goods.get(0), GoodsVO.class);
         return R.ok(copy);
+    }
+
+    @Override()
+    @Transactional(rollbackFor = Exception.class)
+    public R<String> buyGood(BuyGoodDTO buyGoodDTO) {
+        if(!UserUtils.hasPermissions(buyGoodDTO.getSid(), RoleEnum.SHOP.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
+        try {
+            Trade trade = new Trade();
+            trade.setSid(buyGoodDTO.getSid());
+            trade.setIncome(buyGoodDTO.getSum());
+            trade.setCreateTime(LocalDateTime.now());
+            trade.setType(buyGoodDTO.getType());
+            tradeMapper.insert(trade);
+            List<TradeGoods> collect = buyGoodDTO.getGoods().stream().map(e -> {
+                TradeGoods tradeGoods1 = new TradeGoods();
+                tradeGoods1.setGid(e.getGid());
+                tradeGoods1.setName(e.getName());
+                tradeGoods1.setTradeId(trade.getId());
+                tradeGoods1.setNum(e.getNum());
+                return tradeGoods1;
+            }).collect(Collectors.toList());
+            tradeGoodsService.saveBatch(collect);
+            return R.ok("交易成功！");
+        } catch (Exception e) {
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            return R.error("交易失败，请重试或联系管理员！");
+        }
     }
 }

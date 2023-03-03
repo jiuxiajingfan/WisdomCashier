@@ -44,7 +44,7 @@ public class GoodDTO {
 
     @NotNull(message = "数量不能为空!")
     @ApiModelProperty("数量")
-    private Long num;
+    private Integer num;
 
     @ApiModelProperty("图片地址")
     private String picUrl;

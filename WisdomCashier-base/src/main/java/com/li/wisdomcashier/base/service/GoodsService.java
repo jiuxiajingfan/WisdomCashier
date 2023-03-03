@@ -2,6 +2,7 @@ package com.li.wisdomcashier.base.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.BuyGoodDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Goods;
@@ -53,4 +54,10 @@ public interface GoodsService extends IService<Goods> {
      * @return
      */
     R<GoodsVO> getGood(String gid,Long sid);
+
+    /**
+     * 商品交易
+     * @return
+     */
+    R<String> buyGood(BuyGoodDTO buyGoodDTO);
 }

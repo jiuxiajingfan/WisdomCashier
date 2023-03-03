@@ -3,6 +3,7 @@ package com.li.wisdomcashier.customer.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.common.UnCheck;
+import com.li.wisdomcashier.base.entity.dto.BuyGoodDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Goods;
@@ -57,6 +58,12 @@ public class GoodsController {
     @ApiOperation(value = "根据条形码查询商品信息")
     public R<GoodsVO> getGood(String gid, Long sid) {
         return goodsService.getGood(gid, sid);
+    }
+
+    @PostMapping("/buyGood")
+    @ApiOperation(value = "商品交易")
+    R<String> buyGood(@RequestBody @Validated BuyGoodDTO buyGoodDTO){
+        return goodsService.buyGood(buyGoodDTO);
     }
 
 }
