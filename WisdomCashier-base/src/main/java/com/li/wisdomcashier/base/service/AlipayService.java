@@ -2,6 +2,7 @@ package com.li.wisdomcashier.base.service;
 
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.AliPayDTO;
+import com.li.wisdomcashier.base.entity.dto.PayDTO;
 
 /**
  * @ClassName PayService
@@ -17,7 +18,7 @@ public interface AlipayService {
      * @param aliPayDTO
      * @return
      */
-    R<String> aliPay(AliPayDTO aliPayDTO);
+    R<PayDTO> aliPay(AliPayDTO aliPayDTO);
 
     /**
      * 查询订单号状态

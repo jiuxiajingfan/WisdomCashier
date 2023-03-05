@@ -1,5 +1,6 @@
 package com.li.wisdomcashier.base.service.impl;
 
+import cn.hutool.core.util.IdUtil;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
@@ -11,10 +12,17 @@ import com.alipay.api.response.AlipayTradePayResponse;
 import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.AliPayDTO;
+import com.li.wisdomcashier.base.entity.dto.PayDTO;
+import com.li.wisdomcashier.base.entity.po.User;
+import com.li.wisdomcashier.base.mapper.ShopMapper;
 import com.li.wisdomcashier.base.service.AlipayService;
+import com.li.wisdomcashier.base.util.RedisUtils;
+import com.li.wisdomcashier.base.util.UserUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
 
 /**
  * @ClassName PayServiceImpl
@@ -29,19 +37,19 @@ public class AlipayServiceImpl implements AlipayService {
 
     //app ID
     @Value("${alipay.appId}")
-    private  String APP_ID;
+    private String APP_ID;
 
     //应用私钥
     @Value("${alipay.privateKey}")
-    private  String APP_PRIVATE_KEY;
+    private String APP_PRIVATE_KEY;
 
     //字符集
     @Value("${alipay.charset}")
-    private  String CHARSET;
+    private String CHARSET;
 
     // 支付宝公钥
     @Value("${alipay.alipaypublickey}")
-    private  String ALIPAY_PUBLIC_KEY;
+    private String ALIPAY_PUBLIC_KEY;
 
     //接口路径
     @Value("${alipay.serverUrl}")
@@ -53,8 +61,13 @@ public class AlipayServiceImpl implements AlipayService {
 
     //签名方式
     @Value("${alipay.signType}")
-    private String SIGN_TYPE ;
+    private String SIGN_TYPE;
 
+    @Resource
+    private RedisUtils redisUtils;
+
+    @Resource
+    private ShopMapper shopMapper;
     //支付宝异步通知路径,付款完毕后会异步调用本项目的方法,必须为公网地址
     private String NOTIFY_URL = "http://127.0.0.1/notifyUrl";
 
@@ -62,19 +75,23 @@ public class AlipayServiceImpl implements AlipayService {
     private String RETURN_URL = "http://localhost:8080/returnUrl";
 
     @Override
-    public R<String> aliPay(AliPayDTO aliPayDTO) {
-        AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL,APP_ID,APP_PRIVATE_KEY,FORMAT,CHARSET,ALIPAY_PUBLIC_KEY,SIGN_TYPE);
+    public R<PayDTO> aliPay(AliPayDTO aliPayDTO) {
+        User user = UserUtils.getUser();
+        if (redisUtils.hasKey("aliPay" + user.getId()))
+            return R.error("存在一笔订单未处理，请先处理！");
+        AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         AlipayTradePayRequest request = new AlipayTradePayRequest();
-//        AlipayTradePrecreateModel model = new AlipayTradePrecreateModel();
+        String id = IdUtil.getSnowflake().nextIdStr();
+        redisUtils.set("aliPay" + user.getId(),id , 300);
         AlipayTradePayModel model = new AlipayTradePayModel();
         /** 商户订单号，商户自定义，需保证在商户端不重复，如：20200612000001 **/
-        model.setOutTradeNo(aliPayDTO.getId().toString());
+        model.setOutTradeNo(redisUtils.get("aliPay" + user.getId()).toString());
         /**订单标题 **/
-        model.setSubject(aliPayDTO.getShopName());
+        model.setSubject(shopMapper.selectById(aliPayDTO.getShopName()).getShopName());
         /** 订单金额，精确到小数点后两位 **/
-        model.setTotalAmount(String.format("%.2f",aliPayDTO.getPrice()));
+        model.setTotalAmount(String.format("%.2f", aliPayDTO.getPrice()));
         /** 订单描述 **/
-        model.setBody(aliPayDTO.getShopName()+"购物支付");
+        model.setBody(aliPayDTO.getShopName() + "购物支付");
         model.setAuthCode(aliPayDTO.getUserID());
         model.setOperatorId(aliPayDTO.getOperatorId());
         // 5分钟有效
@@ -84,24 +101,34 @@ public class AlipayServiceImpl implements AlipayService {
         /** 异步通知地址，以http或者https开头的，商户外网可以post访问的异步地址，用于接收支付宝返回的支付结果，如果未收到该通知可参考该文档进行确认：			https://opensupport.alipay.com/support/helpcenter/193/201602475759 **/
         request.setNotifyUrl(NOTIFY_URL);
         AlipayTradePayResponse response = null;
+        PayDTO payDTO = new PayDTO();
         try {
             response = alipayClient.execute(request);
+            payDTO.setRemoteID(response.getTradeNo());
+            payDTO.setShopID(id);
+            payDTO.setMsg(response.getSubMsg());
+            //调用出错解锁
+            if(response.getCode().charAt(0)!='1')
+            {
+                redisUtils.del("aliPay" + user.getId());
+            }
         } catch (AlipayApiException e) {
             e.printStackTrace();
+            redisUtils.del("aliPay" + user.getId());
         }
-        return R.ok(response.getTradeNo(),response.getCode());
+        return R.ok(payDTO, response.getCode());
     }
 
     @Override
     public R<String> queryAliPay(String tradeNo) {
-        AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL,APP_ID,APP_PRIVATE_KEY,FORMAT,CHARSET,ALIPAY_PUBLIC_KEY,SIGN_TYPE);
+        AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
         AlipayTradeQueryModel model = new AlipayTradeQueryModel();
         model.setTradeNo(tradeNo);
         request.setBizModel(model);
         AlipayTradeQueryResponse response = null;
-        try{
-           response = alipayClient.execute(request);
+        try {
+            response = alipayClient.execute(request);
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }

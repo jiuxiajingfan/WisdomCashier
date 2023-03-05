@@ -14,6 +14,7 @@ import com.alipay.api.response.AlipayTradePrecreateResponse;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.common.UnCheck;
 import com.li.wisdomcashier.base.entity.dto.AliPayDTO;
+import com.li.wisdomcashier.base.entity.dto.PayDTO;
 import com.li.wisdomcashier.base.service.AlipayService;
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,13 +40,11 @@ public class PayController {
     private AlipayService alipayService;
 
     @PostMapping("/test")
-    @UnCheck
-    public R<String> aliPay(@RequestBody AliPayDTO aliPayDTO){
+    public R<PayDTO> aliPay(@RequestBody AliPayDTO aliPayDTO){
     return alipayService.aliPay(aliPayDTO);
     }
 
     @GetMapping("/test2")
-    @UnCheck
     public R<String> queryAliPay(String tradeNo){
         return alipayService.queryAliPay(tradeNo);
     }

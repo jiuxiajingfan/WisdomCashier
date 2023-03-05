@@ -136,6 +136,7 @@
               size="large"
               style="margin-left: 30px; margin-top: 5px; height: 80%"
               :disabled="data2.length === 0"
+              @click="zfbBut"
             >
               <alipay
                 theme="outline"
@@ -259,6 +260,26 @@
                 </span>
               </template>
             </el-dialog>
+            <el-dialog
+              v-model="dialogVisiblezfb"
+              title="支付宝支付"
+              width="30%"
+            >
+              <h2 style="font-size: 30px">请扫描或输入顾客付款条形码</h2>
+              <el-input v-model="userPayID" @keyup.enter="alipayP"></el-input>
+              <template #footer>
+                <span class="dialog-footer">
+                  <el-button
+                    @click="dialogVisiblezfb = false"
+                    autofocus="autofocus"
+                    >Cancel</el-button
+                  >
+                  <el-button type="primary" @click="dialogVisiblezfb = false">
+                    确定
+                  </el-button>
+                </span>
+              </template>
+            </el-dialog>
           </el-footer>
         </el-container>
       </el-container>
@@ -267,16 +288,19 @@
 </template>
 
 <script setup>
-import { reactive, ref } from "vue";
+import { nextTick, onMounted, reactive, ref } from "vue";
 import api from "@/api/api";
 import { useRouter } from "vue-router/dist/vue-router";
 import * as math from "mathjs";
 import utils from "@/utils/utils";
 import { Wechat, Alipay, PaperMoney, Save } from "@icon-park/vue-next";
 import Utils from "@/utils/utils";
+import { Vue } from "vue-class-component";
+import { ElLoading, ElNotification } from "element-plus";
 let searchText = ref("");
 const data2 = ref([]);
 const router = useRouter();
+let dialogVisiblezfb = ref(false);
 let picshow = ref(false);
 let data = reactive({
   name: "",
@@ -419,6 +443,7 @@ const sure = (gid) => {
   picshow.value = false;
   utils.showMessage(200, "修改数量成功！");
 };
+let userPayID = ref("");
 const onRowClick = (row, column, event) => {
   console.log(row);
   lastData.num = row.num;
@@ -438,11 +463,15 @@ const dele = (gid) => {
 const moneyCharge = ref(false);
 const giveMoney = ref(0);
 let sumM = ref(0);
-const onMonery = () => {
+let trytime = 0;
+const caclSum = () => {
   sumM.value = 0;
   for (let i = 0; i < data2.value.length; i++) {
     sumM.value += math.multiply(data2.value[i].num, data2.value[i].priceOut);
   }
+};
+const onMonery = () => {
+  caclSum();
   moneyCharge.value = true;
 };
 const buy = (type) => {
@@ -514,6 +543,54 @@ const form = reactive({
   shelfLife: "",
   num: 0,
 });
+const zfbBut = () => {
+  dialogVisiblezfb.value = true;
+};
+const loadingText = ref("付款中，请稍后。");
+const alipayP = () => {
+  caclSum();
+  const loading = ElLoading.service({
+    lock: true,
+    text: loadingText.value,
+    background: "rgba(0, 0, 0, 0.7)",
+  });
+  nextTick(() => {
+    // Loading should be closed asynchronously
+    api
+      .post("/pay/test", {
+        price: sumM.value,
+        shopName: router.currentRoute.value.query.id,
+        userID: userPayID.value,
+      })
+      .then((res) => {
+        if (res.data.msg == "10000") {
+          loading.close();
+          utils.showMessage(200, "支付成功！");
+        } else if (res.data.msg == "10003") {
+          loadingText.value = "等待用户确认中!";
+          setInterval("queryPay(res.data.data.remoteID)", 3000);
+        } else {
+          loading.close();
+          ElNotification({
+            title: "支付失败",
+            message: "用户支付失败！请重试",
+            type: "error",
+          });
+        }
+      });
+  });
+};
+const queryPay = (data) => {
+  api
+    .get("/pay/test2", {
+      params: {
+        tradeNo: data,
+      },
+    })
+    .then((res) => {
+      utils.showMessage(res.data.code, res.data.msg);
+    });
+};
 </script>
 
 <style scoped lang="scss">

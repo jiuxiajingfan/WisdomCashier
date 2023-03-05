@@ -97,8 +97,9 @@ let GoodsList = defineAsyncComponent(() =>
   import("../../components/Goods/GoodsList")
 );
 let Charge = defineAsyncComponent(() =>
-  import("../../components/Goods/Charge")
+  import("." + "./../components/Goods/Charge")
 );
+let test = defineAsyncComponent(() => import("../../components/Goods/test"));
 const router = useRouter();
 onBeforeMount(() => {
   api
