@@ -178,6 +178,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             trade.setIncome(buyGoodDTO.getSum());
             trade.setCreateTime(LocalDateTime.now());
             trade.setType(buyGoodDTO.getType());
+            trade.setRemoteNo(buyGoodDTO.getRemoteNo());
             tradeMapper.insert(trade);
             List<TradeGoods> collect = buyGoodDTO.getGoods().stream().map(e -> {
                 TradeGoods tradeGoods1 = new TradeGoods();

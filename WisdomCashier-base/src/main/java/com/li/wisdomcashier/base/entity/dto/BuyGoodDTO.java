@@ -36,4 +36,6 @@ public class BuyGoodDTO {
     @NotNull(message = "总价不能为空")
     Double sum;
 
+    @ApiModelProperty("远程订单号")
+    String remoteNo;
 }

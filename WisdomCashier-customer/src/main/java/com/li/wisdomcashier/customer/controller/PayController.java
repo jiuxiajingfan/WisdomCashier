@@ -39,14 +39,24 @@ public class PayController {
     @Resource
     private AlipayService alipayService;
 
-    @PostMapping("/test")
+    @PostMapping("/aliPay")
     public R<PayDTO> aliPay(@RequestBody AliPayDTO aliPayDTO){
     return alipayService.aliPay(aliPayDTO);
     }
 
-    @GetMapping("/test2")
+    @GetMapping("/queryAliPay")
     public R<String> queryAliPay(String tradeNo){
         return alipayService.queryAliPay(tradeNo);
+    }
+
+    @GetMapping("/cancelPay")
+    R<String> cancelPay(String tradeNo){
+        return alipayService.cancelPay(tradeNo);
+    }
+
+    @GetMapping("/closePay")
+    R<String> closePay(String tradeNo){
+        return alipayService.closePay(tradeNo);
     }
 
 }

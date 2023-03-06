@@ -19,7 +19,12 @@
                 >
               </template>
             </el-input>
-            <el-table :data="data2" @row-click="onRowClick" show-summary>
+            <el-table
+              :data="data2"
+              @row-click="onRowClick"
+              show-summary
+              height="calc(100vh - 170px)"
+            >
               <el-table-column label="名称" prop="name"></el-table-column>
               <el-table-column label="编号" prop="gid"></el-table-column>
               <el-table-column label="数量" prop="num"></el-table-column>
@@ -179,7 +184,7 @@
               <template #footer>
                 <span class="dialog-footer">
                   <el-button> 离开 </el-button>
-                  <el-button type="primary" @click="buy(1)">确认</el-button>
+                  <el-button type="primary" @click="buy(1, '')">确认</el-button>
                 </span>
               </template>
             </el-dialog>
@@ -474,13 +479,14 @@ const onMonery = () => {
   caclSum();
   moneyCharge.value = true;
 };
-const buy = (type) => {
+const buy = (type, no) => {
   api
     .post("/Goods/buyGood", {
       goods: data2.value,
       type: type,
       sum: sumM.value,
       sid: router.currentRoute.value.query.id,
+      remoteNo: no,
     })
     .then((res) => {
       if (res.data.code === 200) {
@@ -546,18 +552,17 @@ const form = reactive({
 const zfbBut = () => {
   dialogVisiblezfb.value = true;
 };
-const loadingText = ref("付款中，请稍后。");
 const alipayP = () => {
   caclSum();
   const loading = ElLoading.service({
     lock: true,
-    text: loadingText.value,
+    text: "订单创建中（请勿刷新或关闭界面）",
     background: "rgba(0, 0, 0, 0.7)",
   });
   nextTick(() => {
     // Loading should be closed asynchronously
     api
-      .post("/pay/test", {
+      .post("/pay/aliPay", {
         price: sumM.value,
         shopName: router.currentRoute.value.query.id,
         userID: userPayID.value,
@@ -565,31 +570,79 @@ const alipayP = () => {
       .then((res) => {
         if (res.data.msg == "10000") {
           loading.close();
-          utils.showMessage(200, "支付成功！");
+          ElNotification({
+            title: "支付成功",
+            message: "用户支付成功",
+            type: "success",
+            duration: 5000,
+          });
+          dialogVisiblezfb.value = false;
+          buy(2, res.data.data.remoteID);
         } else if (res.data.msg == "10003") {
-          loadingText.value = "等待用户确认中!";
-          setInterval("queryPay(res.data.data.remoteID)", 3000);
+          loading.setText(
+            "订单创建成功！等待用户付款中！30秒内未支付则自动取消订单（请勿刷新或关闭界面）"
+          );
+          var cnt = 0;
+          var st = setInterval(function () {
+            cnt++;
+            api
+              .get("/pay/queryAliPay", {
+                params: {
+                  tradeNo: res.data.data.remoteID,
+                },
+              })
+              .then((res) => {
+                if (res.data.data === "TRADE_SUCCESS") {
+                  clearInterval(st);
+                  loading.close();
+                  ElNotification({
+                    title: "支付成功",
+                    message: "用户支付成功！",
+                    type: "success",
+                    duration: 5000,
+                  });
+                  dialogVisiblezfb.value = false;
+                  buy(2, res.data.data.remoteID);
+                }
+              });
+            if (cnt === 10) {
+              clearInterval(st);
+              api.get("/pay/closePay", {
+                params: {
+                  tradeNo: res.data.data.remoteID,
+                },
+              });
+              loading.close();
+              ElNotification({
+                title: "支付失败",
+                message: "用户支付超时！请重新扫描用户付款码",
+                type: "error",
+                duration: 0,
+              });
+              userPayID.value = "";
+            }
+          }, 3000);
         } else {
+          api
+            .get("/pay/cancelPay", {
+              params: {
+                tradeNo: res.data.data.remoteID,
+              },
+            })
+            .then((res) => {
+              utils.showMessage(res.data.code, res.data.msg);
+            });
           loading.close();
           ElNotification({
             title: "支付失败",
-            message: "用户支付失败！请重试",
+            message: "用户支付失败！请重新扫描用户付款码",
             type: "error",
+            duration: 0,
           });
+          userPayID.value = "";
         }
       });
   });
-};
-const queryPay = (data) => {
-  api
-    .get("/pay/test2", {
-      params: {
-        tradeNo: data,
-      },
-    })
-    .then((res) => {
-      utils.showMessage(res.data.code, res.data.msg);
-    });
 };
 </script>
 

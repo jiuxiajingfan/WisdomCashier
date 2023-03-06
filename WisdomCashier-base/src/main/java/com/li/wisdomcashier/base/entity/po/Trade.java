@@ -43,5 +43,8 @@ public class Trade implements Serializable {
     @TableField("type")
     private Integer type;
 
+    @TableField("remote_no")
+    private String remoteNo;
+
 
 }

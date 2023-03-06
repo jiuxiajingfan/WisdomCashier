@@ -26,4 +26,18 @@ public interface AlipayService {
      * @return
      */
     R<String> queryAliPay(String tradeNo);
+
+    /**
+     * 支付未知错误撤销订单
+     * @param tradeNo 支付宝订单号
+     * @return
+     */
+    R<String> cancelPay(String tradeNo);
+
+    /**
+     * 超时主动取消
+     * @param tradeNo
+     * @return
+     */
+    R<String> closePay(String tradeNo);
 }
