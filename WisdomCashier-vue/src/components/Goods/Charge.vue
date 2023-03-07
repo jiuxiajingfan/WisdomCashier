@@ -20,10 +20,11 @@
               </template>
             </el-input>
             <el-table
-              :data="data2"
+              :data="productList"
               @row-click="onRowClick"
               show-summary
               height="calc(100vh - 170px)"
+              :summary-method="getSummaries"
             >
               <el-table-column label="名称" prop="name"></el-table-column>
               <el-table-column label="编号" prop="gid"></el-table-column>
@@ -43,6 +44,13 @@
               </el-table-column>
             </el-table>
           </el-scrollbar>
+          <el-drawer v-model="drawer" title="挂单详情" direction="ltr">
+            <el-table style="width: 100%">
+              <el-table-column label="备注" width="180" />
+              <el-table-column label="金额" width="180" />
+              <el-table-column label="日期" />
+            </el-table>
+          </el-drawer>
         </el-aside>
         <el-container>
           <el-main>
@@ -108,25 +116,26 @@
             />
           </el-main>
           <el-footer>
-            <el-button
-              size="large"
-              style="height: 80%; margin-top: 5px"
-              :disabled="data2.length === 0"
-            >
-              <save
-                theme="outline"
-                size="28"
-                fill="#333"
-                :strokeWidth="1"
-                style="margin-right: 10px"
-              />
-              挂单</el-button
-            >
+            <el-badge :value="12" class="item">
+              <el-button
+                size="large"
+                style="height: 80%; margin-top: 5px"
+                @click="drawer = !drawer"
+              >
+                <save
+                  theme="outline"
+                  size="28"
+                  fill="#333"
+                  :strokeWidth="1"
+                  style="margin-right: 10px"
+                />
+                挂单</el-button
+              >
+            </el-badge>
             <el-button
               size="large"
               style="margin-left: 30px; margin-top: 5px; height: 80%"
               @click="onMonery"
-              :disabled="data2.length === 0"
             >
               <paper-money
                 theme="outline"
@@ -140,7 +149,6 @@
             <el-button
               size="large"
               style="margin-left: 30px; margin-top: 5px; height: 80%"
-              :disabled="data2.length === 0"
               @click="zfbBut"
             >
               <alipay
@@ -155,7 +163,6 @@
             <el-button
               size="large"
               style="margin-left: 30px; margin-top: 5px; height: 80%"
-              :disabled="data2.length === 0"
             >
               <wechat
                 theme="outline"
@@ -199,26 +206,51 @@
                 :inline="true"
                 label-position="left"
                 style="margin-left: 10%"
+                ref="formref"
+                :rules="rules"
               >
                 <div>
-                  <el-form-item label="商品名" :label-width="formLabelWidth">
+                  <el-form-item
+                    label="商品名"
+                    :label-width="formLabelWidth"
+                    prop="name"
+                  >
                     <el-input style="width: 190px" v-model="form.name" />
                   </el-form-item>
-                  <el-form-item label="商品条码" :label-width="formLabelWidth">
+                  <el-form-item
+                    label="商品条码"
+                    :label-width="formLabelWidth"
+                    prop="gid"
+                  >
                     <el-input style="width: 190px" v-model="form.gid" />
                   </el-form-item>
                 </div>
                 <div>
-                  <el-form-item label="进价" :label-width="formLabelWidth">
+                  <el-form-item
+                    label="进价"
+                    :label-width="formLabelWidth"
+                    prop="price_in"
+                  >
                     <el-input style="width: 190px" v-model="form.price_in" />
                   </el-form-item>
-                  <el-form-item label="售价" :label-width="formLabelWidth">
-                    <el-input style="width: 190px" v-model="form.price_out" />
+                  <el-form-item
+                    label="售价"
+                    :label-width="formLabelWidth"
+                    prop="price_out"
+                  >
+                    <el-input
+                      style="width: 190px"
+                      v-model.number="form.price_out"
+                    />
                   </el-form-item>
                 </div>
                 <div>
-                  <el-form-item label="数量" :label-width="formLabelWidth">
-                    <el-input style="width: 190px" v-model="form.num" />
+                  <el-form-item
+                    label="数量"
+                    :label-width="formLabelWidth"
+                    prop="num"
+                  >
+                    <el-input style="width: 190px" v-model.number="form.num" />
                   </el-form-item>
                   <el-form-item label="单位" :label-width="formLabelWidth">
                     <el-input style="width: 190px" v-model="form.metrology" />
@@ -239,8 +271,12 @@
                   <el-form-item
                     label="保质期(天)"
                     :label-width="formLabelWidth"
+                    prop="shelfLife"
                   >
-                    <el-input style="width: 190px" v-model="form.shelfLife" />
+                    <el-input
+                      style="width: 190px"
+                      v-model.number="form.shelfLife"
+                    />
                   </el-form-item>
                 </div>
               </el-form>
@@ -279,9 +315,7 @@
                     autofocus="autofocus"
                     >Cancel</el-button
                   >
-                  <el-button type="primary" @click="dialogVisiblezfb = false">
-                    确定
-                  </el-button>
+                  <el-button type="primary" @click="alipayP"> 确定 </el-button>
                 </span>
               </template>
             </el-dialog>
@@ -300,10 +334,13 @@ import * as math from "mathjs";
 import utils from "@/utils/utils";
 import { Wechat, Alipay, PaperMoney, Save } from "@icon-park/vue-next";
 import Utils from "@/utils/utils";
-import { Vue } from "vue-class-component";
 import { ElLoading, ElNotification } from "element-plus";
+import { useGoodStore } from "@/store/goods";
+import pinia from "@/store/store";
+import { storeToRefs } from "pinia/dist/pinia";
+const good = useGoodStore(pinia);
+const { productList } = storeToRefs(good);
 let searchText = ref("");
-const data2 = ref([]);
 const router = useRouter();
 let dialogVisiblezfb = ref(false);
 let picshow = ref(false);
@@ -338,10 +375,9 @@ const leave = () => {
 };
 const cle = () => {
   searchText.value = "";
-  data2.value = [];
+  good.set([]);
   for (let key of dataMap.keys()) {
-    data2.value.push(dataMap.get(key));
-    console.log(data2);
+    good.push(dataMap.get(key));
   }
 };
 var reg = /^[0-9]*$/;
@@ -363,7 +399,6 @@ const openadd = () => {
         form.price_out = res.data.data.priceOut;
         form.num = 1;
         form.metrology = res.data.data.metrology;
-        console.log(form);
       });
   } else {
     form.name = searchText.value;
@@ -373,7 +408,6 @@ const openadd = () => {
 const queryTaskList = () => {
   var newVar = dataMap.get(searchText.value.trim());
   if (newVar === undefined) {
-    console.log("第一次查");
     api
       .get("/Goods/getGood", {
         params: {
@@ -450,7 +484,6 @@ const sure = (gid) => {
 };
 let userPayID = ref("");
 const onRowClick = (row, column, event) => {
-  console.log(row);
   lastData.num = row.num;
   lastData.name = row.name;
   lastData.metrology = row.metrology;
@@ -468,21 +501,20 @@ const dele = (gid) => {
 const moneyCharge = ref(false);
 const giveMoney = ref(0);
 let sumM = ref(0);
-let trytime = 0;
-const caclSum = () => {
-  sumM.value = 0;
-  for (let i = 0; i < data2.value.length; i++) {
-    sumM.value += math.multiply(data2.value[i].num, data2.value[i].priceOut);
-  }
-};
+// const caclSum = () => {
+//   sumM.value = 0;
+//   for (let i = 0; i < productList.length; i++) {
+//     sumM.value += math.multiply(productList[i].num, productList[i].priceOut);
+//   }
+// };
 const onMonery = () => {
-  caclSum();
+  // caclSum();
   moneyCharge.value = true;
 };
 const buy = (type, no) => {
   api
     .post("/Goods/buyGood", {
-      goods: data2.value,
+      goods: good.get,
       type: type,
       sum: sumM.value,
       sid: router.currentRoute.value.query.id,
@@ -492,7 +524,7 @@ const buy = (type, no) => {
       if (res.data.code === 200) {
         if (type === 1) moneyCharge.value = false;
         utils.showMessage(res.data.code, "结算成功！");
-        data2.value = [];
+        good.set([]);
         dataMap.clear();
         sumM.value = 0;
         giveMoney.value = 0;
@@ -506,36 +538,40 @@ let dialogFormVisible = ref(false);
 const dialogFormVisible2 = ref(false);
 const formLabelWidth = "140px";
 const save2 = () => {
-  api
-    .post("/Goods/addGood", {
-      name: form.name,
-      gid: form.gid,
-      priceIn: form.price_in,
-      priceOut: form.price_out,
-      sid: form.sid,
-      date: form.date,
-      shelfLife: form.shelfLife,
-      num: form.num,
-      profit: form.price_out - form.price_in,
-      metrology: form.metrology,
-    })
-    .then((res) => {
-      Utils.showMessage(res.data.code, res.data.msg);
-      if (res.data.code === 200) {
-        searchText.value = form.gid;
-        dialogFormVisible.value = false;
-        form.name = "";
-        form.gid = "";
-        form.price_in = 0;
-        form.price_out = 0;
-        form.num = 0;
-        form.shelfLife = "";
-        form.date = "";
-        form.metrology = "";
-        form.profit = 0;
-        queryTaskList();
-      }
-    });
+  formref.value.validate((valid) => {
+    if (valid) {
+      api
+        .post("/Goods/addGood", {
+          name: form.name,
+          gid: form.gid,
+          priceIn: form.price_in,
+          priceOut: form.price_out,
+          sid: form.sid,
+          date: form.date,
+          shelfLife: form.shelfLife,
+          num: form.num,
+          profit: form.price_out - form.price_in,
+          metrology: form.metrology,
+        })
+        .then((res) => {
+          Utils.showMessage(res.data.code, res.data.msg);
+          if (res.data.code === 200) {
+            searchText.value = form.gid;
+            dialogFormVisible.value = false;
+            form.name = "";
+            form.gid = "";
+            form.price_in = 0;
+            form.price_out = 0;
+            form.num = 0;
+            form.shelfLife = "";
+            form.date = "";
+            form.metrology = "";
+            form.profit = 0;
+            queryTaskList();
+          }
+        });
+    }
+  });
 };
 const form = reactive({
   name: "",
@@ -553,7 +589,7 @@ const zfbBut = () => {
   dialogVisiblezfb.value = true;
 };
 const alipayP = () => {
-  caclSum();
+  // caclSum();
   const loading = ElLoading.service({
     lock: true,
     text: "订单创建中（请勿刷新或关闭界面）",
@@ -578,6 +614,7 @@ const alipayP = () => {
           });
           dialogVisiblezfb.value = false;
           buy(2, res.data.data.remoteID);
+          userPayID.value = "";
         } else if (res.data.msg == "10003") {
           loading.setText(
             "订单创建成功！等待用户付款中！30秒内未支付则自动取消订单（请勿刷新或关闭界面）"
@@ -603,6 +640,7 @@ const alipayP = () => {
                   });
                   dialogVisiblezfb.value = false;
                   buy(2, res.data.data.remoteID);
+                  userPayID.value = "";
                 }
               });
             if (cnt === 10) {
@@ -644,6 +682,109 @@ const alipayP = () => {
       });
   });
 };
+const getSummaries = (param) => {
+  const { columns, data } = param;
+  const len = columns.length;
+  const sums = [];
+  columns.forEach((column, index) => {
+    if (index === 0) {
+      sums[index] = "总计";
+    } else if (index === len - 1) {
+      const values = data.map((item) => Number(item.priceOut * item.num));
+      if (!values.every((value) => isNaN(value))) {
+        sums[index] = values.reduce((prev, curr) => {
+          const value = Number(curr);
+          if (!isNaN(value)) {
+            return prev + curr;
+          } else {
+            return prev;
+          }
+        }, 0);
+        sums[index] = sums[index].toFixed(2);
+        sumM.value = Number(sums[index]);
+      } else {
+        sums[index] = "N/A";
+      }
+      //如果是除了第一列和最后一列的其他列，则显示为空
+    } else {
+      sums[index] = "";
+    }
+  });
+  return sums;
+};
+const formref = ref();
+const rules = reactive({
+  name: [
+    { required: true, message: "请输入商品名", trigger: "blur" },
+    {
+      min: 1,
+      max: 100,
+      message: "请输入商品名",
+      trigger: "blur",
+    },
+  ],
+  gid: [
+    { required: true, message: "请输入商品条码" },
+    {
+      min: 1,
+      max: 100,
+      message: "请输入商品条码",
+    },
+  ],
+  price_out: [
+    {
+      required: true,
+      message: "请输入商品售价",
+      trigger: "blur",
+    },
+    {
+      validator: (rule, value, callback) => {
+        if (!isNumber(value)) {
+          callback(new Error("请输入数字值"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
+  ],
+  shelfLife: [
+    { required: true, message: "请输入商品保质期天数", trigger: "blur" },
+    { type: "number", message: "保质期必须是数字" },
+  ],
+  num: [
+    { required: true, message: "请输入商品数量", trigger: "blur" },
+    { type: "number", message: "商品数量必须是数字" },
+  ],
+  price_in: [
+    {
+      required: true,
+      message: "请输入商品进价",
+      trigger: "blur",
+    },
+    {
+      validator: (rule, value, callback) => {
+        if (!isNumber(value)) {
+          callback(new Error("请输入数字值"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
+  ],
+});
+const isNumber = (val) => {
+  var regPos = /^\d+(\.\d+)?$/;
+  var regNeg =
+    /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/;
+  if (regPos.test(val) || regNeg.test(val)) {
+    return true;
+  } else {
+    return false;
+  }
+};
+const drawer = ref(false);
 </script>
 
 <style scoped lang="scss">

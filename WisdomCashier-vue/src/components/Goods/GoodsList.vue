@@ -68,29 +68,39 @@
   <el-dialog v-model="dialogFormVisible" title="新增商品" width="900px" center>
     <el-form
       :model="form"
+      ref="formref"
       :inline="true"
       label-position="left"
       style="margin-left: 10%"
+      :rules="rules"
     >
       <div>
-        <el-form-item label="商品名" :label-width="formLabelWidth">
+        <el-form-item label="商品名" :label-width="formLabelWidth" prop="name">
           <el-input style="width: 190px" v-model="form.name" />
         </el-form-item>
-        <el-form-item label="商品条码" :label-width="formLabelWidth">
+        <el-form-item label="商品条码" :label-width="formLabelWidth" prop="gid">
           <el-input style="width: 190px" v-model="form.gid" />
         </el-form-item>
       </div>
       <div>
-        <el-form-item label="进价" :label-width="formLabelWidth">
+        <el-form-item
+          label="进价"
+          :label-width="formLabelWidth"
+          prop="price_in"
+        >
           <el-input style="width: 190px" v-model="form.price_in" />
         </el-form-item>
-        <el-form-item label="售价" :label-width="formLabelWidth">
+        <el-form-item
+          label="售价"
+          :label-width="formLabelWidth"
+          prop="price_out"
+        >
           <el-input style="width: 190px" v-model="form.price_out" />
         </el-form-item>
       </div>
       <div>
-        <el-form-item label="数量" :label-width="formLabelWidth">
-          <el-input style="width: 190px" v-model="form.num" />
+        <el-form-item label="数量" :label-width="formLabelWidth" prop="num">
+          <el-input style="width: 190px" v-model.number="form.num" />
         </el-form-item>
         <el-form-item label="单位" :label-width="formLabelWidth">
           <el-input style="width: 190px" v-model="form.metrology" />
@@ -108,8 +118,12 @@
             />
           </div>
         </el-form-item>
-        <el-form-item label="保质期(天)" :label-width="formLabelWidth">
-          <el-input style="width: 190px" v-model="form.shelfLife" />
+        <el-form-item
+          label="保质期(天)"
+          :label-width="formLabelWidth"
+          prop="shelfLife"
+        >
+          <el-input style="width: 190px" v-model.number="form.shelfLife" />
         </el-form-item>
       </div>
     </el-form>
@@ -165,29 +179,34 @@ const form = reactive({
   shelfLife: "",
   num: 0,
 });
+const formref = ref();
 const save = () => {
-  api
-    .post("/Goods/addGood", {
-      name: form.name,
-      gid: form.gid,
-      priceIn: form.price_in,
-      priceOut: form.price_out,
-      sid: form.sid,
-      date: form.date,
-      shelfLife: form.shelfLife,
-      num: form.num,
-      profit: form.price_out - form.price_in,
-      metrology: form.metrology,
-    })
-    .then((res) => {
-      Utils.showMessage(res.data.code, res.data.msg);
-      if (res.data.code === 200) {
-        dialogFormVisible.value = false;
-        del();
-        searchText.value = "";
-        queryTaskList();
-      }
-    });
+  formref.value.validate((valid) => {
+    if (valid) {
+      api
+        .post("/Goods/addGood", {
+          name: form.name,
+          gid: form.gid,
+          priceIn: form.price_in,
+          priceOut: form.price_out,
+          sid: form.sid,
+          date: form.date,
+          shelfLife: form.shelfLife,
+          num: form.num,
+          profit: form.price_out - form.price_in,
+          metrology: form.metrology,
+        })
+        .then((res) => {
+          Utils.showMessage(res.data.code, res.data.msg);
+          if (res.data.code === 200) {
+            dialogFormVisible.value = false;
+            del();
+            searchText.value = "";
+            queryTaskList();
+          }
+        });
+    }
+  });
 };
 const del = () => {
   form.name = "";
@@ -253,12 +272,82 @@ const openadd = () => {
         form.price_out = res.data.data.priceOut;
         form.num = 1;
         form.metrology = res.data.data.metrology;
-        console.log(form);
       });
   } else {
     form.name = searchText.value;
   }
   dialogFormVisible.value = true;
+};
+const rules = reactive({
+  name: [
+    { required: true, message: "请输入商品名", trigger: "blur" },
+    {
+      min: 1,
+      max: 100,
+      message: "请输入商品名",
+      trigger: "blur",
+    },
+  ],
+  gid: [
+    { required: true, message: "请输入商品条码" },
+    {
+      min: 1,
+      max: 100,
+      message: "请输入商品条码",
+    },
+  ],
+  price_out: [
+    {
+      required: true,
+      message: "请输入商品售价",
+      trigger: "blur",
+    },
+    {
+      validator: (rule, value, callback) => {
+        if (!isNumber(value)) {
+          callback(new Error("请输入数字值"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
+  ],
+  shelfLife: [
+    { required: true, message: "请输入商品保质期天数", trigger: "blur" },
+    { type: "number", message: "保质期必须是数字" },
+  ],
+  num: [
+    { required: true, message: "请输入商品数量", trigger: "blur" },
+    { type: "number", message: "商品数量必须是数字" },
+  ],
+  price_in: [
+    {
+      required: true,
+      message: "请输入商品进价",
+      trigger: "blur",
+    },
+    {
+      validator: (rule, value, callback) => {
+        if (!isNumber(value)) {
+          callback(new Error("请输入数字值"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
+  ],
+});
+const isNumber = (val) => {
+  var regPos = /^\d+(\.\d+)?$/;
+  var regNeg =
+    /^(-(([0-9]+\.[0-9]*[1-9][0-9]*)|([0-9]*[1-9][0-9]*\.[0-9]+)|([0-9]*[1-9][0-9]*)))$/;
+  if (regPos.test(val) || regNeg.test(val)) {
+    return true;
+  } else {
+    return false;
+  }
 };
 </script>
 

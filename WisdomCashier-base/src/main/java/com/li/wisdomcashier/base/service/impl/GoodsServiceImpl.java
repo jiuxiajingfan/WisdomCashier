@@ -18,6 +18,7 @@ import com.li.wisdomcashier.base.entity.po.Trade;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
 import com.li.wisdomcashier.base.entity.pojo.GoodsApi;
 import com.li.wisdomcashier.base.enums.RoleEnum;
+import com.li.wisdomcashier.base.enums.TradeEnum;
 import com.li.wisdomcashier.base.mapper.GoodsMapper;
 import com.li.wisdomcashier.base.mapper.TradeMapper;
 import com.li.wisdomcashier.base.service.GoodsService;
@@ -179,6 +180,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             trade.setCreateTime(LocalDateTime.now());
             trade.setType(buyGoodDTO.getType());
             trade.setRemoteNo(buyGoodDTO.getRemoteNo());
+            trade.setStatus(TradeEnum.FINISH.getCode());
             tradeMapper.insert(trade);
             List<TradeGoods> collect = buyGoodDTO.getGoods().stream().map(e -> {
                 TradeGoods tradeGoods1 = new TradeGoods();
