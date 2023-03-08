@@ -6,6 +6,12 @@ import cn.hutool.extra.cglib.CglibUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import com.alipay.api.AlipayApiException;
+import com.alipay.api.AlipayClient;
+import com.alipay.api.DefaultAlipayClient;
+import com.alipay.api.domain.AlipayTradeQueryModel;
+import com.alipay.api.request.AlipayTradeQueryRequest;
+import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -19,10 +25,12 @@ import com.li.wisdomcashier.base.entity.po.GoodsVO;
 import com.li.wisdomcashier.base.entity.po.Trade;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
 import com.li.wisdomcashier.base.entity.pojo.GoodsApi;
+import com.li.wisdomcashier.base.entity.pojo.QueryTrade;
 import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.enums.TradeEnum;
 import com.li.wisdomcashier.base.mapper.GoodsMapper;
 import com.li.wisdomcashier.base.mapper.TradeMapper;
+import com.li.wisdomcashier.base.service.AlipayService;
 import com.li.wisdomcashier.base.service.GoodsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.service.TradeGoodsService;
@@ -32,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -72,6 +81,10 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Resource
     private TradeMapper tradeMapper;
+
+    @Resource
+    private AlipayService alipayService;
+
     @Override
     public R<Goods> reqGood(String gid) {
         if(StringUtils.isBlank(gid)){
@@ -182,7 +195,8 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             trade.setCreateTime(LocalDateTime.now());
             trade.setType(buyGoodDTO.getType());
             trade.setRemoteNo(buyGoodDTO.getRemoteNo());
-            trade.setStatus(TradeEnum.FINISH.getCode());
+            trade.setStatus(buyGoodDTO.getStatus());
+            trade.setMsg("交易成功");
             tradeMapper.insert(trade);
             List<TradeGoods> collect = buyGoodDTO.getGoods().stream().map(e -> {
                 TradeGoods tradeGoods1 = new TradeGoods();
@@ -204,4 +218,22 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     public R<String> getRandID() {
         return R.ok(IdUtil.nanoId());
     }
+
+    @Override
+    @Async("threadPool")
+    public void failTradeLogAsunc(String tradeNo,Long sid,Integer type) {
+        QueryTrade queryTrade = alipayService.queryPayDetil(tradeNo);
+        Trade trade = new Trade();
+        trade.setSid(sid);
+        trade.setId(Long.parseLong(queryTrade.getTradeNo()));
+        trade.setIncome(queryTrade.getSum());
+        trade.setCreateTime(LocalDateTime.now());
+        trade.setType(type);
+        trade.setRemoteNo(queryTrade.getRemoteNo());
+        trade.setStatus(TradeEnum.CANCEL.getCode());
+        trade.setMsg("交易关闭");
+        tradeMapper.insert(trade);
+    }
+
+
 }

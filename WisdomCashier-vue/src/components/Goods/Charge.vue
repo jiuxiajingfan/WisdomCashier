@@ -541,6 +541,7 @@ const buy = (type, no) => {
       sum: sumM.value,
       sid: router.currentRoute.value.query.id,
       remoteNo: no,
+      status: 3,
     })
     .then((res) => {
       if (res.data.code === 200) {
@@ -667,6 +668,7 @@ const alipayP = () => {
               api.get("/pay/closePay", {
                 params: {
                   tradeNo: res.data.data.remoteID,
+                  sid: router.currentRoute.value.query.id,
                 },
               });
               loading.close();
@@ -684,6 +686,7 @@ const alipayP = () => {
             .get("/pay/cancelPay", {
               params: {
                 tradeNo: res.data.data.remoteID,
+                sid: router.currentRoute.value.query.id,
               },
             })
             .then((res) => {

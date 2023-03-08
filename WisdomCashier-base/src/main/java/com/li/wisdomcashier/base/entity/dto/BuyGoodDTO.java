@@ -38,4 +38,10 @@ public class BuyGoodDTO {
 
     @ApiModelProperty("远程订单号")
     String remoteNo;
+
+    @ApiModelProperty("订单状态")
+    Integer status;
+
+    @ApiModelProperty("订单消息")
+    String msg;
 }

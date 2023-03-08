@@ -17,6 +17,7 @@ import com.li.wisdomcashier.base.entity.dto.AliPayDTO;
 import com.li.wisdomcashier.base.entity.dto.PayDTO;
 import com.li.wisdomcashier.base.service.AlipayService;
 import io.swagger.annotations.Api;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -50,13 +51,13 @@ public class PayController {
     }
 
     @GetMapping("/cancelPay")
-    R<String> cancelPay(String tradeNo){
-        return alipayService.cancelPay(tradeNo);
+    R<String> cancelPay(@Param("tradeNo") String tradeNo,@Param("sid") Long sid){
+        return alipayService.cancelPay(tradeNo, sid);
     }
 
     @GetMapping("/closePay")
-    R<String> closePay(String tradeNo){
-        return alipayService.closePay(tradeNo);
+    R<String> closePay(@Param("tradeNo") String tradeNo,@Param("sid") Long sid){
+        return alipayService.closePay(tradeNo, sid);
     }
 
 }

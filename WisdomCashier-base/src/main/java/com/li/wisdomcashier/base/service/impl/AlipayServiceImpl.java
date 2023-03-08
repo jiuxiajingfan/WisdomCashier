@@ -19,12 +19,17 @@ import com.alipay.api.response.AlipayTradeQueryResponse;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.AliPayDTO;
 import com.li.wisdomcashier.base.entity.dto.PayDTO;
+import com.li.wisdomcashier.base.entity.po.Shop;
 import com.li.wisdomcashier.base.entity.po.User;
+import com.li.wisdomcashier.base.entity.pojo.QueryTrade;
+import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.ShopMapper;
 import com.li.wisdomcashier.base.service.AlipayService;
+import com.li.wisdomcashier.base.service.GoodsService;
 import com.li.wisdomcashier.base.util.RedisUtils;
 import com.li.wisdomcashier.base.util.UserUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -74,14 +79,22 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Resource
     private ShopMapper shopMapper;
+
     //支付宝异步通知路径,付款完毕后会异步调用本项目的方法,必须为公网地址
     private String NOTIFY_URL = "http://127.0.0.1/notifyUrl";
 
     //支付宝同步通知路径,也就是当付款完毕后跳转本项目的页面,可以不是公网地址
     private String RETURN_URL = "http://localhost:8080/returnUrl";
 
+    @Resource
+    private GoodsService goodsService;
+
     @Override
     public R<PayDTO> aliPay(AliPayDTO aliPayDTO) {
+        Shop shop = shopMapper.selectById(aliPayDTO.getShopName());
+        if(!UserUtils.hasPermissions(shop.getId(), RoleEnum.SHOP.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
         User user = UserUtils.getUser();
         if (redisUtils.hasKey("aliPay" + user.getId()))
             return R.error("存在一笔订单未处理，请先处理！");
@@ -93,7 +106,7 @@ public class AlipayServiceImpl implements AlipayService {
         /** 商户订单号，商户自定义，需保证在商户端不重复，如：20200612000001 **/
         model.setOutTradeNo(redisUtils.get("aliPay" + user.getId()).toString());
         /**订单标题 **/
-        model.setSubject(shopMapper.selectById(aliPayDTO.getShopName()).getShopName());
+        model.setSubject(shop.getShopName()+"消费");
         /** 订单金额，精确到小数点后两位 **/
         model.setTotalAmount(String.format("%.2f", aliPayDTO.getPrice()));
         /** 订单描述 **/
@@ -146,7 +159,10 @@ public class AlipayServiceImpl implements AlipayService {
     }
 
     @Override
-    public R<String> cancelPay(String tradeNo) {
+    public R<String> cancelPay(String tradeNo,Long sid) {
+        if(!UserUtils.hasPermissions(sid, RoleEnum.SHOP.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
         AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         User user = UserUtils.getUser();
         redisUtils.del("aliPay" + user.getId());
@@ -161,11 +177,15 @@ public class AlipayServiceImpl implements AlipayService {
             log.error("交易撤销失败！撤销单号{},返回值{}", tradeNo, response.toString());
             return R.error("撤销失败！请重试！");
         }
+        goodsService.failTradeLogAsunc(tradeNo,sid,2);
         return R.ok("撤销成功！");
     }
 
     @Override
-    public R<String> closePay(String tradeNo) {
+    public R<String> closePay(String tradeNo,Long sid) {
+        if(!UserUtils.hasPermissions(sid, RoleEnum.SHOP.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
         AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         User user = UserUtils.getUser();
         redisUtils.del("aliPay" + user.getId());
@@ -181,5 +201,27 @@ public class AlipayServiceImpl implements AlipayService {
             return R.error("停止失败！请重试！");
         }
         return R.ok("停止成功！");
+    }
+
+    @Override
+    public QueryTrade queryPayDetil(String tradeNo) {
+        AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
+        AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+        AlipayTradeQueryModel model = new AlipayTradeQueryModel();
+        model.setTradeNo(tradeNo);
+        request.setBizModel(model);
+        AlipayTradeQueryResponse response = null;
+        QueryTrade queryTrade = new QueryTrade();
+        try {
+            response = alipayClient.execute(request);
+            queryTrade.setSum(Double.parseDouble(response.getTotalAmount()));
+            queryTrade.setPayUserId(response.getBuyerUserId());
+            queryTrade.setTradeNo(response.getOutTradeNo());
+            queryTrade.setPayUser(response.getBuyerLogonId());
+            queryTrade.setRemoteNo(response.getTradeNo());
+        } catch (AlipayApiException e) {
+            e.printStackTrace();
+        }
+        return queryTrade;
     }
 }

@@ -3,6 +3,7 @@ package com.li.wisdomcashier.base.service;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.AliPayDTO;
 import com.li.wisdomcashier.base.entity.dto.PayDTO;
+import com.li.wisdomcashier.base.entity.pojo.QueryTrade;
 
 /**
  * @ClassName PayService
@@ -32,12 +33,15 @@ public interface AlipayService {
      * @param tradeNo 支付宝订单号
      * @return
      */
-    R<String> cancelPay(String tradeNo);
+    R<String> cancelPay(String tradeNo,Long sid);
 
     /**
      * 超时主动取消
      * @param tradeNo
      * @return
      */
-    R<String> closePay(String tradeNo);
+    R<String> closePay(String tradeNo,Long sid);
+
+    QueryTrade queryPayDetil(String tradeNo);
+
 }

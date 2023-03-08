@@ -53,5 +53,12 @@ public class Shop implements Serializable {
     @TableField("status")
     private Integer status;
 
+    @ApiModelProperty(value = "支付宝商家授权码")
+    @TableField("auth_zfb")
+    private String authZfb;
+
+    @ApiModelProperty(value = "微信商家授权码")
+    @TableField("auth_wx")
+    private String authWx;
 
 }

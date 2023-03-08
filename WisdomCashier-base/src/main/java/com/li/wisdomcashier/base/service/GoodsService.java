@@ -66,4 +66,12 @@ public interface GoodsService extends IService<Goods> {
      * @return
      */
     R<String> getRandID();
+
+    /**
+     * 失败订单处理
+     * @param
+     */
+
+    void failTradeLogAsunc(String tradeNo,Long sid,Integer type);
+
 }
