@@ -60,4 +60,10 @@ public interface GoodsService extends IService<Goods> {
      * @return
      */
     R<String> buyGood(BuyGoodDTO buyGoodDTO);
+
+    /**
+     * 返回一个随机订单号
+     * @return
+     */
+    R<String> getRandID();
 }

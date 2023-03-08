@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 
 interface IHang {
+  id: string;
   time: string;
   tip: string;
   list: [];
@@ -18,7 +19,6 @@ export const useHangStore = defineStore("Hang", {
   },
   actions: {
     set(list: []) {
-      localStorage.setItem("Hang", JSON.stringify(list));
       this.hangList = list;
     },
     add(param: IHang) {
@@ -30,18 +30,8 @@ export const useHangStore = defineStore("Hang", {
       this.hangList = this.hangList.filter((item) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        return item.time !== index;
+        return item.id !== index;
       });
-    },
-    getone(index: any) {
-      const new1 = this.hangList.filter((item) => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        return item.time !== index;
-      });
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      console.log(new1[0].list);
     },
   },
   persist: true,

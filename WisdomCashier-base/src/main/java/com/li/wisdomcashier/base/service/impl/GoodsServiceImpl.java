@@ -1,5 +1,7 @@
 package com.li.wisdomcashier.base.service.impl;
 
+import cn.hutool.core.util.IdUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.extra.cglib.CglibUtil;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
@@ -196,5 +198,10 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
             return R.error("交易失败，请重试或联系管理员！");
         }
+    }
+
+    @Override
+    public R<String> getRandID() {
+        return R.ok(IdUtil.nanoId());
     }
 }

@@ -1,6 +1,4 @@
 import { defineStore } from "pinia";
-import { number } from "mathjs";
-import { backtopProps } from "element-plus";
 export const useTradeStore = defineStore("Trade", {
   state: () => {
     return {
@@ -36,13 +34,30 @@ export const useTradeStore = defineStore("Trade", {
       this.tradeList = this.tradeList.filter((e) => {
         // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
-        return e.gid !== params.gid;
+        return e.gid !== params;
       });
     },
 
     //清空
     clear() {
       this.tradeList = [];
+    },
+
+    //指定某条数量
+    setOne(gid: any, num: any) {
+      this.tradeList.forEach((e) => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        if (e.gid === gid) {
+          // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+          // @ts-ignore
+          e.num = num;
+        }
+      });
+    },
+
+    set(list: []) {
+      this.tradeList = list;
     },
   },
   persist: true,

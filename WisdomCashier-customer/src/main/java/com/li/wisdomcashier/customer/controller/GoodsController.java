@@ -66,4 +66,11 @@ public class GoodsController {
         return goodsService.buyGood(buyGoodDTO);
     }
 
+    @GetMapping("/getRandID")
+    @ApiOperation(value = "返回一个随机订单号")
+    R<String> getRandID(){
+        return goodsService.getRandID();
+    }
+
+
 }

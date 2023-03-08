@@ -19,11 +19,24 @@
                 >
               </template>
             </el-input>
-            <el-button style="margin-left: 10px" @click="hangclick"
+            <el-button
+              type="primary"
+              style="margin-left: 10px"
+              @click="dialogVisiblegd = true"
               >挂单</el-button
             >
+            <el-dialog v-model="dialogVisiblegd" title="挂单" width="30%">
+              <h2 style="font-size: 30px">如需备注请输入备注</h2>
+              <el-input v-model="tips" @keyup.enter="hangclick"></el-input>
+              <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="dialogVisiblegd = false">取消</el-button>
+                  <el-button type="primary" @click="hangclick">确定 </el-button>
+                </span>
+              </template>
+            </el-dialog>
             <el-table
-              :data="productList"
+              :data="tradeList"
               @row-click="onRowClick"
               show-summary
               height="calc(100vh - 170px)"
@@ -97,7 +110,7 @@
                 <template v-slot="scope">
                   <el-popconfirm
                     title="确定要删除吗?"
-                    @confirm="deleHang(scope.row.time)"
+                    @confirm="deleHang(scope.row.id)"
                   >
                     <template #reference>
                       <el-button link type="primary">删除</el-button>
@@ -106,7 +119,7 @@
                   <el-button
                     link
                     type="primary"
-                    @click="getHangon(scope.row.time)"
+                    @click="getHangon(scope.row.id)"
                     >取单</el-button
                   >
                 </template>
@@ -178,7 +191,11 @@
             />
           </el-main>
           <el-footer>
-            <el-badge :value="12" class="item">
+            <el-badge
+              :value="Hang.get.length"
+              class="item"
+              :hidden="Hang.get.length === 0"
+            >
               <el-button
                 size="large"
                 style="height: 80%; margin-top: 5px"
@@ -211,7 +228,7 @@
             <el-button
               size="large"
               style="margin-left: 30px; margin-top: 5px; height: 80%"
-              @click="zfbBut"
+              @click="dialogVisiblezfb = true"
             >
               <alipay
                 theme="outline"
@@ -367,16 +384,17 @@
               v-model="dialogVisiblezfb"
               title="支付宝支付"
               width="30%"
+              @focus="this.$refs['zfbinput'].focus()"
             >
               <h2 style="font-size: 30px">请扫描或输入顾客付款条形码</h2>
-              <el-input v-model="userPayID" @keyup.enter="alipayP"></el-input>
+              <el-input
+                ref="zfbinput"
+                v-model="userPayID"
+                @keyup.enter="alipayP"
+              ></el-input>
               <template #footer>
                 <span class="dialog-footer">
-                  <el-button
-                    @click="dialogVisiblezfb = false"
-                    autofocus="autofocus"
-                    >Cancel</el-button
-                  >
+                  <el-button @click="dialogVisiblezfb = false">取消</el-button>
                   <el-button type="primary" @click="alipayP"> 确定 </el-button>
                 </span>
               </template>
@@ -397,27 +415,18 @@ import utils from "@/utils/utils";
 import { Wechat, Alipay, PaperMoney, Save } from "@icon-park/vue-next";
 import Utils from "@/utils/utils";
 import { ElLoading, ElNotification } from "element-plus";
-import { useGoodStore } from "@/store/goods";
 import pinia from "@/store/store";
 import { storeToRefs } from "pinia/dist/pinia";
 import { useHangStore } from "@/store/hangon";
-const good = useGoodStore(pinia);
+import { useTradeStore } from "@/store/trade";
 const Hang = useHangStore(pinia);
+const Trade = useTradeStore(pinia);
 const { hangList } = storeToRefs(Hang);
-const { productList } = storeToRefs(good);
+const { tradeList } = storeToRefs(Trade);
 let searchText = ref("");
 const router = useRouter();
 let dialogVisiblezfb = ref(false);
 let picshow = ref(false);
-let data = reactive({
-  name: "",
-  num: 1,
-  priceOut: "",
-  picUrl: "",
-  metrology: "",
-  gid: "",
-});
-let dataMap = reactive(new Map());
 let lastData = reactive({
   name: "",
   num: 1,
@@ -437,14 +446,6 @@ const leave = () => {
   form.date = "";
   form.metrology = "";
   form.profit = 0;
-};
-const cle = () => {
-  searchText.value = "";
-  good.set([]);
-  for (let key of dataMap.keys()) {
-    good.push(dataMap.get(key));
-  }
-  good.save();
 };
 var reg = /^[0-9]*$/;
 const openadd2 = () => {
@@ -472,79 +473,41 @@ const openadd = () => {
   dialogFormVisible.value = true;
 };
 const queryTaskList = () => {
-  var newVar = dataMap.get(searchText.value.trim());
-  if (newVar === undefined) {
-    api
-      .get("/Goods/getGood", {
-        params: {
+  api
+    .get("/Goods/getGood", {
+      params: {
+        gid: searchText.value.trim(),
+        sid: router.currentRoute.value.query.id,
+      },
+    })
+    .then((res) => {
+      if (res.data.code === 200) {
+        Trade.add({
+          num: 1,
+          name: res.data.data.name,
+          metrology: res.data.data.metrology,
+          picUrl: res.data.data.picUrl,
+          priceOut: res.data.data.priceOut,
           gid: searchText.value.trim(),
-          sid: router.currentRoute.value.query.id,
-        },
-      })
-      .then((res) => {
-        if (res.data.code === 200) {
-          data.num = 1;
-          data.name = res.data.data.name;
-          data.metrology = res.data.data.metrology;
-          data.picUrl = res.data.data.picUrl;
-          data.priceOut = res.data.data.priceOut;
-          data.gid = searchText.value.trim();
-          dataMap.set(searchText.value.trim(), {
-            num: data.num,
-            name: data.name,
-            metrology: data.metrology,
-            picUrl: data.picUrl,
-            priceOut: data.priceOut,
-            gid: data.gid,
-          });
-          lastData.num = 1;
-          lastData.name = res.data.data.name;
-          lastData.metrology = res.data.data.metrology;
-          lastData.picUrl = res.data.data.picUrl;
-          lastData.priceOut = res.data.data.priceOut;
-          lastData.gid = searchText.value.trim();
-          cle();
-          picshow.value = true;
-        } else {
-          dialogFormVisible2.value = true;
-        }
-      });
-  } else {
-    data.num = newVar.num + 1;
-    data.name = newVar.name;
-    data.metrology = newVar.metrology;
-    data.picUrl = newVar.picUrl;
-    data.priceOut = newVar.priceOut;
-    data.gid = searchText.value.trim();
-    dataMap.set(searchText.value.trim(), {
-      num: data.num,
-      name: data.name,
-      metrology: data.metrology,
-      picUrl: data.picUrl,
-      priceOut: data.priceOut,
-      gid: data.gid,
+        });
+        lastData.num = Trade.get.filter((e) => {
+          return e.gid === searchText.value.trim();
+        })[0].num;
+        lastData.name = res.data.data.name;
+        lastData.metrology = res.data.data.metrology;
+        lastData.picUrl = res.data.data.picUrl;
+        lastData.priceOut = res.data.data.priceOut;
+        lastData.gid = searchText.value.trim();
+        searchText.value = "";
+        picshow.value = true;
+      } else {
+        dialogFormVisible2.value = true;
+      }
     });
-    data.num = 1;
-    lastData.num = newVar.num + 1;
-    lastData.name = newVar.name;
-    lastData.metrology = newVar.metrology;
-    lastData.picUrl = newVar.picUrl;
-    lastData.priceOut = newVar.priceOut;
-    lastData.gid = searchText.value.trim();
-    cle();
-    picshow.value = true;
-  }
 };
 const sure = (gid) => {
-  dataMap.set(gid, {
-    num: lastData.num,
-    name: lastData.name,
-    metrology: lastData.metrology,
-    picUrl: lastData.picUrl,
-    priceOut: lastData.priceOut,
-    gid: lastData.gid,
-  });
-  cle();
+  Trade.setOne(gid, lastData.num);
+  searchText.value = "";
   picshow.value = false;
   utils.showMessage(200, "修改数量成功！");
 };
@@ -559,28 +522,21 @@ const onRowClick = (row, column, event) => {
   picshow.value = true;
 };
 const dele = (gid) => {
-  dataMap.delete(gid);
-  cle();
+  Trade.del(gid);
+  searchText.value = "";
   picshow.value = false;
   utils.showMessage(200, "删除商品成功！");
 };
 const moneyCharge = ref(false);
 const giveMoney = ref(0);
 let sumM = ref(0);
-// const caclSum = () => {
-//   sumM.value = 0;
-//   for (let i = 0; i < productList.length; i++) {
-//     sumM.value += math.multiply(productList[i].num, productList[i].priceOut);
-//   }
-// };
 const onMonery = () => {
-  // caclSum();
   moneyCharge.value = true;
 };
 const buy = (type, no) => {
   api
     .post("/Goods/buyGood", {
-      goods: good.get,
+      goods: Trade.get,
       type: type,
       sum: sumM.value,
       sid: router.currentRoute.value.query.id,
@@ -590,8 +546,7 @@ const buy = (type, no) => {
       if (res.data.code === 200) {
         if (type === 1) moneyCharge.value = false;
         utils.showMessage(res.data.code, "结算成功！");
-        good.set([]);
-        dataMap.clear();
+        Trade.clear();
         sumM.value = 0;
         giveMoney.value = 0;
         picshow.value = false;
@@ -651,9 +606,7 @@ const form = reactive({
   shelfLife: "",
   num: 0,
 });
-const zfbBut = () => {
-  dialogVisiblezfb.value = true;
-};
+
 const alipayP = () => {
   // caclSum();
   const loading = ElLoading.service({
@@ -851,6 +804,7 @@ const isNumber = (val) => {
   }
 };
 const drawer = ref(false);
+const tips = ref("");
 const hangclick = () => {
   let dt = new Date();
   let y = dt.getFullYear();
@@ -859,22 +813,32 @@ const hangclick = () => {
   let h = dt.getHours().toString().padStart(2, "0");
   let m = dt.getMinutes().toString().padStart(2, "0");
   let nowtime = y + "-" + mt + "-" + day + " " + h + ":" + m;
-  Hang.add({
-    time: nowtime,
-    tip: "hello",
-    list: good.get,
-    sum: sumM.value,
+  api.get("/Goods/getRandID").then((res) => {
+    if (res.data.code === 200) {
+      Hang.add({
+        id: res.data.msg,
+        time: nowtime,
+        tip: tips.value,
+        list: Trade.get,
+        sum: sumM.value,
+      });
+      tips.value = "";
+      dialogVisiblegd.value = false;
+      utils.showMessage(200, "创建挂单成功！");
+    } else {
+      utils.showMessage(400, "创建挂单失败！请重试");
+    }
   });
 };
 const deleHang = (param) => {
-  debugger;
   Hang.del(param);
   utils.showMessage(200, "删除挂单成功！");
 };
+const dialogVisiblegd = ref(false);
 const getHangon = (param) => {
-  good.set(
+  Trade.set(
     Hang.get.filter((e) => {
-      return e.time === param;
+      return e.id === param;
     })[0].list
   );
   Hang.del(param);
