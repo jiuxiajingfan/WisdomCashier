@@ -671,6 +671,14 @@ const alipayP = () => {
                   sid: router.currentRoute.value.query.id,
                 },
               });
+              api.post("/Goods/buyGood", {
+                goods: Trade.get,
+                type: 1,
+                sum: sumM.value,
+                sid: router.currentRoute.value.query.id,
+                remoteNo: res.data.data.remoteID,
+                status: 2,
+              });
               loading.close();
               ElNotification({
                 title: "支付失败",
@@ -692,6 +700,14 @@ const alipayP = () => {
             .then((res) => {
               utils.showMessage(res.data.code, res.data.msg);
             });
+          api.post("/Goods/buyGood", {
+            goods: Trade.get,
+            type: 1,
+            sum: sumM.value,
+            sid: router.currentRoute.value.query.id,
+            remoteNo: res.data.data.remoteID,
+            status: 7,
+          });
           loading.close();
           ElNotification({
             title: "支付失败",

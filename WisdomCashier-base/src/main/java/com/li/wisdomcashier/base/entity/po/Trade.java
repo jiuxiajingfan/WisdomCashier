@@ -51,4 +51,7 @@ public class Trade implements Serializable {
 
     @TableField("msg")
     private String msg;
+
+    @TableField("payer")
+    private String payer;
 }

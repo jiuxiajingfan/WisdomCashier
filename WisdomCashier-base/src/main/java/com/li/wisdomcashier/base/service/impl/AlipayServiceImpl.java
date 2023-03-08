@@ -86,9 +86,6 @@ public class AlipayServiceImpl implements AlipayService {
     //支付宝同步通知路径,也就是当付款完毕后跳转本项目的页面,可以不是公网地址
     private String RETURN_URL = "http://localhost:8080/returnUrl";
 
-    @Resource
-    private GoodsService goodsService;
-
     @Override
     public R<PayDTO> aliPay(AliPayDTO aliPayDTO) {
         Shop shop = shopMapper.selectById(aliPayDTO.getShopName());
@@ -177,7 +174,6 @@ public class AlipayServiceImpl implements AlipayService {
             log.error("交易撤销失败！撤销单号{},返回值{}", tradeNo, response.toString());
             return R.error("撤销失败！请重试！");
         }
-        goodsService.failTradeLogAsunc(tradeNo,sid,2);
         return R.ok("撤销成功！");
     }
 

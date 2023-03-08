@@ -20,7 +20,8 @@ public enum TradeEnum {
     FINISH(3,"完成可退款"),
     REFUND(4,"部分退款"),
     REFUNDALL(5,"全额退款"),
-    FINAL(6,"完成不可退款");
+    FINAL(6,"完成不可退款"),
+    STOP(7,"未知错误交易停止");
 
 
 

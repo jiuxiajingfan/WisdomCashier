@@ -189,24 +189,29 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             throw new AuthorizationException("无权操作！");
         }
         try {
-            Trade trade = new Trade();
-            trade.setSid(buyGoodDTO.getSid());
-            trade.setIncome(buyGoodDTO.getSum());
-            trade.setCreateTime(LocalDateTime.now());
-            trade.setType(buyGoodDTO.getType());
-            trade.setRemoteNo(buyGoodDTO.getRemoteNo());
-            trade.setStatus(buyGoodDTO.getStatus());
-            trade.setMsg("交易成功");
-            tradeMapper.insert(trade);
-            List<TradeGoods> collect = buyGoodDTO.getGoods().stream().map(e -> {
-                TradeGoods tradeGoods1 = new TradeGoods();
-                tradeGoods1.setGid(e.getGid());
-                tradeGoods1.setName(e.getName());
-                tradeGoods1.setTradeId(trade.getId());
-                tradeGoods1.setNum(e.getNum());
-                return tradeGoods1;
-            }).collect(Collectors.toList());
-            tradeGoodsService.saveBatch(collect);
+            if(buyGoodDTO.getStatus()==TradeEnum.FINISH.getCode()) {
+                Trade trade = new Trade();
+                trade.setSid(buyGoodDTO.getSid());
+                trade.setIncome(buyGoodDTO.getSum());
+                trade.setCreateTime(LocalDateTime.now());
+                trade.setType(buyGoodDTO.getType());
+                trade.setRemoteNo(buyGoodDTO.getRemoteNo());
+                trade.setStatus(buyGoodDTO.getStatus());
+                trade.setMsg("交易成功");
+                tradeMapper.insert(trade);
+                List<TradeGoods> collect = buyGoodDTO.getGoods().stream().map(e -> {
+                    TradeGoods tradeGoods1 = new TradeGoods();
+                    tradeGoods1.setGid(e.getGid());
+                    tradeGoods1.setName(e.getName());
+                    tradeGoods1.setTradeId(trade.getId());
+                    tradeGoods1.setNum(e.getNum());
+                    return tradeGoods1;
+                }).collect(Collectors.toList());
+                tradeGoodsService.saveBatch(collect);
+            }
+            else{
+                this.failTradeLogAsunc(buyGoodDTO.getRemoteNo(), buyGoodDTO.getSid(),buyGoodDTO.getType());
+            }
             return R.ok("交易成功！");
         } catch (Exception e) {
             TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
@@ -220,7 +225,6 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    @Async("threadPool")
     public void failTradeLogAsunc(String tradeNo,Long sid,Integer type) {
         QueryTrade queryTrade = alipayService.queryPayDetil(tradeNo);
         Trade trade = new Trade();
@@ -232,6 +236,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         trade.setRemoteNo(queryTrade.getRemoteNo());
         trade.setStatus(TradeEnum.CANCEL.getCode());
         trade.setMsg("交易关闭");
+        trade.setPayer(queryTrade.getPayUserId());
         tradeMapper.insert(trade);
     }
 
