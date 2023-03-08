@@ -11,8 +11,14 @@ interface ProductInter {
 
 export const useGoodStore = defineStore("Good", {
   state: () => {
+    let list = [];
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    list = JSON.parse(localStorage.getItem("productList"));
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return {
-      productList: [],
+      productList: list,
     };
   },
   getters: {
@@ -27,6 +33,9 @@ export const useGoodStore = defineStore("Good", {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       this.productList.push(param);
+    },
+    save() {
+      localStorage.setItem("productList", JSON.stringify(this.productList));
     },
   },
 });

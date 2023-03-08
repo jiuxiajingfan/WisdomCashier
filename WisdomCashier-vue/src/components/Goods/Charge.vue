@@ -19,6 +19,9 @@
                 >
               </template>
             </el-input>
+            <el-button style="margin-left: 10px" @click="hangclick"
+              >挂单</el-button
+            >
             <el-table
               :data="productList"
               @row-click="onRowClick"
@@ -44,11 +47,70 @@
               </el-table-column>
             </el-table>
           </el-scrollbar>
-          <el-drawer v-model="drawer" title="挂单详情" direction="ltr">
-            <el-table style="width: 100%">
-              <el-table-column label="备注" width="180" />
-              <el-table-column label="金额" width="180" />
-              <el-table-column label="日期" />
+          <el-drawer
+            v-model="drawer"
+            title="挂单详情"
+            direction="ltr"
+            size="60%"
+          >
+            <el-table :data="hangList" style="width: 100%">
+              <el-table-column type="expand">
+                <template #default="props">
+                  <div m="4">
+                    <el-table :data="props.row.list">
+                      <el-table-column
+                        label="名称"
+                        prop="name"
+                      ></el-table-column>
+                      <el-table-column
+                        label="编号"
+                        prop="gid"
+                      ></el-table-column>
+                      <el-table-column
+                        label="数量"
+                        prop="num"
+                      ></el-table-column>
+                      <el-table-column
+                        label="单价"
+                        prop="priceOut"
+                      ></el-table-column>
+                      <el-table-column label="总价">
+                        <template v-slot="scope">
+                          {{
+                            math
+                              .multiply(
+                                math.bignumber(scope.row.num),
+                                math.bignumber(scope.row.priceOut)
+                              )
+                              .toFixed(2)
+                          }}
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="tip" label="备注" width="180" />
+              <el-table-column prop="sum" label="金额" width="180" />
+              <el-table-column prop="time" label="日期" />
+              <el-table-column fixed="right" label="操作" width="120">
+                <template v-slot="scope">
+                  <el-popconfirm
+                    title="确定要删除吗?"
+                    @confirm="deleHang(scope.row.time)"
+                  >
+                    <template #reference>
+                      <el-button link type="primary">删除</el-button>
+                    </template>
+                  </el-popconfirm>
+                  <el-button
+                    link
+                    type="primary"
+                    @click="getHangon(scope.row.time)"
+                    >取单</el-button
+                  >
+                </template>
+              </el-table-column>
             </el-table>
           </el-drawer>
         </el-aside>
@@ -129,7 +191,7 @@
                   :strokeWidth="1"
                   style="margin-right: 10px"
                 />
-                挂单</el-button
+                挂单详情</el-button
               >
             </el-badge>
             <el-button
@@ -190,7 +252,7 @@
               <h2>找零：{{ (giveMoney - sumM).toFixed(2) }}</h2>
               <template #footer>
                 <span class="dialog-footer">
-                  <el-button> 离开 </el-button>
+                  <el-button @click="moneyCharge = false"> 离开 </el-button>
                   <el-button type="primary" @click="buy(1, '')">确认</el-button>
                 </span>
               </template>
@@ -338,7 +400,10 @@ import { ElLoading, ElNotification } from "element-plus";
 import { useGoodStore } from "@/store/goods";
 import pinia from "@/store/store";
 import { storeToRefs } from "pinia/dist/pinia";
+import { useHangStore } from "@/store/hangon";
 const good = useGoodStore(pinia);
+const Hang = useHangStore(pinia);
+const { hangList } = storeToRefs(Hang);
 const { productList } = storeToRefs(good);
 let searchText = ref("");
 const router = useRouter();
@@ -379,6 +444,7 @@ const cle = () => {
   for (let key of dataMap.keys()) {
     good.push(dataMap.get(key));
   }
+  good.save();
 };
 var reg = /^[0-9]*$/;
 const openadd2 = () => {
@@ -785,6 +851,36 @@ const isNumber = (val) => {
   }
 };
 const drawer = ref(false);
+const hangclick = () => {
+  let dt = new Date();
+  let y = dt.getFullYear();
+  let mt = (dt.getMonth() + 1).toString().padStart(2, "0");
+  let day = dt.getDate().toString().padStart(2, "0");
+  let h = dt.getHours().toString().padStart(2, "0");
+  let m = dt.getMinutes().toString().padStart(2, "0");
+  let nowtime = y + "-" + mt + "-" + day + " " + h + ":" + m;
+  Hang.add({
+    time: nowtime,
+    tip: "hello",
+    list: good.get,
+    sum: sumM.value,
+  });
+};
+const deleHang = (param) => {
+  debugger;
+  Hang.del(param);
+  utils.showMessage(200, "删除挂单成功！");
+};
+const getHangon = (param) => {
+  good.set(
+    Hang.get.filter((e) => {
+      return e.time === param;
+    })[0].list
+  );
+  Hang.del(param);
+  drawer.value = false;
+  utils.showMessage(200, "取单成功！");
+};
 </script>
 
 <style scoped lang="scss">
