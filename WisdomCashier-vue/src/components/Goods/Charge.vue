@@ -126,6 +126,35 @@
               </el-table-column>
             </el-table>
           </el-drawer>
+          <el-drawer
+            v-model="drawer2"
+            title="最近十笔交易记录"
+            direction="rtl"
+            size="60%"
+          >
+            <el-table :data="trdeList" style="width: 100%">
+              <el-table-column prop="id" label="流水号" width="180" />
+              <el-table-column label="交易类型" width="180">
+                <template #default="scope">
+                  <span style="margin-left: 2px">
+                    {{ tradetype[scope.row.type - 1] }}
+                  </span>
+                </template>
+              </el-table-column>
+              <el-table-column prop="income" label="金额" width="180" />
+              <el-table-column prop="status" label="交易状态" width="180">
+                <template #default="scope">
+                  <div style="display: flex; align-items: center">
+                    <i :style="getStyle(scope.row.status)"></i>
+                    <span style="margin-left: 2px">
+                      {{ tradetype1[scope.row.status].msg }}
+                    </span>
+                  </div>
+                </template>
+              </el-table-column>
+              <el-table-column prop="createTime" label="日期" />
+            </el-table>
+          </el-drawer>
         </el-aside>
         <el-container>
           <el-main>
@@ -251,6 +280,20 @@
                 style="margin-right: 10px"
               />
               微信结算</el-button
+            >
+            <el-button
+              size="large"
+              style="margin-left: 30px; margin-top: 5px; height: 80%"
+              @click="leastFun"
+            >
+              <transaction-order
+                theme="outline"
+                size="28"
+                fill="#333"
+                :strokeWidth="1"
+                style="margin-right: 10px"
+              />
+              最近交易</el-button
             >
             <el-dialog
               v-model="moneyCharge"
@@ -412,7 +455,13 @@ import api from "@/api/api";
 import { useRouter } from "vue-router/dist/vue-router";
 import * as math from "mathjs";
 import utils from "@/utils/utils";
-import { Wechat, Alipay, PaperMoney, Save } from "@icon-park/vue-next";
+import {
+  Wechat,
+  Alipay,
+  PaperMoney,
+  Save,
+  TransactionOrder,
+} from "@icon-park/vue-next";
 import Utils from "@/utils/utils";
 import { ElLoading, ElNotification } from "element-plus";
 import pinia from "@/store/store";
@@ -673,7 +722,7 @@ const alipayP = () => {
               });
               api.post("/Goods/buyGood", {
                 goods: Trade.get,
-                type: 1,
+                type: 2,
                 sum: sumM.value,
                 sid: router.currentRoute.value.query.id,
                 remoteNo: res.data.data.remoteID,
@@ -702,7 +751,7 @@ const alipayP = () => {
             });
           api.post("/Goods/buyGood", {
             goods: Trade.get,
-            type: 1,
+            type: 2,
             sum: sumM.value,
             sid: router.currentRoute.value.query.id,
             remoteNo: res.data.data.remoteID,
@@ -823,6 +872,7 @@ const isNumber = (val) => {
   }
 };
 const drawer = ref(false);
+const drawer2 = ref(false);
 const tips = ref("");
 const hangclick = () => {
   let dt = new Date();
@@ -863,6 +913,41 @@ const getHangon = (param) => {
   Hang.del(param);
   drawer.value = false;
   utils.showMessage(200, "取单成功！");
+};
+let trdeList = ref([]);
+const leastFun = () => {
+  api
+    .get("/trade/queryLeast", {
+      params: {
+        sid: 1,
+      },
+    })
+    .then((res) => {
+      trdeList.value = res.data.data;
+    });
+  drawer2.value = true;
+};
+let tradetype = ["现金支付", "支付宝支付", "微信支付"];
+let tradetype1 = [
+  { msg: "等待付款", color: "#fffb09" },
+  { msg: "失败", color: "#f60303" },
+  { msg: "取消", color: "#f60303" },
+  { msg: "完成可退款", color: "#409EFF" },
+  { msg: "部分退款", color: "#3febfa" },
+  { msg: "全额退款", color: "#ee03f6" },
+  { msg: "完成不可退款", color: "#00ff14" },
+  { msg: "未知错误交易停止", color: "#f60303" },
+];
+const getStyle = (data) => {
+  return (
+    "background-color: " +
+    tradetype1[data].color +
+    ";\n" +
+    "width: 15px;\n" +
+    "height: 15px;\n" +
+    "border-radius: 50%;\n" +
+    "display: block;"
+  );
 };
 </script>
 

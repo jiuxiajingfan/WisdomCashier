@@ -77,6 +77,7 @@
             >
               <component :is="map.get(item.content)"></component>
             </el-tab-pane>
+            <component v-show="cnt == 0" :is="Charge"></component>
           </el-tabs>
         </el-scrollbar>
       </el-main>
@@ -126,6 +127,7 @@ onBeforeMount(() => {
       router.go(-1);
     });
 });
+const openeds = [0];
 const isCollapse = ref(false);
 const buttonWidth = ref("200px");
 const contraction = () => {
@@ -140,9 +142,9 @@ let tabIndex = 2;
 const editableTabsValue = ref("2");
 const editableTabs = ref([
   {
-    title: "我的信息",
-    name: "myMessage",
-    content: "myMessage",
+    title: "收银",
+    name: "Charge",
+    content: "Charge",
   },
 ]);
 const addTab = (targetName, component, title) => {

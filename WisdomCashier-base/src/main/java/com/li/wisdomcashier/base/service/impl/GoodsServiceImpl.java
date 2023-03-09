@@ -198,6 +198,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                 trade.setRemoteNo(buyGoodDTO.getRemoteNo());
                 trade.setStatus(buyGoodDTO.getStatus());
                 trade.setMsg("交易成功");
+                trade.setOperater(UserUtils.getUser().getId());
                 tradeMapper.insert(trade);
                 List<TradeGoods> collect = buyGoodDTO.getGoods().stream().map(e -> {
                     TradeGoods tradeGoods1 = new TradeGoods();
@@ -235,6 +236,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         trade.setType(type);
         trade.setRemoteNo(queryTrade.getRemoteNo());
         trade.setStatus(TradeEnum.CANCEL.getCode());
+        trade.setOperater(UserUtils.getUser().getId());
         trade.setMsg("交易关闭");
         trade.setPayer(queryTrade.getPayUserId());
         tradeMapper.insert(trade);

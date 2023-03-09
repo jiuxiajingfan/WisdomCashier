@@ -2,10 +2,14 @@ package com.li.wisdomcashier.base.mapper;
 
 import com.li.wisdomcashier.base.entity.po.Trade;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+
+import java.util.List;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author lsw
@@ -13,4 +17,11 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  */
 public interface TradeMapper extends BaseMapper<Trade> {
 
+    @Select("select *\n" +
+            "from t_trade\n" +
+            "where sid = #{sid}\n" +
+            "  and operater = #{userID}\n" +
+            "order by create_time desc\n" +
+            "limit 0,10")
+    List<Trade> selectLesat(@Param("sid") Long sid, @Param("userID") Long userId);
 }
