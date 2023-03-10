@@ -144,12 +144,19 @@
               <el-table-column prop="income" label="金额" width="180" />
               <el-table-column prop="status" label="交易状态" width="180">
                 <template #default="scope">
-                  <div style="display: flex; align-items: center">
-                    <i :style="getStyle(scope.row.status)"></i>
-                    <span style="margin-left: 2px">
-                      {{ tradetype1[scope.row.status].msg }}
-                    </span>
-                  </div>
+                  <el-tooltip
+                    class="box-item"
+                    effect="dark"
+                    :content="scope.row.msg"
+                    placement="top"
+                  >
+                    <div style="display: flex; align-items: center">
+                      <i :style="getStyle(scope.row.status)"></i>
+                      <span style="margin-left: 2px">
+                        {{ tradetype1[scope.row.status].msg }}
+                      </span>
+                    </div>
+                  </el-tooltip>
                 </template>
               </el-table-column>
               <el-table-column prop="createTime" label="日期" />
@@ -450,7 +457,7 @@
 </template>
 
 <script setup>
-import { nextTick, onMounted, reactive, ref } from "vue";
+import { nextTick, reactive, ref } from "vue";
 import api from "@/api/api";
 import { useRouter } from "vue-router/dist/vue-router";
 import * as math from "mathjs";

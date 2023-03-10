@@ -1,10 +1,8 @@
-package com.li.wisdomcashier.base.entity.dto;
+package com.li.wisdomcashier.base.entity.vo;
 
-import com.li.wisdomcashier.base.entity.po.TradeGoods;
 import lombok.Data;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * @ClassName TradeDTO
@@ -14,7 +12,7 @@ import java.util.List;
  * @Version 1.0
  */
 @Data
-public class TradeDTO {
+public class TradeVO {
     private Long id;
     private LocalDateTime createTime;
     private Double income;

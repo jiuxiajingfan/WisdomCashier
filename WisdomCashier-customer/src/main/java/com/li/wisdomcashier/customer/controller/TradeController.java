@@ -1,18 +1,18 @@
 package com.li.wisdomcashier.customer.controller;
 
-
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
-import com.li.wisdomcashier.base.entity.dto.TradeDTO;
+import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
+import com.li.wisdomcashier.base.entity.vo.TradeVO;
 import com.li.wisdomcashier.base.service.TradeService;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
@@ -31,18 +31,24 @@ public class TradeController {
     private TradeService tradeService;
 
 
-    @Validated
+
     @GetMapping("/queryLeast")
     @ApiOperation(value = "查询店铺最近十笔交易记录")
-    R<List<TradeDTO>> queryLeast( Long sid){
+    R<List<TradeVO>> queryLeast(Long sid){
         return tradeService.queryLeast(sid);
     }
 
-    @Validated
+
     @GetMapping("/queryGoodsById")
     @ApiOperation(value = "更具订单查询详情")
     R<List<TradeGoods>> queryGoodsById(Long id){
         return tradeService.queryGoodsById(id);
+    }
+
+    @PostMapping("/queryTradePage")
+    @ApiOperation(value = "交易记录")
+    public R<IPage<TradeVO>> queryTradePage(@RequestBody @Validated QueryTradeDTO queryTradeDTO){
+        return tradeService.queryTradePage(queryTradeDTO);
     }
 }
 

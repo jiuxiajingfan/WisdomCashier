@@ -97,6 +97,9 @@ import { useRouter } from "vue-router";
 let GoodsList = defineAsyncComponent(() =>
   import("../../components/Goods/GoodsList")
 );
+let TradeRecode = defineAsyncComponent(() =>
+  import("../../components/Goods/TradeRecode")
+);
 let Charge = defineAsyncComponent(() =>
   import("." + "./../components/Goods/Charge")
 );
