@@ -192,10 +192,10 @@ const sure = () => {
       if (res.data.code === 200) {
         ElNotification({
           title: "退款成功",
-          message: res.data.msg,
           type: "success",
           duration: 5000,
         });
+        refund();
       } else {
         ElNotification({
           title: "退款失败",
@@ -203,11 +203,11 @@ const sure = () => {
           type: "error",
           duration: 5000,
         });
+        refund();
       }
     });
   mon.value = 0;
   msg.value = "";
-  refund();
   centerDialogVisible.value = false;
 };
 
