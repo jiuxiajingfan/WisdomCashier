@@ -42,7 +42,7 @@ public class ShopController {
 
     @ApiOperation(value = "获取店铺菜单")
     @GetMapping("/getShopMenu")
-    public R<List<SysMenu>> getMenu(Long shopId){
-        return shopService.getMenu(shopId);
+    public R<List<SysMenu>> getMenu(String shopId){
+        return shopService.getMenu(Long.parseLong(shopId));
     }
 }

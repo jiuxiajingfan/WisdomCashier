@@ -40,7 +40,6 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -100,7 +99,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Override
     public R<String> addGood(GoodDTO good) {
-        if(!UserUtils.hasPermissions(good.getSid(), RoleEnum.SHOP.getCode())){
+        if(!UserUtils.hasPermissions(Long.parseLong(good.getSid()), RoleEnum.SHOP.getCode())){
             throw new AuthorizationException("无权操作！");
         }
         List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, good.getGid()).eq(Goods::getSid, good.getSid()));
@@ -120,7 +119,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Override
     public R<IPage<Goods>> getGoodPage(GoodQueryDTO goodQueryDTO) {
-        if(!UserUtils.hasPermissions(goodQueryDTO.getSid(), RoleEnum.SHOP.getCode())){
+        if(!UserUtils.hasPermissions(Long.parseLong(goodQueryDTO.getSid()), RoleEnum.SHOP.getCode())){
             throw new AuthorizationException("无权操作！");
         }
 
@@ -143,7 +142,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Override
     public R<String> updateGood(GoodDTO good) {
-        if(!UserUtils.hasPermissions(good.getSid(), RoleEnum.SHOP.getCode())){
+        if(!UserUtils.hasPermissions(Long.parseLong(good.getSid()), RoleEnum.SHOP.getCode())){
             throw new AuthorizationException("无权操作！");
         }
         List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, good.getGid()).eq(Goods::getSid, good.getSid()));
@@ -175,20 +174,23 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     @Override()
     @Transactional(rollbackFor = Exception.class)
     public R<String> buyGood(BuyGoodDTO buyGoodDTO) {
-        if(!UserUtils.hasPermissions(buyGoodDTO.getSid(), RoleEnum.SHOP.getCode())){
+        if(!UserUtils.hasPermissions(Long.parseLong(buyGoodDTO.getSid()), RoleEnum.SHOP.getCode())){
             throw new AuthorizationException("无权操作！");
         }
         try {
             if(buyGoodDTO.getStatus()==TradeEnum.FINISH.getCode()) {
                 Trade trade = new Trade();
-                trade.setSid(buyGoodDTO.getSid());
-                trade.setIncome(buyGoodDTO.getSum());
+                trade.setSid(Long.parseLong(buyGoodDTO.getSid()));
+                trade.setIncome(Double.parseDouble(buyGoodDTO.getSum()));
                 trade.setCreateTime(LocalDateTime.now());
                 trade.setType(buyGoodDTO.getType());
                 trade.setRemoteNo(buyGoodDTO.getRemoteNo());
                 trade.setStatus(buyGoodDTO.getStatus());
                 trade.setMsg("交易成功");
                 trade.setOperater(UserUtils.getUser().getId());
+                if(!StringUtils.isBlank(buyGoodDTO.getId())) {
+                    trade.setId(Long.parseLong(buyGoodDTO.getId()));
+                }
                 tradeMapper.insert(trade);
                 List<TradeGoods> collect = buyGoodDTO.getGoods().stream().map(e -> {
                     TradeGoods tradeGoods1 = new TradeGoods();
@@ -196,12 +198,13 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                     tradeGoods1.setName(e.getName());
                     tradeGoods1.setTradeId(trade.getId());
                     tradeGoods1.setNum(e.getNum());
+                    tradeGoods1.setPrice(e.getPriceOut());
                     return tradeGoods1;
                 }).collect(Collectors.toList());
                 tradeGoodsService.saveBatch(collect);
             }
             else{
-                this.failTradeLogAsunc(buyGoodDTO.getRemoteNo(), buyGoodDTO.getSid(),buyGoodDTO.getType());
+                this.failTradeLogAsunc(buyGoodDTO.getRemoteNo(), Long.parseLong(buyGoodDTO.getSid()),buyGoodDTO.getType());
             }
             return R.ok("交易成功！");
         } catch (Exception e) {

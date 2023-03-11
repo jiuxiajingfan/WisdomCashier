@@ -1,5 +1,7 @@
 package com.li.wisdomcashier.base.entity.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -12,6 +14,7 @@ import lombok.Data;
  */
 @Data
 public class ShopVO {
+    @JsonSerialize(using= ToStringSerializer.class)
     Long id;
     String shopName;
     @ApiModelProperty(value = "权限")

@@ -1,6 +1,8 @@
 package com.li.wisdomcashier.base.entity.dto;
 
+import com.alibaba.fastjson.annotation.JSONField;
 import com.alipay.api.internal.mapping.ApiField;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 /**
@@ -13,7 +15,7 @@ import lombok.Data;
 @Data
 public class AliPayDTO {
     String shopName;
-    Long id;
+    String id;
     Double price;
 
     /**

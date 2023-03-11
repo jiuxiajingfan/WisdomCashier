@@ -57,4 +57,8 @@ public class Trade implements Serializable {
 
     @TableField("operater")
     private Long operater;
+
+    @TableField("refund_no")
+    private Integer refundNo;
+
 }

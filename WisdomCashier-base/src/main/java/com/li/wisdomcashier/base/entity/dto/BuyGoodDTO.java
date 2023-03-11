@@ -26,7 +26,7 @@ public class BuyGoodDTO {
 
     @ApiModelProperty("店铺id")
     @NotNull(message = "店铺id不能为空！")
-    Long sid;
+    String sid;
 
     @ApiModelProperty("支付类型 1现金 2wx 3zfb")
     @NotNull(message = "支付类型不能为空！")
@@ -34,7 +34,7 @@ public class BuyGoodDTO {
 
     @ApiModelProperty("总价")
     @NotNull(message = "总价不能为空")
-    Double sum;
+    String sum;
 
     @ApiModelProperty("远程订单号")
     String remoteNo;
@@ -44,4 +44,6 @@ public class BuyGoodDTO {
 
     @ApiModelProperty("订单消息")
     String msg;
+
+    String id;
 }

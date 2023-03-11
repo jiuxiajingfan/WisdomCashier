@@ -30,19 +30,17 @@ public class TradeController {
     @Resource
     private TradeService tradeService;
 
-
-
     @GetMapping("/queryLeast")
     @ApiOperation(value = "查询店铺最近十笔交易记录")
-    R<List<TradeVO>> queryLeast(Long sid){
-        return tradeService.queryLeast(sid);
+    R<List<TradeVO>> queryLeast(String sid){
+        return tradeService.queryLeast(Long.parseLong(sid));
     }
 
 
     @GetMapping("/queryGoodsById")
     @ApiOperation(value = "更具订单查询详情")
-    R<List<TradeGoods>> queryGoodsById(Long id){
-        return tradeService.queryGoodsById(id);
+    R<List<TradeGoods>> queryGoodsById(String id){
+        return tradeService.queryGoodsById(Long.parseLong(id));
     }
 
     @PostMapping("/queryTradePage")

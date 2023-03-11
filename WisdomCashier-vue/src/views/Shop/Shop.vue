@@ -103,6 +103,9 @@ let TradeRecode = defineAsyncComponent(() =>
 let Charge = defineAsyncComponent(() =>
   import("." + "./../components/Goods/Charge")
 );
+let Refund = defineAsyncComponent(() =>
+  import("." + "./../components/Goods/Refund")
+);
 let test = defineAsyncComponent(() => import("../../components/Goods/test"));
 const router = useRouter();
 onBeforeMount(() => {

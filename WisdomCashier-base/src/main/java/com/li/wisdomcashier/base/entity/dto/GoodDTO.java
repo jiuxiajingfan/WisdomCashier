@@ -25,15 +25,16 @@ public class GoodDTO {
     private String gid;
 
     @ApiModelProperty("进价")
-    private Double priceIn;
+    private String priceIn;
 
     @NotNull(message = "商品售价不能为空！")
     @ApiModelProperty("售价")
-    private Double priceOut;
+    private String priceOut;
 
     @NotNull(message = "商店id不能为空!")
     @ApiModelProperty("商店id")
-    private Long sid;
+
+    private String sid;
 
     @ApiModelProperty("生产日期")
     private LocalDate date;
@@ -50,7 +51,7 @@ public class GoodDTO {
     private String picUrl;
 
     @ApiModelProperty("利润")
-    private Double profit;
+    private String profit;
 
     @ApiModelProperty("计量")
     private String metrology;

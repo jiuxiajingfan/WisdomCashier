@@ -43,9 +43,32 @@
       <el-table :data="trade" height="calc(100vh - 230px)">
         <el-table-column prop="id" label="流水号" width="auto" />
         <el-table-column prop="income" label="金额" width="auto" />
-        <el-table-column prop="status" label="交易状态" width="auto" />
-        <el-table-column prop="type" label="付款方式" width="auto" />
+        <el-table-column label="交易状态" width="auto">
+          <template #default="scope">
+            <el-tooltip
+              class="box-item"
+              effect="dark"
+              :content="scope.row.msg"
+              placement="top"
+            >
+              <div style="display: flex; align-items: center">
+                <i :style="getStyle(scope.row.status)"></i>
+                <span style="margin-left: 2px">
+                  {{ tradetype2[scope.row.status].msg }}
+                </span>
+              </div>
+            </el-tooltip>
+          </template>
+        </el-table-column>
+        <el-table-column label="付款方式" width="auto">
+          <template #default="scope">
+            <span style="margin-left: 2px">
+              {{ tradetype[scope.row.type - 1] }}
+            </span>
+          </template>
+        </el-table-column>
         <el-table-column prop="createTime" label="交易时间" width="auto" />
+        <el-table-column prop="operater" label="交易员" width="auto" />
       </el-table>
       <el-pagination
         :hide-on-single-page="false"
@@ -64,7 +87,7 @@
 </template>
 
 <script setup>
-import { onBeforeMount, reactive, ref } from "vue";
+import { onBeforeMount, reactive, ref, watch } from "vue";
 import api from "@/api/api";
 import router from "@/router";
 let trade = ref([]);
@@ -147,6 +170,31 @@ const taskCurrentChange = (cnt) => {
 const taskSizeChange = (ps) => {
   pageSize.value = ps;
   queryTaskList();
+};
+watch(formInline, (newValue, oldValue) => {
+  current.value = 1;
+});
+let tradetype = ["现金支付", "支付宝支付", "微信支付"];
+let tradetype2 = [
+  { msg: "等待付款", color: "#fffb09" },
+  { msg: "失败", color: "#f60303" },
+  { msg: "取消", color: "#f60303" },
+  { msg: "完成可退款", color: "#409EFF" },
+  { msg: "部分退款", color: "#3febfa" },
+  { msg: "全额退款", color: "#ee03f6" },
+  { msg: "完成不可退款", color: "#00ff14" },
+  { msg: "未知错误交易停止", color: "#f60303" },
+];
+const getStyle = (data) => {
+  return (
+    "background-color: " +
+    tradetype2[data].color +
+    ";\n" +
+    "width: 15px;\n" +
+    "height: 15px;\n" +
+    "border-radius: 50%;\n" +
+    "display: block;"
+  );
 };
 </script>
 

@@ -28,7 +28,7 @@ public class Role implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "id主键")
-      @TableId(value = "id", type = IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
     @TableField("user_id")

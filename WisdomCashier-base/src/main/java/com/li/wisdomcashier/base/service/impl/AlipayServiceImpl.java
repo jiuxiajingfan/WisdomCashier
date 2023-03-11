@@ -4,28 +4,23 @@ import cn.hutool.core.util.IdUtil;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.domain.AlipayTradeCancelModel;
-import com.alipay.api.domain.AlipayTradeCloseModel;
-import com.alipay.api.domain.AlipayTradePayModel;
-import com.alipay.api.domain.AlipayTradeQueryModel;
-import com.alipay.api.request.AlipayTradeCancelRequest;
-import com.alipay.api.request.AlipayTradeCloseRequest;
-import com.alipay.api.request.AlipayTradePayRequest;
-import com.alipay.api.request.AlipayTradeQueryRequest;
-import com.alipay.api.response.AlipayTradeCancelResponse;
-import com.alipay.api.response.AlipayTradeCloseResponse;
-import com.alipay.api.response.AlipayTradePayResponse;
-import com.alipay.api.response.AlipayTradeQueryResponse;
+import com.alipay.api.domain.*;
+import com.alipay.api.request.*;
+import com.alipay.api.response.*;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.AliPayDTO;
 import com.li.wisdomcashier.base.entity.dto.PayDTO;
+import com.li.wisdomcashier.base.entity.dto.RefundDTO;
 import com.li.wisdomcashier.base.entity.po.Shop;
+import com.li.wisdomcashier.base.entity.po.TradeRefund;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.entity.pojo.QueryTrade;
 import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.ShopMapper;
+import com.li.wisdomcashier.base.mapper.TradeMapper;
 import com.li.wisdomcashier.base.service.AlipayService;
 import com.li.wisdomcashier.base.service.GoodsService;
+import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.li.wisdomcashier.base.util.RedisUtils;
 import com.li.wisdomcashier.base.util.UserUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +29,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 
 /**
  * @ClassName PayServiceImpl
@@ -79,6 +75,9 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Resource
     private ShopMapper shopMapper;
+
+    @Resource
+    private TradeRefundService tradeRefundService;
 
     //支付宝异步通知路径,付款完毕后会异步调用本项目的方法,必须为公网地址
     private String NOTIFY_URL = "http://127.0.0.1/notifyUrl";
@@ -219,5 +218,84 @@ public class AlipayServiceImpl implements AlipayService {
             e.printStackTrace();
         }
         return queryTrade;
+    }
+
+    @Override
+    public R<String> refundPay(RefundDTO refundDTO) {
+        if(!UserUtils.hasPermissions(Long.parseLong(refundDTO.getSid()), RoleEnum.SHOP.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
+        User user = UserUtils.getUser();
+        AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
+        AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+        AlipayTradeRefundModel model = new AlipayTradeRefundModel();
+        model.setOutTradeNo(refundDTO.getTradeNo());
+        model.setRefundAmount(String.format("%.2f",refundDTO.getMoney()));
+        model.setRefundReason(refundDTO.getMsg());
+        model.setOutRequestNo(refundDTO.getNo());
+        request.setBizModel(model);
+        AlipayTradeRefundResponse response = null;
+        TradeRefund tradeRefund = new TradeRefund();
+        tradeRefund.setMsg(refundDTO.getMsg());
+        tradeRefund.setSid(Long.parseLong(refundDTO.getTradeNo()));
+        tradeRefund.setNo(refundDTO.getNo());
+        tradeRefund.setMoney(refundDTO.getMoney());
+        tradeRefund.setCtrateTime(LocalDateTime.now());
+        tradeRefund.setOperater(user.getId());
+        tradeRefund.setType(2);
+        try {
+            response = alipayClient.execute(request);
+            if(response.getCode().compareTo("10000")==0){
+
+                if(response.getFundChange().compareTo("Y")==0) {
+                    tradeRefund.setStatus(1);
+                }
+                else{
+                    Thread.sleep(10000);
+                    R<String> stringR = this.queryRefund(refundDTO);
+                    if(stringR.getCode() == 200){
+                        tradeRefund.setStatus(1);
+                    }
+                    else{
+                        tradeRefund.setStatus(0);
+                    }
+                }
+            }
+            else{
+                tradeRefund.setStatus(0);
+                tradeRefund.setErrMsg(response.getSubMsg());
+                tradeRefundService.TradeRefundRecord(tradeRefund);
+                return R.error(response.getSubMsg());
+            }
+            tradeRefundService.TradeRefundRecord(tradeRefund);
+        } catch (AlipayApiException e) {
+           log.error("交易退款失败，订单号：{},Err:{}",refundDTO.getTradeNo(),e.getErrMsg());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return R.ok(response.getCode(),response.getFundChange());
+    }
+
+    @Override
+    public R<String> queryRefund(RefundDTO refundDTO) {
+        if(!UserUtils.hasPermissions(Long.parseLong(refundDTO.getSid()), RoleEnum.SHOP.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
+        AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
+        AlipayTradeFastpayRefundQueryRequest request = new AlipayTradeFastpayRefundQueryRequest();
+        AlipayTradeFastpayRefundQueryModel model = new AlipayTradeFastpayRefundQueryModel();
+        model.setOutTradeNo(refundDTO.getTradeNo());
+        model.setOutRequestNo(refundDTO.getNo());
+        request.setBizModel(model);
+        AlipayTradeFastpayRefundQueryResponse response = null;
+        try{
+            response = alipayClient.execute(request);
+            if(response.getRefundStatus().compareTo("REFUND_SUCCESS")!=0){
+                return R.error("退款失败！");
+            }
+        } catch (AlipayApiException e) {
+            log.info("退款查询失败，订单号：{}，errMsg:{}",refundDTO.getTradeNo(),response.getSubMsg());
+        }
+        return R.ok("退款成功！");
     }
 }

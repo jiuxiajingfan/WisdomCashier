@@ -56,8 +56,8 @@ public class GoodsController {
 
     @GetMapping("/getGood")
     @ApiOperation(value = "根据条形码查询商品信息")
-    public R<GoodsVO> getGood(String gid, Long sid) {
-        return goodsService.getGood(gid, sid);
+    public R<GoodsVO> getGood(String gid, String sid) {
+        return goodsService.getGood(gid, Long.parseLong(sid));
     }
 
     @PostMapping("/buyGood")

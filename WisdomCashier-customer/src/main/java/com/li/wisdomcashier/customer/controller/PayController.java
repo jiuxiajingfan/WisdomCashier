@@ -15,11 +15,14 @@ import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.common.UnCheck;
 import com.li.wisdomcashier.base.entity.dto.AliPayDTO;
 import com.li.wisdomcashier.base.entity.dto.PayDTO;
+import com.li.wisdomcashier.base.entity.dto.RefundDTO;
 import com.li.wisdomcashier.base.service.AlipayService;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -41,23 +44,39 @@ public class PayController {
     private AlipayService alipayService;
 
     @PostMapping("/aliPay")
+    @ApiOperation(value = "支付宝支付")
     public R<PayDTO> aliPay(@RequestBody AliPayDTO aliPayDTO){
     return alipayService.aliPay(aliPayDTO);
     }
 
     @GetMapping("/queryAliPay")
+    @ApiOperation(value = "支付宝交易查询")
     public R<String> queryAliPay(String tradeNo){
         return alipayService.queryAliPay(tradeNo);
     }
 
     @GetMapping("/cancelPay")
-    R<String> cancelPay(@Param("tradeNo") String tradeNo,@Param("sid") Long sid){
-        return alipayService.cancelPay(tradeNo, sid);
+    @ApiOperation(value = "支付宝交易撤销")
+    R<String> cancelPay(@Param("tradeNo") String tradeNo,@Param("sid") String sid){
+        return alipayService.cancelPay(tradeNo, Long.parseLong(sid));
     }
 
     @GetMapping("/closePay")
-    R<String> closePay(@Param("tradeNo") String tradeNo,@Param("sid") Long sid){
-        return alipayService.closePay(tradeNo, sid);
+    @ApiOperation(value = "支付宝交易关闭")
+    R<String> closePay(@Param("tradeNo") String tradeNo,@Param("sid") String sid){
+        return alipayService.closePay(tradeNo, Long.parseLong(sid));
+    }
+
+    @PostMapping("/refundPay")
+    @ApiOperation(value = "支付宝交易退款")
+    R<String> refundPay(@RequestBody @Validated RefundDTO refundDTO){
+        return alipayService.refundPay(refundDTO);
+    }
+
+    @PostMapping("/queryRefund")
+    @ApiOperation(value = "支付宝交易退款查询")
+    R<String> queryRefund(@RequestBody @Validated RefundDTO refundDTO){
+        return alipayService.queryRefund(refundDTO);
     }
 
 }

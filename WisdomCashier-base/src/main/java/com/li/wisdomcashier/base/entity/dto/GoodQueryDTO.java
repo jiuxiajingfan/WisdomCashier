@@ -15,7 +15,7 @@ import javax.validation.constraints.NotNull;
 @Data
 public class GoodQueryDTO extends PageDTO {
     @NotNull
-    Long sid;
+    String sid;
 
     String gid;
 

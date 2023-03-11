@@ -17,10 +17,10 @@ import java.util.List;
 
 @Data
 public class QueryTradeDTO extends PageDTO {
-    private Long id;
+    private String id;
     private LocalDate startTime;
     private LocalDate endTime;
     private List<Integer> status;
     @NotNull(message = "店铺id不能为空")
-    private Long sid;
+    private String sid;
 }

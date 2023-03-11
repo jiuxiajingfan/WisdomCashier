@@ -134,7 +134,7 @@
           >
             <el-table :data="trdeList" style="width: 100%">
               <el-table-column prop="id" label="流水号" width="180" />
-              <el-table-column label="交易类型" width="180">
+              <el-table-column label="付款方式" width="180">
                 <template #default="scope">
                   <span style="margin-left: 2px">
                     {{ tradetype[scope.row.type - 1] }}
@@ -320,7 +320,9 @@
               <template #footer>
                 <span class="dialog-footer">
                   <el-button @click="moneyCharge = false"> 离开 </el-button>
-                  <el-button type="primary" @click="buy(1, '')">确认</el-button>
+                  <el-button type="primary" @click="buy(1, '', '')"
+                    >确认</el-button
+                  >
                 </span>
               </template>
             </el-dialog>
@@ -589,7 +591,7 @@ let sumM = ref(0);
 const onMonery = () => {
   moneyCharge.value = true;
 };
-const buy = (type, no) => {
+const buy = (type, no, remoteID) => {
   api
     .post("/Goods/buyGood", {
       goods: Trade.get,
@@ -598,6 +600,7 @@ const buy = (type, no) => {
       sid: router.currentRoute.value.query.id,
       remoteNo: no,
       status: 3,
+      id: remoteID,
     })
     .then((res) => {
       if (res.data.code === 200) {
@@ -689,7 +692,7 @@ const alipayP = () => {
             duration: 5000,
           });
           dialogVisiblezfb.value = false;
-          buy(2, res.data.data.remoteID);
+          buy(2, res.data.data.remoteID, res.data.data.shopID);
           userPayID.value = "";
         } else if (res.data.msg == "10003") {
           loading.setText(
@@ -715,11 +718,12 @@ const alipayP = () => {
                     duration: 5000,
                   });
                   dialogVisiblezfb.value = false;
-                  buy(2, res.data.data.remoteID);
+                  buy(2, res.data.data.remoteID, res.data.data.shopID);
                   userPayID.value = "";
                 }
               });
             if (cnt === 10) {
+              debugger;
               clearInterval(st);
               api.get("/pay/closePay", {
                 params: {
@@ -734,6 +738,7 @@ const alipayP = () => {
                 sid: router.currentRoute.value.query.id,
                 remoteNo: res.data.data.remoteID,
                 status: 2,
+                id: res.data.data.shopID,
               });
               loading.close();
               ElNotification({
@@ -763,6 +768,7 @@ const alipayP = () => {
             sid: router.currentRoute.value.query.id,
             remoteNo: res.data.data.remoteID,
             status: 7,
+            id: res.data.data.shopID,
           });
           loading.close();
           ElNotification({

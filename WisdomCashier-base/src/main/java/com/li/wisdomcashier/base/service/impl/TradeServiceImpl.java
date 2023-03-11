@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
-import com.li.wisdomcashier.base.entity.po.Goods;
 import com.li.wisdomcashier.base.entity.po.Trade;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
 import com.li.wisdomcashier.base.entity.vo.TradeVO;
@@ -17,8 +16,6 @@ import com.li.wisdomcashier.base.mapper.TradeMapper;
 import com.li.wisdomcashier.base.service.TradeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.UserUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -69,7 +66,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
 
     @Override
     public R<IPage<TradeVO>> queryTradePage(QueryTradeDTO queryTradeDTO) {
-        if(!UserUtils.hasPermissions(queryTradeDTO.getSid(), RoleEnum.SHOP.getCode())){
+        if(!UserUtils.hasPermissions(Long.parseLong(queryTradeDTO.getSid()), RoleEnum.SHOP.getCode())){
             throw new AuthorizationException("无权操作！");
         }
         if(!Objects.isNull(queryTradeDTO.getEndTime())){
