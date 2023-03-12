@@ -79,7 +79,7 @@
         </span>
       </template>
     </el-table-column>
-    <el-table-column prop="createTime" label="退款时间" width="auto" />
+    <el-table-column prop="ctrateTime" label="退款时间" width="auto" />
     <el-table-column prop="msg" label="退款原因" width="auto" />
     <el-table-column prop="operater" label="操作员" width="auto" />
   </el-table>
@@ -88,6 +88,7 @@
       size="large"
       style="margin-left: 30px; margin-top: 5px; height: 80%"
       @click="onMonery"
+      :disabled="flag"
     >
       <paper-money
         theme="outline"
@@ -102,7 +103,7 @@
       size="large"
       style="margin-left: 30px; margin-top: 5px; height: 80%"
       @click="centerDialogVisible = true"
-      :disabled="type !== 2"
+      :disabled="type !== 2 || flag"
     >
       <alipay
         theme="outline"
@@ -210,7 +211,7 @@ const sure = () => {
   msg.value = "";
   centerDialogVisible.value = false;
 };
-
+const flag = ref(true);
 const refund = () => {
   api
     .get("tradeRefund/queryRefund", {
@@ -251,6 +252,12 @@ const queryTaskList = () => {
         if (trade.value.length !== 0) {
           type.value = res.data.data.records[0].type;
           sumM.value = res.data.data.records[0].income;
+          if (
+            res.data.data.records[0].status === 3 ||
+            res.data.data.records[0].status === 4
+          ) {
+            flag.value = false;
+          }
           refund();
           fluse();
         }

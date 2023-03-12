@@ -3,6 +3,7 @@ package com.li.wisdomcashier.base.entity.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -37,7 +38,7 @@ public class Trade implements Serializable {
     private Long sid;
 
     @TableField("income")
-    private Double income;
+    private BigDecimal income;
 
 
     @TableField("type")

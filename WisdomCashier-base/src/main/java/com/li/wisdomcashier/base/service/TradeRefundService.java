@@ -3,6 +3,7 @@ package com.li.wisdomcashier.base.service;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.po.TradeRefund;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.util.List;
 
@@ -28,4 +29,9 @@ public interface TradeRefundService extends IService<TradeRefund> {
      * @return
      */
     R<List<TradeRefund>> queryRefund(Long sid,Long id);
+
+    /**
+     * 检查并更改订单退款周期状态
+     */
+    void checkDate();
 }

@@ -678,7 +678,7 @@ const alipayP = () => {
     // Loading should be closed asynchronously
     api
       .post("/pay/aliPay", {
-        price: sumM.value,
+        price: sumM.value.toFixed(2),
         shopName: router.currentRoute.value.query.id,
         userID: userPayID.value,
       })
@@ -723,7 +723,6 @@ const alipayP = () => {
                 }
               });
             if (cnt === 10) {
-              debugger;
               clearInterval(st);
               api.get("/pay/closePay", {
                 params: {

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
@@ -40,7 +41,7 @@ public class TradeRefund implements Serializable {
     private Long sid;
 
     @TableField("money")
-    private Double money;
+    private BigDecimal money;
 
     @TableField("msg")
     private String msg;

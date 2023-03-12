@@ -3,6 +3,7 @@ package com.li.wisdomcashier.base.entity.po;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.annotation.IdType;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -38,10 +39,10 @@ public class Goods implements Serializable {
     private String gid;
 
     @TableField("price_in")
-    private Double priceIn;
+    private BigDecimal priceIn;
 
     @TableField("price_out")
-    private Double priceOut;
+    private BigDecimal priceOut;
 
     @TableField("sid")
     private Long sid;
@@ -56,7 +57,7 @@ public class Goods implements Serializable {
     private String picUrl;
 
     @TableField("profit")
-    private Double profit;
+    private BigDecimal profit;
 
     @TableField("metrology")
     private String metrology;

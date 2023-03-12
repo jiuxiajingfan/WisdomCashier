@@ -18,7 +18,7 @@ public class TradeVO {
     @JsonSerialize(using= ToStringSerializer.class)
     private Long id;
     private LocalDateTime createTime;
-    private Double income;
+    private String income;
     private Integer type;
     private Integer status;
     private String msg;

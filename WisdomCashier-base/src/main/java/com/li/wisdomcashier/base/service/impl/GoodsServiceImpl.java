@@ -38,6 +38,7 @@ import org.springframework.transaction.interceptor.TransactionAspectSupport;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -92,7 +93,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         }
         GoodsApi data = jsonObject.getBean("data", GoodsApi.class);
         goods.setName(data.getGoodsName());
-        goods.setPriceOut(Double.parseDouble(data.getPrice()));
+        goods.setPriceOut(new BigDecimal(data.getPrice()));
         goods.setMetrology(data.getStandard());
         return R.ok(goods);
     }
@@ -102,7 +103,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         if(!UserUtils.hasPermissions(Long.parseLong(good.getSid()), RoleEnum.SHOP.getCode())){
             throw new AuthorizationException("无权操作！");
         }
-        List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, good.getGid()).eq(Goods::getSid, good.getSid()));
+        List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, good.getGid()).eq(Goods::getSid, Long.parseLong(good.getSid())));
         if(!CollectionUtils.isEmpty(goods)){
             return R.error("该条码已存在库中！添加失败");
         }
@@ -111,7 +112,10 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         {
             good.setDate(LocalDate.now());
         }
-        copy.setProfit(Double.parseDouble(String.format("%.2f",good.getProfit())));
+        copy.setPriceOut(new BigDecimal(good.getPriceOut()));
+        copy.setPriceIn(new BigDecimal(good.getPriceIn()));
+        copy.setProfit(new BigDecimal(good.getProfit()));
+        copy.setSid(Long.parseLong(good.getSid()));
         copy.setDeadline(good.getDate().plusDays(good.getShelfLife()));
         return goodsMapper.insert(copy)==1?R.ok("添加成功"):R.error("添加失败,请联系管理员查看问题");
     }
@@ -122,7 +126,6 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         if(!UserUtils.hasPermissions(Long.parseLong(goodQueryDTO.getSid()), RoleEnum.SHOP.getCode())){
             throw new AuthorizationException("无权操作！");
         }
-
         Boolean flag = true;
         //判断是商品名还是条形码
         if(!StringUtils.isBlank(goodQueryDTO.getGid())) {
@@ -150,6 +153,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             return R.error("不存在该商品！");
         }
         Goods copy = CglibUtil.copy(good, Goods.class);
+        copy.setSid(Long.parseLong(good.getSid()));
         if(good.getDate()==null)
         {
             good.setDate(LocalDate.now());
@@ -168,6 +172,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             return R.error("不存在该商品！");
         }
         GoodsVO copy = CglibUtil.copy(goods.get(0), GoodsVO.class);
+        copy.setPriceOut(String.format("%.2f",goods.get(0).getPriceOut()));
         return R.ok(copy);
     }
 
@@ -181,7 +186,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
             if(buyGoodDTO.getStatus()==TradeEnum.FINISH.getCode()) {
                 Trade trade = new Trade();
                 trade.setSid(Long.parseLong(buyGoodDTO.getSid()));
-                trade.setIncome(Double.parseDouble(buyGoodDTO.getSum()));
+                trade.setIncome(new BigDecimal(buyGoodDTO.getSum()));
                 trade.setCreateTime(LocalDateTime.now());
                 trade.setType(buyGoodDTO.getType());
                 trade.setRemoteNo(buyGoodDTO.getRemoteNo());
@@ -224,7 +229,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         Trade trade = new Trade();
         trade.setSid(sid);
         trade.setId(Long.parseLong(queryTrade.getTradeNo()));
-        trade.setIncome(queryTrade.getSum());
+        trade.setIncome(new BigDecimal(queryTrade.getSum()));
         trade.setCreateTime(LocalDateTime.now());
         trade.setType(type);
         trade.setRemoteNo(queryTrade.getRemoteNo());

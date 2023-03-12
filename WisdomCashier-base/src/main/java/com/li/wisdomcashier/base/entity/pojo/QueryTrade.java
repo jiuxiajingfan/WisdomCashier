@@ -12,7 +12,7 @@ import lombok.Data;
 @Data
 public class QueryTrade {
     String payUser;
-    Double sum;
+    String sum;
     String tradeNo;
     String remoteNo;
     String payUserId;

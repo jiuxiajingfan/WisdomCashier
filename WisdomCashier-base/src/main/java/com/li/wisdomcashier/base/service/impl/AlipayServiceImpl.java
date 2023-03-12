@@ -17,9 +17,7 @@ import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.entity.pojo.QueryTrade;
 import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.ShopMapper;
-import com.li.wisdomcashier.base.mapper.TradeMapper;
 import com.li.wisdomcashier.base.service.AlipayService;
-import com.li.wisdomcashier.base.service.GoodsService;
 import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.li.wisdomcashier.base.util.RedisUtils;
 import com.li.wisdomcashier.base.util.UserUtils;
@@ -29,6 +27,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -87,7 +86,7 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Override
     public R<PayDTO> aliPay(AliPayDTO aliPayDTO) {
-        Shop shop = shopMapper.selectById(aliPayDTO.getShopName());
+        Shop shop = shopMapper.selectById(Long.parseLong(aliPayDTO.getShopName()));
         if(!UserUtils.hasPermissions(shop.getId(), RoleEnum.SHOP.getCode())){
             throw new AuthorizationException("无权操作！");
         }
@@ -97,14 +96,14 @@ public class AlipayServiceImpl implements AlipayService {
         AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         AlipayTradePayRequest request = new AlipayTradePayRequest();
         String id = IdUtil.getSnowflake().nextIdStr();
-        redisUtils.set("aliPay" + user.getId(), id, 120);
+        redisUtils.set("aliPay" + user.getId(), id, 60);
         AlipayTradePayModel model = new AlipayTradePayModel();
         /** 商户订单号，商户自定义，需保证在商户端不重复，如：20200612000001 **/
         model.setOutTradeNo(redisUtils.get("aliPay" + user.getId()).toString());
         /**订单标题 **/
         model.setSubject(shop.getShopName()+"消费");
         /** 订单金额，精确到小数点后两位 **/
-        model.setTotalAmount(String.format("%.2f", aliPayDTO.getPrice()));
+        model.setTotalAmount(aliPayDTO.getPrice());
         /** 订单描述 **/
         model.setBody(aliPayDTO.getShopName() + "购物支付");
         model.setAuthCode(aliPayDTO.getUserID());
@@ -209,7 +208,7 @@ public class AlipayServiceImpl implements AlipayService {
         QueryTrade queryTrade = new QueryTrade();
         try {
             response = alipayClient.execute(request);
-            queryTrade.setSum(Double.parseDouble(response.getTotalAmount()));
+            queryTrade.setSum(response.getTotalAmount());
             queryTrade.setPayUserId(response.getBuyerUserId());
             queryTrade.setTradeNo(response.getOutTradeNo());
             queryTrade.setPayUser(response.getBuyerLogonId());
@@ -230,7 +229,7 @@ public class AlipayServiceImpl implements AlipayService {
         AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
         AlipayTradeRefundModel model = new AlipayTradeRefundModel();
         model.setOutTradeNo(refundDTO.getTradeNo());
-        model.setRefundAmount(String.format("%.2f",refundDTO.getMoney()));
+        model.setRefundAmount(refundDTO.getMoney());
         model.setRefundReason(refundDTO.getMsg());
         model.setOutRequestNo(refundDTO.getNo());
         request.setBizModel(model);
@@ -239,10 +238,11 @@ public class AlipayServiceImpl implements AlipayService {
         tradeRefund.setMsg(refundDTO.getMsg());
         tradeRefund.setSid(Long.parseLong(refundDTO.getTradeNo()));
         tradeRefund.setNo(refundDTO.getNo());
-        tradeRefund.setMoney(refundDTO.getMoney());
+        tradeRefund.setMoney(new BigDecimal(refundDTO.getMoney()));
         tradeRefund.setCtrateTime(LocalDateTime.now());
         tradeRefund.setOperater(user.getId());
         tradeRefund.setType(2);
+        tradeRefund.setCtrateTime(LocalDateTime.now());
         try {
             response = alipayClient.execute(request);
             if(response.getCode().compareTo("10000")==0){

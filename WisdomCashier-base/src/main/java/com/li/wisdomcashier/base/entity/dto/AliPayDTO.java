@@ -16,7 +16,7 @@ import lombok.Data;
 public class AliPayDTO {
     String shopName;
     String id;
-    Double price;
+    String price;
 
     /**
      * 商户操作员编号。

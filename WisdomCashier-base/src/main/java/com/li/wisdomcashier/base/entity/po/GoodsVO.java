@@ -16,7 +16,7 @@ public class GoodsVO {
 
     private String gid;
 
-    private Double priceOut;
+    private String priceOut;
 
     private String picUrl;
 

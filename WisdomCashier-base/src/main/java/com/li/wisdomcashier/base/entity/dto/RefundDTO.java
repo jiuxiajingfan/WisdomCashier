@@ -18,7 +18,7 @@ public class RefundDTO {
     String sid;
 
     @NotNull(message = "退款金额不能为空")
-    Double money;
+    String money;
 
     @NotBlank(message = "订单号不能为空")
     String tradeNo;
