@@ -26,6 +26,7 @@ import com.li.wisdomcashier.base.mapper.RoleMapper;
 import com.li.wisdomcashier.base.mapper.UserMapper;
 import com.li.wisdomcashier.base.mapper.SysMenuMapper;
 import com.li.wisdomcashier.base.service.EmailService;
+import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.li.wisdomcashier.base.service.UserService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.*;

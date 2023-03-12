@@ -11,6 +11,7 @@ import com.li.wisdomcashier.base.mapper.TradeRefundMapper;
 import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.UserUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,8 +19,10 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -30,6 +33,7 @@ import java.util.Objects;
  * @since 2023-03-11
  */
 @Service
+@Slf4j
 public class TradeRefundServiceImpl extends ServiceImpl<TradeRefundMapper, TradeRefund> implements TradeRefundService {
 
     @Resource
@@ -70,8 +74,17 @@ public class TradeRefundServiceImpl extends ServiceImpl<TradeRefundMapper, Trade
     }
 
     @Override
-    @Scheduled(cron = "")
+    @Scheduled(cron = "0 0 */1 * * ?")
     public void checkDate() {
-
+        log.info("查询并更改订单可否退款开始");
+        List<Trade> trades = tradeMapper.selectList(Wrappers.lambdaQuery(Trade.class).eq(Trade::getRefundNo, 0));
+        LocalDateTime now = LocalDateTime.now();
+        List<Long> collect = trades.stream().filter(e ->
+                e.getCreateTime().plusDays(7).isBefore(now)
+        ).map(Trade::getId).collect(Collectors.toList());
+        tradeMapper.update(null,Wrappers.lambdaUpdate(Trade.class)
+                .in(Trade::getId,collect)
+                .set(Trade::getStatus,TradeEnum.FINAL.getCode())
+        );
     }
 }
