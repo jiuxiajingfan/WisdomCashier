@@ -43,6 +43,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -114,7 +115,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         }
         copy.setPriceOut(new BigDecimal(good.getPriceOut()));
         copy.setPriceIn(new BigDecimal(good.getPriceIn()));
-        copy.setProfit(new BigDecimal(good.getProfit()));
+        copy.setProfit(copy.getPriceOut().subtract(copy.getPriceIn()));
         copy.setSid(Long.parseLong(good.getSid()));
         copy.setDeadline(good.getDate().plusDays(good.getShelfLife()));
         return goodsMapper.insert(copy)==1?R.ok("添加成功"):R.error("添加失败,请联系管理员查看问题");
@@ -148,18 +149,21 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         if(!UserUtils.hasPermissions(Long.parseLong(good.getSid()), RoleEnum.SHOP.getCode())){
             throw new AuthorizationException("无权操作！");
         }
-        List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, good.getGid()).eq(Goods::getSid, good.getSid()));
-        if(CollectionUtils.isEmpty(goods)){
+        Goods goods = goodsMapper.selectOne(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, good.getGid()).eq(Goods::getSid, Long.parseLong(good.getSid())));
+        if(Objects.isNull(goods)){
             return R.error("不存在该商品！");
         }
-        Goods copy = CglibUtil.copy(good, Goods.class);
-        copy.setSid(Long.parseLong(good.getSid()));
+        goods.setPriceOut(new BigDecimal(good.getPriceOut()));
+        goods.setPriceIn(new BigDecimal(good.getPriceIn()));
+        if(goods.getPriceOut().compareTo(goods.getPriceIn())<0)
+            return R.error("售价不能小于进价！");
+        goods.setProfit(goods.getPriceOut().subtract(goods.getPriceIn()));
         if(good.getDate()==null)
         {
             good.setDate(LocalDate.now());
         }
-        copy.setDeadline(good.getDate().plusDays(good.getShelfLife()));
-        return goodsMapper.updateById(copy)==1?R.ok("更新成功！"):R.error("更新失败,请联系管理员查看问题");
+        goods.setDeadline(good.getDate().plusDays(good.getShelfLife()));
+        return goodsMapper.updateById(goods)==1?R.ok("更新成功！"):R.error("更新失败,请联系管理员查看问题");
     }
 
     @Override
@@ -240,5 +244,27 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         tradeMapper.insert(trade);
     }
 
+    @Override
+    public R<String> deleteGood(String sid, String gid) {
+        //仅店长可删除
+        if(!UserUtils.hasPermissions(Long.parseLong(sid), RoleEnum.SHOPADMIN.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
+        Goods goods = goodsMapper.selectOne(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, gid));
+        if(Objects.isNull(goods))
+            return R.error("不存在该商品！");
+        return goodsMapper.deleteById(goods) ==1?R.ok("删除成功！"):R.error("删除失败,请联系管理员查看问题");
+    }
+
+    @Override
+    public R<IPage<Goods>> getGoodTemporaryPage(GoodQueryDTO goodQueryDTO) {
+        if(!UserUtils.hasPermissions(Long.parseLong(goodQueryDTO.getSid()), RoleEnum.SHOP.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
+        LambdaQueryWrapper<Goods> wrapper = Wrappers.lambdaQuery(Goods.class).le(Goods::getDeadline, LocalDate.now().plusDays(7));
+        Page<Goods> page = new Page(goodQueryDTO.getCurrent(),goodQueryDTO.getPageSize());
+        Page<Goods> result = goodsMapper.selectPage(page, wrapper);
+        return R.ok(result);
+    }
 
 }

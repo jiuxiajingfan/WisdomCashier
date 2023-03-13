@@ -72,5 +72,18 @@ public class GoodsController {
         return goodsService.getRandID();
     }
 
+    @GetMapping("/deleteGood")
+    @ApiOperation(value = "删除商品")
+    public R<String> deleteGood(String sid, String gid){
+        return goodsService.deleteGood(sid, gid);
+    }
+
+
+    @PostMapping("/getGoodTemporaryPage")
+    @ApiOperation(value = "获取临期商品")
+    R<IPage<Goods>> getGoodTemporaryPage(@RequestBody @Validated GoodQueryDTO goodQueryDTO){
+        return goodsService.getGoodTemporaryPage(goodQueryDTO);
+    }
+
 
 }

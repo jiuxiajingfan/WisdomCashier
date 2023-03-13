@@ -74,4 +74,19 @@ public interface GoodsService extends IService<Goods> {
 
     void failTradeLogAsunc(String tradeNo,Long sid,Integer type);
 
+    /**
+     * 删除商品
+     * @param sid
+     * @param gid
+     * @return
+     */
+    R<String> deleteGood(String sid,String gid);
+
+    /**
+     * 获取临期商品
+     * @param goodQueryDTO
+     * @return
+     */
+    R<IPage<Goods>> getGoodTemporaryPage(GoodQueryDTO goodQueryDTO);
+
 }

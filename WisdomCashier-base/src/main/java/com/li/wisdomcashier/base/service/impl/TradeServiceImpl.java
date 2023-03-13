@@ -7,12 +7,16 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
+import com.li.wisdomcashier.base.entity.dto.RefundDTO;
 import com.li.wisdomcashier.base.entity.po.Trade;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
+import com.li.wisdomcashier.base.entity.po.TradeRefund;
 import com.li.wisdomcashier.base.entity.vo.TradeVO;
 import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.TradeGoodsMapper;
 import com.li.wisdomcashier.base.mapper.TradeMapper;
+import com.li.wisdomcashier.base.mapper.TradeRefundMapper;
+import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.li.wisdomcashier.base.service.TradeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.UserUtils;
@@ -21,6 +25,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -41,6 +47,12 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
 
     @Resource
     private TradeGoodsMapper tradeGoodsMapper;
+
+    @Resource
+    private TradeRefundService tradeRefundService;
+
+    @Resource
+    private TradeRefundMapper tradeRefundMapper;
 
     @Override
     public R<List<TradeVO>> queryLeast(Long sid) {
@@ -94,6 +106,31 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
         );
         return R.ok(convert);
 
+    }
+
+    @Override
+    public R<String> cashTradeRefund(RefundDTO refundDTO) {
+        Trade trade = tradeMapper.selectById(Long.parseLong(refundDTO.getSid()));
+        List<TradeRefund> tradeRefunds = tradeRefundMapper.selectList(Wrappers.lambdaQuery(TradeRefund.class).eq(TradeRefund::getSid, Long.parseLong(refundDTO.getSid())));
+        BigDecimal reduce = tradeRefunds.stream().filter(e->
+                e.getStatus()==1
+        ).map(TradeRefund::getMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
+        TradeRefund tradeRefund = new TradeRefund();
+        tradeRefund.setSid(Long.parseLong(refundDTO.getSid()));
+        tradeRefund.setNo(refundDTO.getNo());
+        tradeRefund.setCtrateTime(LocalDateTime.now());
+        tradeRefund.setMsg(refundDTO.getMsg());
+        tradeRefund.setOperater(UserUtils.getUser().getId());
+        tradeRefund.setType(1);
+        if(reduce.add(new BigDecimal(refundDTO.getMoney())).compareTo(trade.getIncome())>0){
+            tradeRefund.setStatus(0);
+            tradeRefund.setErrMsg("总退款金额大于付款！");
+            tradeRefundService.TradeRefundRecord(tradeRefund);
+            return R.error("总退款金额大于付款！");
+        }
+        tradeRefund.setStatus(1);
+        tradeRefundService.TradeRefundRecord(tradeRefund);
+        return R.ok("退款成功！");
     }
 
 }

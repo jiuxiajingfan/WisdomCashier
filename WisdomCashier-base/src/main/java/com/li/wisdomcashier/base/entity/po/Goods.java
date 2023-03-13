@@ -38,10 +38,10 @@ public class Goods implements Serializable {
     @TableField("gid")
     private String gid;
 
-    @TableField("price_in")
+    @TableField(value = "price_in",numericScale = "2")
     private BigDecimal priceIn;
 
-    @TableField("price_out")
+    @TableField(value ="price_out",numericScale = "2")
     private BigDecimal priceOut;
 
     @TableField("sid")
@@ -56,11 +56,9 @@ public class Goods implements Serializable {
     @TableField("pic_url")
     private String picUrl;
 
-    @TableField("profit")
+    @TableField(value ="profit",numericScale = "2")
     private BigDecimal profit;
 
     @TableField("metrology")
     private String metrology;
-
-
 }
