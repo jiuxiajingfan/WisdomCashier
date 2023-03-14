@@ -6,11 +6,13 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.QueryMoneyDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
 import com.li.wisdomcashier.base.entity.dto.RefundDTO;
 import com.li.wisdomcashier.base.entity.po.Trade;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
 import com.li.wisdomcashier.base.entity.po.TradeRefund;
+import com.li.wisdomcashier.base.entity.vo.EChartVO;
 import com.li.wisdomcashier.base.entity.vo.TradeVO;
 import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.TradeGoodsMapper;
@@ -110,18 +112,23 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
 
     @Override
     public R<String> cashTradeRefund(RefundDTO refundDTO) {
-        Trade trade = tradeMapper.selectById(Long.parseLong(refundDTO.getSid()));
-        List<TradeRefund> tradeRefunds = tradeRefundMapper.selectList(Wrappers.lambdaQuery(TradeRefund.class).eq(TradeRefund::getSid, Long.parseLong(refundDTO.getSid())));
+        //店铺管理员才能退款
+        if(!UserUtils.hasPermissions(Long.parseLong(refundDTO.getSid()), RoleEnum.SHOPADMIN.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
+        Trade trade = tradeMapper.selectById(Long.parseLong(refundDTO.getTradeNo()));
+        List<TradeRefund> tradeRefunds = tradeRefundMapper.selectList(Wrappers.lambdaQuery(TradeRefund.class).eq(TradeRefund::getSid, Long.parseLong(refundDTO.getTradeNo())));
         BigDecimal reduce = tradeRefunds.stream().filter(e->
                 e.getStatus()==1
         ).map(TradeRefund::getMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
         TradeRefund tradeRefund = new TradeRefund();
-        tradeRefund.setSid(Long.parseLong(refundDTO.getSid()));
+        tradeRefund.setSid(Long.parseLong(refundDTO.getTradeNo()));
         tradeRefund.setNo(refundDTO.getNo());
         tradeRefund.setCtrateTime(LocalDateTime.now());
         tradeRefund.setMsg(refundDTO.getMsg());
         tradeRefund.setOperater(UserUtils.getUser().getId());
         tradeRefund.setType(1);
+        tradeRefund.setMoney(new BigDecimal(refundDTO.getMoney()));
         if(reduce.add(new BigDecimal(refundDTO.getMoney())).compareTo(trade.getIncome())>0){
             tradeRefund.setStatus(0);
             tradeRefund.setErrMsg("总退款金额大于付款！");
@@ -131,6 +138,19 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
         tradeRefund.setStatus(1);
         tradeRefundService.TradeRefundRecord(tradeRefund);
         return R.ok("退款成功！");
+    }
+
+    @Override
+    public R<EChartVO> currentTradeMoney(QueryMoneyDTO queryMoneyDTO) {
+        //店铺管理员权限接口
+        if(!UserUtils.hasPermissions(Long.parseLong(queryMoneyDTO.getSid()), RoleEnum.SHOPADMIN.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
+        tradeMapper.selectList(Wrappers.lambdaQuery(Trade.class)
+                .eq(Trade::getSid,Long.parseLong(queryMoneyDTO.getSid()))
+                .
+        )
+
     }
 
 }

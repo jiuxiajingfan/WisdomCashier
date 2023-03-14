@@ -3,6 +3,7 @@ package com.li.wisdomcashier.customer.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
+import com.li.wisdomcashier.base.entity.dto.RefundDTO;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
 import com.li.wisdomcashier.base.entity.vo.TradeVO;
 import com.li.wisdomcashier.base.service.TradeService;
@@ -47,6 +48,12 @@ public class TradeController {
     @ApiOperation(value = "交易记录")
     public R<IPage<TradeVO>> queryTradePage(@RequestBody @Validated QueryTradeDTO queryTradeDTO){
         return tradeService.queryTradePage(queryTradeDTO);
+    }
+
+    @PostMapping("/cashTradeRefund")
+    @ApiOperation(value = "现金退款")
+    public R<String> cashTradeRefund(@RequestBody @Validated RefundDTO refundDTO){
+        return tradeService.cashTradeRefund(refundDTO);
     }
 }
 

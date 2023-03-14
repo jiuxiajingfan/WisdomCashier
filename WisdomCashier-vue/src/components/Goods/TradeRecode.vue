@@ -69,6 +69,19 @@
         </el-table-column>
         <el-table-column prop="createTime" label="交易时间" width="auto" />
         <el-table-column prop="operater" label="交易员" width="auto" />
+        <el-table-column label="操作" width="auto">
+          <template #default="scope">
+            <el-button
+              link
+              type="primary"
+              size="large"
+              @click="querydetail(scope.row.id)"
+              :disabled="scope.row.status == 2 || scope.row.status == 7"
+            >
+              购物详情
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination
         :hide-on-single-page="false"
@@ -82,6 +95,19 @@
         @size-change="taskSizeChange"
       >
       </el-pagination>
+      <el-dialog
+        v-model="dialogTableVisible"
+        title="消费清单"
+        width="50%"
+        align-center="true"
+      >
+        <el-table :data="detail" height="calc(30vh)">
+          <el-table-column property="gid" label="商品标签号" width="auto" />
+          <el-table-column property="name" label="商品名" width="auto" />
+          <el-table-column property="num" label="购买数量" width="auto" />
+          <el-table-column property="price" label="单价" width="auto" />
+        </el-table>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -90,9 +116,12 @@
 import { onBeforeMount, reactive, ref, watch } from "vue";
 import api from "@/api/api";
 import router from "@/router";
+import utils from "@/utils/utils";
 let trade = ref([]);
 let pageSize = ref(20);
 let total = ref(0);
+let dialogTableVisible = ref(false);
+let detail = ref([]);
 const clear = () => {
   formInline.id = "";
   formInline.date = null;
@@ -103,6 +132,22 @@ const formInline = reactive({
   date: "",
   type: [],
 });
+const querydetail = (row) => {
+  api
+    .get("trade/queryGoodsById", {
+      params: {
+        id: row,
+      },
+    })
+    .then((res) => {
+      if (res.data.code === 200) {
+        detail.value = res.data.data;
+      } else {
+        utils.showMessage(400, "查询失败！");
+      }
+    });
+  dialogTableVisible.value = true;
+};
 onBeforeMount(() => {
   queryTaskList();
 });

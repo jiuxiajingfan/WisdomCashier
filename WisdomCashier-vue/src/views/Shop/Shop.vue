@@ -107,6 +107,12 @@ let Refund = defineAsyncComponent(() =>
   import("." + "./../components/Goods/Refund")
 );
 let test = defineAsyncComponent(() => import("../../components/Goods/test"));
+let TradeDigital = defineAsyncComponent(() =>
+  import("../../components/Shop/TradeDigital")
+);
+let Temporary = defineAsyncComponent(() =>
+  import("../../components/Goods/Temporary")
+);
 const router = useRouter();
 onBeforeMount(() => {
   api

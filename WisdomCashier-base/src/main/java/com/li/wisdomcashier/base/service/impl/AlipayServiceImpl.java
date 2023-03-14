@@ -7,16 +7,20 @@ import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.*;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.AliPayDTO;
 import com.li.wisdomcashier.base.entity.dto.PayDTO;
 import com.li.wisdomcashier.base.entity.dto.RefundDTO;
 import com.li.wisdomcashier.base.entity.po.Shop;
+import com.li.wisdomcashier.base.entity.po.Trade;
 import com.li.wisdomcashier.base.entity.po.TradeRefund;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.entity.pojo.QueryTrade;
 import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.ShopMapper;
+import com.li.wisdomcashier.base.mapper.TradeMapper;
+import com.li.wisdomcashier.base.mapper.TradeRefundMapper;
 import com.li.wisdomcashier.base.service.AlipayService;
 import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.li.wisdomcashier.base.util.RedisUtils;
@@ -29,6 +33,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @ClassName PayServiceImpl
@@ -77,6 +82,12 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Resource
     private TradeRefundService tradeRefundService;
+
+    @Resource
+    private TradeMapper tradeMapper;
+
+    @Resource
+    private TradeRefundMapper tradeRefundMapper;
 
     //支付宝异步通知路径,付款完毕后会异步调用本项目的方法,必须为公网地址
     private String NOTIFY_URL = "http://127.0.0.1/notifyUrl";
@@ -221,10 +232,32 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Override
     public R<String> refundPay(RefundDTO refundDTO) {
-        if(!UserUtils.hasPermissions(Long.parseLong(refundDTO.getSid()), RoleEnum.SHOP.getCode())){
+        //店铺管理员才能退款
+        if(!UserUtils.hasPermissions(Long.parseLong(refundDTO.getSid()), RoleEnum.SHOPADMIN.getCode())){
             throw new AuthorizationException("无权操作！");
         }
+        //检查是否有现金退款
+        TradeRefund tradeRefund = new TradeRefund();
         User user = UserUtils.getUser();
+        Trade trade = tradeMapper.selectById(Long.parseLong(refundDTO.getTradeNo()));
+        List<TradeRefund> tradeRefunds = tradeRefundMapper.selectList(Wrappers.lambdaQuery(TradeRefund.class).eq(TradeRefund::getSid, Long.parseLong(refundDTO.getTradeNo())));
+        BigDecimal reduce = tradeRefunds.stream().filter(e->
+                e.getStatus()==1
+        ).map(TradeRefund::getMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
+        tradeRefund.setMsg(refundDTO.getMsg());
+        tradeRefund.setSid(Long.parseLong(refundDTO.getTradeNo()));
+        tradeRefund.setNo(refundDTO.getNo());
+        tradeRefund.setMoney(new BigDecimal(refundDTO.getMoney()));
+        tradeRefund.setCtrateTime(LocalDateTime.now());
+        tradeRefund.setOperater(user.getId());
+        tradeRefund.setType(2);
+        tradeRefund.setCtrateTime(LocalDateTime.now());
+        if(reduce.add(new BigDecimal(refundDTO.getMoney())).compareTo(trade.getIncome())>0){
+            tradeRefund.setStatus(0);
+            tradeRefund.setErrMsg("总退款金额大于付款！");
+            tradeRefundService.TradeRefundRecord(tradeRefund);
+            return R.error("总退款金额大于付款！");
+        }
         AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
         AlipayTradeRefundModel model = new AlipayTradeRefundModel();
@@ -234,15 +267,6 @@ public class AlipayServiceImpl implements AlipayService {
         model.setOutRequestNo(refundDTO.getNo());
         request.setBizModel(model);
         AlipayTradeRefundResponse response = null;
-        TradeRefund tradeRefund = new TradeRefund();
-        tradeRefund.setMsg(refundDTO.getMsg());
-        tradeRefund.setSid(Long.parseLong(refundDTO.getTradeNo()));
-        tradeRefund.setNo(refundDTO.getNo());
-        tradeRefund.setMoney(new BigDecimal(refundDTO.getMoney()));
-        tradeRefund.setCtrateTime(LocalDateTime.now());
-        tradeRefund.setOperater(user.getId());
-        tradeRefund.setType(2);
-        tradeRefund.setCtrateTime(LocalDateTime.now());
         try {
             response = alipayClient.execute(request);
             if(response.getCode().compareTo("10000")==0){

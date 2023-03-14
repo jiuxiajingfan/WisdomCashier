@@ -2,11 +2,13 @@ package com.li.wisdomcashier.base.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.QueryMoneyDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
 import com.li.wisdomcashier.base.entity.dto.RefundDTO;
 import com.li.wisdomcashier.base.entity.po.Trade;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
+import com.li.wisdomcashier.base.entity.vo.EChartVO;
 import com.li.wisdomcashier.base.entity.vo.TradeVO;
 
 import java.util.List;
@@ -38,4 +40,11 @@ public interface TradeService extends IService<Trade> {
     R<IPage<TradeVO>> queryTradePage(QueryTradeDTO queryTradeDTO);
 
     R<String> cashTradeRefund(RefundDTO refundDTO);
+
+
+    /**
+     * 交易er图
+     * @return
+     */
+    R<EChartVO> currentTradeMoney(QueryMoneyDTO queryMoneyDTO);
 }

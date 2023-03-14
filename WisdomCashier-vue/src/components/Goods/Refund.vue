@@ -87,7 +87,7 @@
     <el-button
       size="large"
       style="margin-left: 30px; margin-top: 5px; height: 80%"
-      @click="onMonery"
+      @click="centerDialogVisible7 = true"
       :disabled="flag"
     >
       <paper-money
@@ -150,6 +150,27 @@
       </span>
     </template>
   </el-dialog>
+  <el-dialog
+    v-model="centerDialogVisible7"
+    title="发起退款"
+    width="30%"
+    align-center
+  >
+    <span
+      >该订单已累计退款： {{ tradeRefund.length }} 次，剩余可退款金额为：{{
+        (sumM - cut).toFixed(2)
+      }}
+    </span>
+    <h2 style="font-size: 20px">请确认后输入退款金额及原因</h2>
+    <el-input v-model="mon" placeholder="请输入退款金额"></el-input>
+    <el-input v-model="msg" placeholder="请输入退款原因"></el-input>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="centerDialogVisible7 = false">取消</el-button>
+        <el-button type="primary" @click="sure2"> 确定 </el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup>
@@ -165,6 +186,7 @@ let tradeRefund = ref([]);
 let searchText = ref("");
 let mon = ref();
 let msg = ref("");
+let centerDialogVisible7 = ref(false);
 const fluse = () => {
   api
     .get("/trade/queryGoodsById", {
@@ -211,6 +233,38 @@ const sure = () => {
   msg.value = "";
   centerDialogVisible.value = false;
 };
+const sure2 = () => {
+  api
+    .post("trade/cashTradeRefund", {
+      sid: router.currentRoute.value.query.id,
+      money: mon.value,
+      tradeNo: searchText.value,
+      msg: msg.value,
+      no: searchText.value + no,
+    })
+    .then((res) => {
+      if (res.data.code === 200) {
+        ElNotification({
+          title: "退款成功",
+          type: "success",
+          duration: 5000,
+        });
+        refund();
+      } else {
+        ElNotification({
+          title: "退款失败",
+          message: res.data.msg,
+          type: "error",
+          duration: 5000,
+        });
+        refund();
+      }
+    });
+  mon.value = 0;
+  msg.value = "";
+  centerDialogVisible7.value = false;
+};
+
 const flag = ref(true);
 const refund = () => {
   api
@@ -224,6 +278,7 @@ const refund = () => {
       if (res.data.code === 200) {
         tradeRefund.value = res.data.data;
         if (tradeRefund.value.length > 0) {
+          cut.value = 0;
           tradeRefund.value.forEach((e) => {
             if (e.status === 1) {
               cut.value += e.money;
@@ -268,7 +323,7 @@ const queryTaskList = () => {
 };
 const type = ref("0");
 const sumM = ref(0);
-const cut = ref(0);
+const cut = ref(Number);
 const centerDialogVisible = ref(false);
 let tradetype = ["现金支付", "支付宝支付", "微信支付"];
 let tradetype4 = ["现金退款", "支付宝退款", "微信退款"];
