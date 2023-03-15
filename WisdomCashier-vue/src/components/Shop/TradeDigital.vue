@@ -20,6 +20,8 @@
         start-placeholder="起始时间"
         end-placeholder="结束时间"
         value-format="YYYY-MM-DD"
+        :default-time="date"
+        @change="refuse"
       />
     </el-col>
   </el-row>
@@ -38,34 +40,51 @@ const type = ref("monthrange");
 let date = ref([]);
 const isCollapse = ref(true);
 const isCollapse2 = ref(true);
+let area = null;
 onMounted(() => {
-  date.value = [new Date(), new Date()];
+  let dt = new Date();
+  let y = dt.getFullYear();
+  let mt = (dt.getMonth() + 1).toString().padStart(2, "0");
+  let day = dt.getDate().toString().padStart(2, "0");
+  let h = dt.getHours().toString().padStart(2, "0");
+  let m = dt.getMinutes().toString().padStart(2, "0");
+  let nowtime = y + "-" + mt + "-" + day;
+  date.value = [nowtime, nowtime];
   c1();
-  c2();
-  c3();
-});
-const c1 = () => {
-  const data = ref([]);
   api
     .post("/trade/currentTradeMoney", {
       sid: router.currentRoute.value.query.id,
-      timeEnd: date.value[0] + "00:00:00",
-      timeStart: date.value[0] + "23:59:59",
+      timeStart: date.value[0] + " 00:00:00",
+      timeEnd: date.value[1] + " 23:59:59",
+      // timeEnd: "2023-03-29 23:59:59",
+      // timeStart: "2023-03-01 00:00:00",
       timeType: isCollapse.value == false ? 1 : 0,
       type: 1,
     })
     .then((res) => {
-      data.value = res.data.data;
+      c3(res.data.data);
     });
+  c2();
+});
+const c1 = () => {
+  const data = [
+    { type: "分类一", value: 27 },
+    { type: "分类二", value: 25 },
+    { type: "分类三", value: 18 },
+    { type: "分类四", value: 15 },
+    { type: "分类五", value: 10 },
+    { type: "其他", value: 5 },
+  ];
+
   const piePlot = new Pie("container1", {
     appendPadding: 10,
     data,
-    angleField: "name",
-    colorField: "value",
-    radius: 1,
-    innerRadius: 0.64,
+    angleField: "value",
+    colorField: "type",
     height: 300,
     width: 300,
+    radius: 1,
+    innerRadius: 0.64,
     meta: {
       value: {
         formatter: (v) => `¥ ${v}`,
@@ -158,21 +177,11 @@ const c2 = () => {
 
   piePlot.render();
 };
-const c3 = () => {
-  const data = [
-    { year: "1991", value: 3 },
-    { year: "1992", value: 4 },
-    { year: "1993", value: 3.5 },
-    { year: "1994", value: 5 },
-    { year: "1995", value: 4.9 },
-    { year: "1996", value: 6 },
-    { year: "1997", value: 7 },
-    { year: "1998", value: 9 },
-    { year: "1999", value: 13 },
-  ];
-  const area = new Area("container3", {
+const c3 = (res) => {
+  const data = res;
+  area = new Area("container3", {
     data,
-    xField: "year",
+    xField: "name",
     yField: "value",
     xAxis: {
       range: [0, 1],
@@ -186,6 +195,21 @@ const c3 = () => {
     },
   });
   area.render();
+};
+const refuse = () => {
+  api
+    .post("/trade/currentTradeMoney", {
+      sid: router.currentRoute.value.query.id,
+      timeStart: date.value[0] + " 00:00:00",
+      timeEnd: date.value[1] + " 23:59:59",
+      // timeEnd: "2023-03-29 23:59:59",
+      // timeStart: "2023-03-01 00:00:00",
+      timeType: isCollapse.value == false ? 1 : 0,
+      type: 1,
+    })
+    .then((res) => {
+      area.changeData(res.data.data);
+    });
 };
 watch(isCollapse2, (n, o) => {
   if (o === false) {

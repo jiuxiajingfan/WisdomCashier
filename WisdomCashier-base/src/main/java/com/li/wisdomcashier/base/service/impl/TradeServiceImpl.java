@@ -146,7 +146,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
     }
 
     @Override
-    public R<EChartVO> currentTradeMoney(QueryMoneyDTO queryMoneyDTO) {
+    public R<List<EChartVO>>  currentTradeMoney(QueryMoneyDTO queryMoneyDTO) {
         //店铺管理员权限接口
         if(!UserUtils.hasPermissions(Long.parseLong(queryMoneyDTO.getSid()), RoleEnum.SHOPADMIN.getCode())){
             throw new AuthorizationException("无权操作！");
@@ -162,14 +162,14 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
                 e.getCreateTime().format(queryMoneyDTO.getTimeType()==0?DateTimeFormatter.ISO_DATE:DateTimeFormatter.ofPattern("yyyy-MM")),
                 Collectors.reducing(BigDecimal.ZERO, Trade::getIncome, BigDecimal::add)));
         List<String> date = this.getDate(queryMoneyDTO.getTimeStart(), queryMoneyDTO.getTimeEnd(), queryMoneyDTO.getTimeType());
-        List<String> money = new ArrayList<>();
+        ArrayList<EChartVO> eChartVOS = new ArrayList<>();
         date.forEach(e->{
-            money.add(collect.getOrDefault(e,BigDecimal.ZERO).toString());
+            EChartVO eChartVO = new EChartVO();
+            eChartVO.setName(e);
+            eChartVO.setValue(collect.getOrDefault(e,BigDecimal.ZERO).toString());
+            eChartVOS.add(eChartVO);
         });
-        EChartVO eChartVO = new EChartVO();
-        eChartVO.setName(date);
-        eChartVO.setValue(money);
-        return R.ok(eChartVO);
+        return R.ok(eChartVOS);
     }
 
     /**

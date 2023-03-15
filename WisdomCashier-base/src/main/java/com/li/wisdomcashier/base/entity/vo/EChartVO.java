@@ -13,6 +13,6 @@ import java.util.List;
  */
 @Data
 public class EChartVO {
-    List<String> name;
-    List<String> value;
+    String name;
+    String value;
 }
