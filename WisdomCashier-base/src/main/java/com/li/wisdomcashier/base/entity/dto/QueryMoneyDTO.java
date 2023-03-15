@@ -4,7 +4,6 @@ import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -30,8 +29,8 @@ public class QueryMoneyDTO {
     @NotNull(message = "日期类型不能为空")
     Integer timeType;
 
-    LocalDate timeStart;
+    LocalDateTime timeStart;
 
-    LocalDate timeEnd;
+    LocalDateTime timeEnd;
 
 }

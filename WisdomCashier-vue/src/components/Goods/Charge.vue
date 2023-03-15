@@ -931,7 +931,7 @@ const leastFun = () => {
   api
     .get("/trade/queryLeast", {
       params: {
-        sid: 1,
+        sid: router.currentRoute.value.query.id,
       },
     })
     .then((res) => {

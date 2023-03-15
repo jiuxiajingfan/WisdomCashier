@@ -2,9 +2,11 @@ package com.li.wisdomcashier.customer.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.QueryMoneyDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
 import com.li.wisdomcashier.base.entity.dto.RefundDTO;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
+import com.li.wisdomcashier.base.entity.vo.EChartVO;
 import com.li.wisdomcashier.base.entity.vo.TradeVO;
 import com.li.wisdomcashier.base.service.TradeService;
 import io.swagger.annotations.Api;
@@ -54,6 +56,12 @@ public class TradeController {
     @ApiOperation(value = "现金退款")
     public R<String> cashTradeRefund(@RequestBody @Validated RefundDTO refundDTO){
         return tradeService.cashTradeRefund(refundDTO);
+    }
+
+    @PostMapping("/currentTradeMoney")
+    @ApiOperation(value = "最近交易")
+    public R<EChartVO> currentTradeMoney(@RequestBody @Validated QueryMoneyDTO queryMoneyDTO){
+        return tradeService.currentTradeMoney(queryMoneyDTO);
     }
 }
 

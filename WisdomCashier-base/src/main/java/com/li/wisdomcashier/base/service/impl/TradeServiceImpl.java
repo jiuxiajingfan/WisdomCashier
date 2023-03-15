@@ -28,8 +28,13 @@ import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -146,11 +151,51 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
         if(!UserUtils.hasPermissions(Long.parseLong(queryMoneyDTO.getSid()), RoleEnum.SHOPADMIN.getCode())){
             throw new AuthorizationException("无权操作！");
         }
-        tradeMapper.selectList(Wrappers.lambdaQuery(Trade.class)
-                .eq(Trade::getSid,Long.parseLong(queryMoneyDTO.getSid()))
-                .
-        )
+        List<Trade> trades = tradeMapper.selectList(Wrappers.lambdaQuery(Trade.class)
+                .eq(Trade::getSid, Long.parseLong(queryMoneyDTO.getSid()))
+                .le(Trade::getCreateTime, queryMoneyDTO.getTimeEnd())
+                .ge(Trade::getCreateTime, queryMoneyDTO.getTimeStart())
+        );
+        Map<String, BigDecimal> collect = trades.stream().filter(e->{
+            return e.getStatus()==1||e.getStatus()==2||e.getStatus()==7;
+        }).collect(Collectors.groupingBy(e ->
+                e.getCreateTime().format(queryMoneyDTO.getTimeType()==0?DateTimeFormatter.ISO_DATE:DateTimeFormatter.ofPattern("yyyy-MM")),
+                Collectors.reducing(BigDecimal.ZERO, Trade::getIncome, BigDecimal::add)));
+        List<String> date = this.getDate(queryMoneyDTO.getTimeStart(), queryMoneyDTO.getTimeEnd(), queryMoneyDTO.getTimeType());
+        List<String> money = new ArrayList<>();
+        date.forEach(e->{
+            money.add(collect.getOrDefault(e,BigDecimal.ZERO).toString());
+        });
+        EChartVO eChartVO = new EChartVO();
+        eChartVO.setName(date);
+        eChartVO.setValue(money);
+        return R.ok(eChartVO);
+    }
 
+    /**
+     * 获取日期区间
+     * @param a 起始
+     * @param b 结束
+     * @param type 返回值类型 0日 1月
+     * @return
+     */
+    public List<String> getDate(LocalDateTime a,LocalDateTime b,Integer type){
+        List<String> ans = new ArrayList<>();
+        //日
+        if(type == 0) {
+            while (a.isBefore(b)) {
+                ans.add(a.format(DateTimeFormatter.ISO_DATE));
+                a = a.plusDays(1);
+            }
+        }
+        //月
+        else{
+            while (a.isBefore(b)) {
+                ans.add(a.format(DateTimeFormatter.ofPattern("yyyy-MM")));
+                a = a.plusMonths(1);
+            }
+        }
+        return ans;
     }
 
 }
