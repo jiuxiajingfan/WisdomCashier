@@ -107,6 +107,9 @@ let Refund = defineAsyncComponent(() =>
   import("." + "./../components/Goods/Refund")
 );
 let test = defineAsyncComponent(() => import("../../components/Goods/test"));
+let ClassificationManage = defineAsyncComponent(() =>
+  import("../../components/Goods/ClassificationManage.vue")
+);
 let TradeDigital = defineAsyncComponent(() =>
   import("../../components/Shop/TradeDigital")
 );

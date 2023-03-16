@@ -60,7 +60,7 @@ public class TradeController {
 
     @PostMapping("/currentTradeMoney")
     @ApiOperation(value = "最近交易")
-    public R<List<EChartVO>> currentTradeMoney(@RequestBody @Validated QueryMoneyDTO queryMoneyDTO){
+    public R<List<List<EChartVO>>> currentTradeMoney(@RequestBody @Validated QueryMoneyDTO queryMoneyDTO){
         return tradeService.currentTradeMoney(queryMoneyDTO);
     }
 }

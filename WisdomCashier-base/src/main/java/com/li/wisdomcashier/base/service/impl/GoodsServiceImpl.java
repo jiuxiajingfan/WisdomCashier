@@ -177,6 +177,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         }
         GoodsVO copy = CglibUtil.copy(goods.get(0), GoodsVO.class);
         copy.setPriceOut(String.format("%.2f",goods.get(0).getPriceOut()));
+        copy.setPriceIn(String.format("%.2f",goods.get(0).getPriceIn()));
         return R.ok(copy);
     }
 
@@ -208,6 +209,10 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                     tradeGoods1.setTradeId(trade.getId());
                     tradeGoods1.setNum(e.getNum());
                     tradeGoods1.setPrice(e.getPriceOut());
+                    tradeGoods1.setPriceIn(e.getPriceIn());
+                    tradeGoods1.setType(e.getType());
+                    tradeGoods1.setPriceOutSum(e.getPriceOut().multiply(new BigDecimal(e.getNum())));
+                    tradeGoods1.setPriceInSum(e.getPriceIn().multiply(new BigDecimal(e.getNum())));
                     return tradeGoods1;
                 }).collect(Collectors.toList());
                 tradeGoodsService.saveBatch(collect);

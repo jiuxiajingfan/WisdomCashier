@@ -489,9 +489,11 @@ let lastData = reactive({
   name: "",
   num: 1,
   priceOut: "",
+  priceIn: "",
   picUrl: "",
   metrology: "",
   gid: "",
+  type: "",
 });
 const leave = () => {
   dialogFormVisible2.value = false;
@@ -504,6 +506,7 @@ const leave = () => {
   form.date = "";
   form.metrology = "";
   form.profit = 0;
+  form.type = "";
 };
 var reg = /^[0-9]*$/;
 const openadd2 = () => {
@@ -546,7 +549,9 @@ const queryTaskList = () => {
           metrology: res.data.data.metrology,
           picUrl: res.data.data.picUrl,
           priceOut: res.data.data.priceOut,
+          priceIn: res.data.data.priceIn,
           gid: searchText.value.trim(),
+          type: res.data.data.type,
         });
         lastData.num = Trade.get.filter((e) => {
           return e.gid === searchText.value.trim();
@@ -555,7 +560,9 @@ const queryTaskList = () => {
         lastData.metrology = res.data.data.metrology;
         lastData.picUrl = res.data.data.picUrl;
         lastData.priceOut = res.data.data.priceOut;
+        lastData.priceIn = res.data.data.priceIn;
         lastData.gid = searchText.value.trim();
+        lastData.type = res.data.data.type;
         searchText.value = "";
         picshow.value = true;
       } else {
@@ -576,6 +583,8 @@ const onRowClick = (row, column, event) => {
   lastData.metrology = row.metrology;
   lastData.picUrl = row.picUrl;
   lastData.priceOut = row.priceOut;
+  lastData.priceIn = row.priceIn;
+  lastData.type = row.type;
   lastData.gid = row.gid;
   picshow.value = true;
 };
@@ -633,6 +642,7 @@ const save2 = () => {
           num: form.num,
           profit: form.price_out - form.price_in,
           metrology: form.metrology,
+          type: form.type,
         })
         .then((res) => {
           Utils.showMessage(res.data.code, res.data.msg);
@@ -665,6 +675,7 @@ const form = reactive({
   profit: 0,
   shelfLife: "",
   num: 0,
+  type: "",
 });
 
 const alipayP = () => {

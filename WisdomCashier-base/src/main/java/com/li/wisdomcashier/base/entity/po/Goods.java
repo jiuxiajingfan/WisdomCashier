@@ -61,4 +61,7 @@ public class Goods implements Serializable {
 
     @TableField("metrology")
     private String metrology;
+
+    @TableField("type")
+    private String type;
 }

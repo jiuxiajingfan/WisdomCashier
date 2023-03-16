@@ -15,7 +15,7 @@
     "clipboard": "^2.0.11",
     "core-js": "^3.8.3",
     "crypto-js": "^4.1.1",
-    "element-plus": "^2.2.18",
+    "element-plus": "^2.2.30",
     "js-md5": "^0.7.3",
     "mathjs": "^11.6.0",
     "pinia": "^2.0.23",

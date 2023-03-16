@@ -25,6 +25,7 @@ public interface TradeService extends IService<Trade> {
 
     /**
      * 查询店铺最近十笔交易记录
+     *
      * @param sid
      * @return
      */
@@ -32,6 +33,7 @@ public interface TradeService extends IService<Trade> {
 
     /**
      * 更具订单查询详情
+     *
      * @param id
      * @return
      */
@@ -44,7 +46,9 @@ public interface TradeService extends IService<Trade> {
 
     /**
      * 交易er图
+     *
      * @return
      */
-    public R<List<EChartVO>>  currentTradeMoney(QueryMoneyDTO queryMoneyDTO);
+    public R<List<List<EChartVO>>> currentTradeMoney(QueryMoneyDTO queryMoneyDTO);
 }
+

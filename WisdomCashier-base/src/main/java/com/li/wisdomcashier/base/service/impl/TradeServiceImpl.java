@@ -23,6 +23,7 @@ import com.li.wisdomcashier.base.service.TradeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.UserUtils;
 import org.apache.shiro.authz.AuthorizationException;
+import org.simpleframework.xml.util.Entry;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -32,10 +33,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -146,31 +144,83 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
     }
 
     @Override
-    public R<List<EChartVO>>  currentTradeMoney(QueryMoneyDTO queryMoneyDTO) {
+    public R<List<List<EChartVO>>>  currentTradeMoney(QueryMoneyDTO queryMoneyDTO) {
         //店铺管理员权限接口
         if(!UserUtils.hasPermissions(Long.parseLong(queryMoneyDTO.getSid()), RoleEnum.SHOPADMIN.getCode())){
             throw new AuthorizationException("无权操作！");
+        }
+        //月份处理
+        if(queryMoneyDTO.getTimeType()==1){
+            queryMoneyDTO.setTimeEnd(queryMoneyDTO.getTimeEnd().plusMonths(1));
         }
         List<Trade> trades = tradeMapper.selectList(Wrappers.lambdaQuery(Trade.class)
                 .eq(Trade::getSid, Long.parseLong(queryMoneyDTO.getSid()))
                 .le(Trade::getCreateTime, queryMoneyDTO.getTimeEnd())
                 .ge(Trade::getCreateTime, queryMoneyDTO.getTimeStart())
+                .in(Trade::getStatus, Arrays.asList(3,4,5,6))
         );
-        Map<String, BigDecimal> collect = trades.stream().filter(e->{
-            return e.getStatus()==1||e.getStatus()==2||e.getStatus()==7;
-        }).collect(Collectors.groupingBy(e ->
-                e.getCreateTime().format(queryMoneyDTO.getTimeType()==0?DateTimeFormatter.ISO_DATE:DateTimeFormatter.ofPattern("yyyy-MM")),
-                Collectors.reducing(BigDecimal.ZERO, Trade::getIncome, BigDecimal::add)));
+        //月份处理
+        if(queryMoneyDTO.getTimeType()==1){
+            queryMoneyDTO.setTimeEnd(queryMoneyDTO.getTimeEnd().minusMonths(1));
+        }
+        if(trades.isEmpty())
+        {
+            return R.error("区间内暂无数据！");
+        }
         List<String> date = this.getDate(queryMoneyDTO.getTimeStart(), queryMoneyDTO.getTimeEnd(), queryMoneyDTO.getTimeType());
-        ArrayList<EChartVO> eChartVOS = new ArrayList<>();
-        date.forEach(e->{
-            EChartVO eChartVO = new EChartVO();
-            eChartVO.setName(e);
-            eChartVO.setValue(collect.getOrDefault(e,BigDecimal.ZERO).toString());
-            eChartVOS.add(eChartVO);
-        });
-        return R.ok(eChartVOS);
+        ArrayList<List<EChartVO>> ans = new ArrayList<List<EChartVO>>();
+
+        //折线图
+        ArrayList<EChartVO> area = new ArrayList<>();
+        if(queryMoneyDTO.getType() == 0) {
+            //计算金额
+            Map<String, BigDecimal> collect = trades.stream().collect(Collectors.groupingBy(e ->
+                            e.getCreateTime().format(queryMoneyDTO.getTimeType() == 0 ? DateTimeFormatter.ISO_DATE : DateTimeFormatter.ofPattern("yyyy-MM")),
+                    Collectors.reducing(BigDecimal.ZERO, Trade::getIncome, BigDecimal::add)));
+            date.forEach(e -> {
+                EChartVO eChartVO = new EChartVO();
+                eChartVO.setName(e);
+                eChartVO.setValue(collect.getOrDefault(e, BigDecimal.ZERO).toString());
+                area.add(eChartVO);
+            });
+            ans.add(area);
+        }else{
+            //计算订单数
+            Map<String, List<Trade>> collect = trades.stream().collect(Collectors.groupingBy(e ->
+                    e.getCreateTime().format(queryMoneyDTO.getTimeType() == 0 ? DateTimeFormatter.ISO_DATE : DateTimeFormatter.ofPattern("yyyy-MM"))));
+            date.forEach(e -> {
+                EChartVO eChartVO = new EChartVO();
+                eChartVO.setName(e);
+                List<Trade> orDefault = collect.getOrDefault(e, new ArrayList<>());
+                eChartVO.setValue(Integer.toString(orDefault.size()));
+                area.add(eChartVO);
+            });
+            ans.add(area);
+
+        }
+        //饼图1
+        List<Long> collect1 = trades.stream().map(e -> e.getId()).collect(Collectors.toList());
+        List<TradeGoods> tradeGoods = tradeGoodsMapper.selectList(Wrappers.lambdaQuery(TradeGoods.class).in(TradeGoods::getTradeId, collect1));
+        BigDecimal out = tradeGoods.stream().map(TradeGoods::getPriceOutSum).reduce(BigDecimal.ZERO, BigDecimal::add);
+        BigDecimal in = tradeGoods.stream().map(TradeGoods::getPriceInSum).reduce(BigDecimal.ZERO, BigDecimal::add);
+        ArrayList<EChartVO> pie = new ArrayList<>();
+        pie.add(new EChartVO("成本",in.toString()));
+        pie.add(new EChartVO("利润",out.subtract(in).toString()));
+        ans.add(pie);
+
+        //饼图2
+        Map<String, BigDecimal> collect2 = tradeGoods.stream().collect(Collectors.groupingBy(TradeGoods::getType,
+                Collectors.reducing(BigDecimal.ZERO, TradeGoods::getPriceOutSum, BigDecimal::add)));
+        ArrayList<EChartVO> pie2 = new ArrayList<>();
+        Iterator<Map.Entry<String, BigDecimal>> iterator = collect2.entrySet().iterator();
+        while(iterator.hasNext()){
+            Map.Entry<String, BigDecimal> next = iterator.next();
+            pie2.add(new EChartVO(next.getKey(), next.getValue().toString()));
+        }
+        ans.add(pie2);
+        return R.ok(ans);
     }
+
 
     /**
      * 获取日期区间

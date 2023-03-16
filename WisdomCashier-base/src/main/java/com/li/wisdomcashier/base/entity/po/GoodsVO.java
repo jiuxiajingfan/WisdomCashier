@@ -21,4 +21,9 @@ public class GoodsVO {
     private String picUrl;
 
     private String metrology;
+
+    private String priceIn;
+
+    private String type;
+
 }

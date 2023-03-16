@@ -1,15 +1,15 @@
 <template>
   <el-row>
     <el-col :span="3">
-      <el-radio-group v-model="isCollapse" style="margin: 0">
+      <el-radio-group v-model="isCollapse" style="margin: 0" @change="refuse">
         <el-radio-button :label="false">订单数</el-radio-button>
         <el-radio-button :label="true">交易额</el-radio-button>
       </el-radio-group>
     </el-col>
     <el-col :span="3">
-      <el-radio-group v-model="isCollapse2" style="margin: 0">
-        <el-radio-button :label="false">日统计</el-radio-button>
-        <el-radio-button :label="true">月统计</el-radio-button>
+      <el-radio-group v-model="isCollapse2" style="margin: 0" @change="refuse">
+        <el-radio-button :label="false">月统计</el-radio-button>
+        <el-radio-button :label="true">日统计</el-radio-button>
       </el-radio-group>
     </el-col>
     <el-col :span="10">
@@ -20,27 +20,48 @@
         start-placeholder="起始时间"
         end-placeholder="结束时间"
         value-format="YYYY-MM-DD"
-        :default-time="date"
         @change="refuse"
+        :disabled-date="disabledDate"
       />
     </el-col>
   </el-row>
   <el-row style="height: calc(30vh)">
-    <el-col :span="12"><div id="container1" /></el-col>
-    <el-col :span="12"><div id="container2" /></el-col>
+    <el-col :span="12">
+      <h2>总收入</h2>
+      <div id="container1" />
+    </el-col>
+    <el-col :span="12">
+      <h2>收入分类</h2>
+      <div id="container2"
+    /></el-col>
+    <el-col :span="24">
+      <h2 style="font-size: 30px">收入变化</h2>
+    </el-col>
   </el-row>
-  <div id="container3" style="height: calc(50vh)"></div>
+  <el-row style="margin-top: 8%">
+    <el-col :span="24">
+      <div id="container3" style="height: calc(40vh)"></div>
+    </el-col>
+  </el-row>
 </template>
 <script setup>
 import { onMounted, ref, watch } from "vue";
 import { Area, Bar, Line, Pie } from "@antv/g2plot";
 import api from "@/api/api";
 import router from "@/router";
-const type = ref("monthrange");
+import utils from "@/utils/utils";
+const type = ref("daterange");
 let date = ref([]);
 const isCollapse = ref(true);
 const isCollapse2 = ref(true);
 let area = null;
+let piePlot = null;
+let piePlot2 = null;
+const disabledDate = (time) => {
+  return time.getTime() > Date.now();
+};
+let timeType = 0;
+let typetype = 0;
 onMounted(() => {
   let dt = new Date();
   let y = dt.getFullYear();
@@ -49,8 +70,8 @@ onMounted(() => {
   let h = dt.getHours().toString().padStart(2, "0");
   let m = dt.getMinutes().toString().padStart(2, "0");
   let nowtime = y + "-" + mt + "-" + day;
-  date.value = [nowtime, nowtime];
-  c1();
+  let nowtime2 = y + "-" + mt + "-" + "01";
+  date.value = [nowtime2, nowtime];
   api
     .post("/trade/currentTradeMoney", {
       sid: router.currentRoute.value.query.id,
@@ -58,29 +79,29 @@ onMounted(() => {
       timeEnd: date.value[1] + " 23:59:59",
       // timeEnd: "2023-03-29 23:59:59",
       // timeStart: "2023-03-01 00:00:00",
-      timeType: isCollapse.value == false ? 1 : 0,
-      type: 1,
+      timeType: timeType,
+      type: typetype,
     })
     .then((res) => {
-      c3(res.data.data);
+      c3(res.data.data[0]);
+      c1(res.data.data[1]);
+      c2(res.data.data[2]);
     });
-  c2();
 });
-const c1 = () => {
-  const data = [
-    { type: "分类一", value: 27 },
-    { type: "分类二", value: 25 },
-    { type: "分类三", value: 18 },
-    { type: "分类四", value: 15 },
-    { type: "分类五", value: 10 },
-    { type: "其他", value: 5 },
-  ];
-
-  const piePlot = new Pie("container1", {
-    appendPadding: 10,
+const c1 = (res) => {
+  const data = [];
+  for (let i = 0; i < res.length; i++) {
+    console.log(res[i]);
+    data.push({
+      name: res[i].name,
+      value: parseFloat(res[i].value),
+    });
+  }
+  piePlot = new Pie("container1", {
+    padding: [5, 5, 5, 5],
     data,
     angleField: "value",
-    colorField: "type",
+    colorField: "name",
     height: 300,
     width: 300,
     radius: 1,
@@ -133,52 +154,45 @@ const c1 = () => {
 
   piePlot.render();
 };
-const c2 = () => {
-  const data = [
-    { type: "分类一", value: 27 },
-    { type: "分类二", value: 25 },
-    { type: "分类三", value: 18 },
-    { type: "分类四", value: 15 },
-    { type: "分类五", value: 10 },
-    { type: "其他", value: 5 },
-  ];
-
-  const piePlot = new Pie("container2", {
-    appendPadding: 10,
+const c2 = (res) => {
+  const data = [];
+  for (let i = 0; i < res.length; i++) {
+    data.push({
+      name: res[i].name,
+      value: parseFloat(res[i].value),
+    });
+  }
+  piePlot2 = new Pie("container2", {
+    padding: [5, 5, 5, 5],
     data,
     angleField: "value",
-    colorField: "type",
+    colorField: "name",
     height: 300,
     width: 300,
     radius: 1,
-    innerRadius: 0.6,
     label: {
       type: "inner",
-      offset: "-50%",
-      content: "{value}",
+      offset: "-30%",
+      content: ({ percent }) => `${(percent * 100).toFixed(0)}%`,
       style: {
-        textAlign: "center",
         fontSize: 14,
+        textAlign: "center",
       },
     },
-    interactions: [{ type: "element-selected" }, { type: "element-active" }],
-    statistic: {
-      title: false,
-      content: {
-        style: {
-          whiteSpace: "pre-wrap",
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-        },
-        content: "AntV\nG2Plot",
-      },
-    },
+    interactions: [{ type: "element-active" }],
   });
 
   piePlot.render();
+  piePlot2.render();
 };
 const c3 = (res) => {
-  const data = res;
+  const data = [];
+  res.forEach((e) => {
+    data.push({
+      name: e.name,
+      value: parseFloat(e.value),
+    });
+  });
   area = new Area("container3", {
     data,
     xField: "name",
@@ -197,6 +211,16 @@ const c3 = (res) => {
   area.render();
 };
 const refuse = () => {
+  if (isCollapse2.value === false) {
+    timeType = 1;
+  } else {
+    timeType = 0;
+  }
+  if (isCollapse.value === false) {
+    typetype = 1;
+  } else {
+    typetype = 0;
+  }
   api
     .post("/trade/currentTradeMoney", {
       sid: router.currentRoute.value.query.id,
@@ -204,15 +228,42 @@ const refuse = () => {
       timeEnd: date.value[1] + " 23:59:59",
       // timeEnd: "2023-03-29 23:59:59",
       // timeStart: "2023-03-01 00:00:00",
-      timeType: isCollapse.value == false ? 1 : 0,
-      type: 1,
+      timeType: timeType,
+      type: typetype,
     })
     .then((res) => {
-      area.changeData(res.data.data);
+      if (res.data.code === 200) {
+        const da3 = [];
+        res.data.data[0].forEach((e) => {
+          da3.push({
+            name: e.name,
+            value: parseFloat(e.value),
+          });
+        });
+        area.changeData(da3);
+        const da = [];
+        res.data.data[1].forEach((e) => {
+          da.push({
+            name: e.name,
+            value: parseFloat(e.value),
+          });
+        });
+        piePlot.changeData(da);
+        const da2 = [];
+        res.data.data[2].forEach((e) => {
+          da2.push({
+            name: e.name,
+            value: parseFloat(e.value),
+          });
+        });
+        piePlot2.changeData(da2);
+      } else {
+        utils.showErrMessage(res.data.msg);
+      }
     });
 };
 watch(isCollapse2, (n, o) => {
-  if (o === false) {
+  if (o === true) {
     type.value = "monthrange";
   } else {
     type.value = "daterange";

@@ -52,5 +52,16 @@ public class TradeGoods implements Serializable {
     @TableField("price")
     private BigDecimal price;
 
+    @TableField("price_in")
+    private BigDecimal priceIn;
+
+    @TableField("type")
+    private String type;
+
+    @TableField("price_out_sum")
+    private BigDecimal priceOutSum;
+
+    @TableField("price_in_sum")
+    private BigDecimal priceInSum;
 
 }
