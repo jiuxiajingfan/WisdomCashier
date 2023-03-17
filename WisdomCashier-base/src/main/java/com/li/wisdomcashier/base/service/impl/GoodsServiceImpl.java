@@ -267,7 +267,9 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         if(!UserUtils.hasPermissions(Long.parseLong(goodQueryDTO.getSid()), RoleEnum.SHOP.getCode())){
             throw new AuthorizationException("无权操作！");
         }
-        LambdaQueryWrapper<Goods> wrapper = Wrappers.lambdaQuery(Goods.class).le(Goods::getDeadline, LocalDate.now().plusDays(7));
+        LambdaQueryWrapper<Goods> wrapper = Wrappers.lambdaQuery(Goods.class)
+                .eq(Goods::getSid,Long.parseLong(goodQueryDTO.getSid()))
+                .le(Goods::getDeadline, LocalDate.now().plusDays(7));
         Page<Goods> page = new Page(goodQueryDTO.getCurrent(),goodQueryDTO.getPageSize());
         Page<Goods> result = goodsMapper.selectPage(page, wrapper);
         return R.ok(result);

@@ -151,7 +151,10 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
         }
         //月份处理
         if(queryMoneyDTO.getTimeType()==1){
-            queryMoneyDTO.setTimeEnd(queryMoneyDTO.getTimeEnd().plusMonths(1));
+            LocalDateTime tt = queryMoneyDTO.getTimeEnd();
+            LocalDateTime tt2 = queryMoneyDTO.getTimeStart();
+            queryMoneyDTO.setTimeEnd(LocalDateTime.of(tt.getYear(),tt.plusMonths(1).getMonth(),1,0,0,0));
+            queryMoneyDTO.setTimeStart(LocalDateTime.of(tt2.getYear(),tt2.getMonth(),1,0,0,0));
         }
         List<Trade> trades = tradeMapper.selectList(Wrappers.lambdaQuery(Trade.class)
                 .eq(Trade::getSid, Long.parseLong(queryMoneyDTO.getSid()))
@@ -161,7 +164,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
         );
         //月份处理
         if(queryMoneyDTO.getTimeType()==1){
-            queryMoneyDTO.setTimeEnd(queryMoneyDTO.getTimeEnd().minusMonths(1));
+            queryMoneyDTO.setTimeEnd(queryMoneyDTO.getTimeEnd().minusDays(1));
         }
         if(trades.isEmpty())
         {

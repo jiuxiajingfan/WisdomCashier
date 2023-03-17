@@ -15,7 +15,12 @@
   <div class="mm">
     <div class="tables">
       <el-scrollbar>
-        <el-table :data="shops" style="width: 100%" :show-header="true">
+        <el-table
+          :data="shops"
+          height="calc(100vh - 230px)"
+          style="width: 100%"
+          :show-header="true"
+        >
           <el-table-column prop="shopName" label="店铺名" width="auto" />
           <el-table-column label="操作" align="right">
             <template v-slot="scope">

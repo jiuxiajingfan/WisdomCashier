@@ -1,19 +1,21 @@
 <template>
   <div class="mm">
-    <avatarUpload></avatarUpload>
-    <br />
-    <br />
-    <br />
-    <div class="userMessage">
+    <avatarUpload style="margin-top: 5%"></avatarUpload>
+    <div class="userMessage" style="margin-top: 3%">
       <el-space wrap>
-        <el-card style="width: 600px; height: auto">
+        <el-card style="width: 600px; height: 350px">
           <template #header>
             <div class="card-header">
               <span>用户信息</span>
               <el-switch v-show="false" v-model="userModel.change" />
             </div>
           </template>
-          <el-form :model="userModel" label-width="120px">
+          <el-form
+            style="margin-top: 4%"
+            :model="userModel"
+            label-width="120px"
+            label-position="right"
+          >
             <el-form-item label="用户标识 :">
               {{ user.getId }}
               <el-button

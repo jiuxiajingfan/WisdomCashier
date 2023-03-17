@@ -49,6 +49,6 @@ public interface TradeService extends IService<Trade> {
      *
      * @return
      */
-    public R<List<List<EChartVO>>> currentTradeMoney(QueryMoneyDTO queryMoneyDTO);
+    R<List<List<EChartVO>>> currentTradeMoney(QueryMoneyDTO queryMoneyDTO);
 }
 

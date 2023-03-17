@@ -229,81 +229,86 @@
             />
           </el-main>
           <el-footer>
-            <el-badge
-              :value="Hang.get.length"
-              class="item"
-              :hidden="Hang.get.length === 0"
-            >
+            <el-scrollbar>
+              <el-badge
+                :value="Hang.get.length"
+                class="item"
+                :hidden="Hang.get.length === 0"
+              >
+                <el-button
+                  size="large"
+                  style="height: 80%; margin-top: 5px"
+                  @click="drawer = !drawer"
+                >
+                  <save
+                    theme="outline"
+                    size="28"
+                    fill="#333"
+                    :strokeWidth="1"
+                    style="margin-right: 10px"
+                  />
+                  挂单详情</el-button
+                >
+              </el-badge>
               <el-button
                 size="large"
-                style="height: 80%; margin-top: 5px"
-                @click="drawer = !drawer"
+                style="margin-left: 30px; margin-top: 5px; height: 80%"
+                @click="onMonery"
+                :disabled="Trade.get.length === 0"
               >
-                <save
+                <paper-money
                   theme="outline"
                   size="28"
                   fill="#333"
                   :strokeWidth="1"
                   style="margin-right: 10px"
                 />
-                挂单详情</el-button
+                现金结算</el-button
               >
-            </el-badge>
-            <el-button
-              size="large"
-              style="margin-left: 30px; margin-top: 5px; height: 80%"
-              @click="onMonery"
-            >
-              <paper-money
-                theme="outline"
-                size="28"
-                fill="#333"
-                :strokeWidth="1"
-                style="margin-right: 10px"
-              />
-              现金结算</el-button
-            >
-            <el-button
-              size="large"
-              style="margin-left: 30px; margin-top: 5px; height: 80%"
-              @click="dialogVisiblezfb = true"
-            >
-              <alipay
-                theme="outline"
-                size="28"
-                fill="#333"
-                :strokeWidth="1"
-                style="margin-right: 10px"
-              />
-              支付宝结算</el-button
-            >
-            <el-button
-              size="large"
-              style="margin-left: 30px; margin-top: 5px; height: 80%"
-            >
-              <wechat
-                theme="outline"
-                size="28"
-                fill="#333"
-                :strokeWidth="1"
-                style="margin-right: 10px"
-              />
-              微信结算</el-button
-            >
-            <el-button
-              size="large"
-              style="margin-left: 30px; margin-top: 5px; height: 80%"
-              @click="leastFun"
-            >
-              <transaction-order
-                theme="outline"
-                size="28"
-                fill="#333"
-                :strokeWidth="1"
-                style="margin-right: 10px"
-              />
-              最近交易</el-button
-            >
+              <el-button
+                size="large"
+                style="margin-left: 30px; margin-top: 5px; height: 80%"
+                @click="dialogVisiblezfb = true"
+                :disabled="Trade.get.length === 0"
+              >
+                <alipay
+                  theme="outline"
+                  size="28"
+                  fill="#333"
+                  :strokeWidth="1"
+                  style="margin-right: 10px"
+                />
+                支付宝结算</el-button
+              >
+              <el-button
+                size="large"
+                style="margin-left: 30px; margin-top: 5px; height: 80%"
+                :disabled="Trade.get.length === 0"
+              >
+                <wechat
+                  theme="outline"
+                  size="28"
+                  fill="#333"
+                  :strokeWidth="1"
+                  style="margin-right: 10px"
+                />
+                微信结算</el-button
+              >
+              <el-button
+                size="large"
+                style="margin-left: 30px; margin-top: 5px; height: 80%"
+                @click="leastFun"
+              >
+                <transaction-order
+                  theme="outline"
+                  size="28"
+                  fill="#333"
+                  :strokeWidth="1"
+                  style="margin-right: 10px"
+                />
+                最近交易</el-button
+              >
+            </el-scrollbar>
             <el-dialog
               v-model="moneyCharge"
               title="现金收款"

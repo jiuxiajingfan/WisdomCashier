@@ -113,6 +113,9 @@ let ClassificationManage = defineAsyncComponent(() =>
 let TradeDigital = defineAsyncComponent(() =>
   import("../../components/Shop/TradeDigital")
 );
+let ShopMessage = defineAsyncComponent(() =>
+  import("../../components/Shop/ShopMessage")
+);
 let Temporary = defineAsyncComponent(() =>
   import("../../components/Goods/Temporary")
 );
