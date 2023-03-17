@@ -162,6 +162,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         {
             good.setDate(LocalDate.now());
         }
+        goods.setType(good.getType());
         goods.setDeadline(good.getDate().plusDays(good.getShelfLife()));
         return goodsMapper.updateById(goods)==1?R.ok("更新成功！"):R.error("更新失败,请联系管理员查看问题");
     }

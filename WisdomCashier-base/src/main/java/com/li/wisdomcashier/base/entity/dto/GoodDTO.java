@@ -55,4 +55,7 @@ public class GoodDTO {
 
     @ApiModelProperty("计量")
     private String metrology;
+
+    @ApiModelProperty("分类")
+    private String type;
 }

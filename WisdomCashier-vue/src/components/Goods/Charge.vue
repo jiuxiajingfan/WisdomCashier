@@ -9,12 +9,14 @@
               v-model="searchText"
               class="input-with-select"
               @keyup.enter="queryTaskList"
+              v-loading="lod"
             >
               <template #append>
                 <el-button
                   icon="Search"
                   @click="queryTaskList"
                   :disabled="searchText.trim().length === 0"
+                  :loading="lod"
                   >搜索</el-button
                 >
               </template>
@@ -320,7 +322,10 @@
               <template #footer>
                 <span class="dialog-footer">
                   <el-button @click="moneyCharge = false"> 离开 </el-button>
-                  <el-button type="primary" @click="buy(1, '', '')"
+                  <el-button
+                    type="primary"
+                    @click="buy(1, '', '')"
+                    :loading="lod"
                     >确认</el-button
                   >
                 </span>
@@ -410,6 +415,23 @@
                     />
                   </el-form-item>
                 </div>
+                <div>
+                  <el-form-item label="商品分类" :label-width="formLabelWidth">
+                    <el-select
+                      v-model="form.type"
+                      class="m-2"
+                      placeholder="Select"
+                      size="large"
+                    >
+                      <el-option
+                        v-for="item in options"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      />
+                    </el-select>
+                  </el-form-item>
+                </div>
               </el-form>
               <template #footer>
                 <span class="dialog-footer">
@@ -459,7 +481,7 @@
 </template>
 
 <script setup>
-import { nextTick, reactive, ref } from "vue";
+import { nextTick, onBeforeMount, reactive, ref } from "vue";
 import api from "@/api/api";
 import { useRouter } from "vue-router/dist/vue-router";
 import * as math from "mathjs";
@@ -513,6 +535,7 @@ const openadd2 = () => {
   dialogFormVisible2.value = false;
   openadd();
 };
+const lod = ref(false);
 const openadd = () => {
   if (reg.test(searchText.value)) {
     api
@@ -534,6 +557,7 @@ const openadd = () => {
   dialogFormVisible.value = true;
 };
 const queryTaskList = () => {
+  lod.value = true;
   api
     .get("/Goods/getGood", {
       params: {
@@ -568,6 +592,9 @@ const queryTaskList = () => {
       } else {
         dialogFormVisible2.value = true;
       }
+    })
+    .finally(() => {
+      lod.value = false;
     });
 };
 const sure = (gid) => {
@@ -601,6 +628,7 @@ const onMonery = () => {
   moneyCharge.value = true;
 };
 const buy = (type, no, remoteID) => {
+  lod.value = true;
   api
     .post("/Goods/buyGood", {
       goods: Trade.get,
@@ -622,11 +650,15 @@ const buy = (type, no, remoteID) => {
       } else {
         utils.showMessage(res.data.code, "结算失败请重试或联系管理员！");
       }
+    })
+    .finally(() => {
+      lod.value = false;
     });
 };
 let dialogFormVisible = ref(false);
 const dialogFormVisible2 = ref(false);
 const formLabelWidth = "140px";
+const options = ref([]);
 const save2 = () => {
   formref.value.validate((valid) => {
     if (valid) {
@@ -972,6 +1004,17 @@ const getStyle = (data) => {
     "display: block;"
   );
 };
+onBeforeMount(() => {
+  api
+    .get("Shop/getCategory", {
+      params: {
+        sid: router.currentRoute.value.query.id,
+      },
+    })
+    .then((res) => {
+      options.value = res.data.data;
+    });
+});
 </script>
 
 <style scoped lang="scss">

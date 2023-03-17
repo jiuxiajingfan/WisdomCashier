@@ -146,7 +146,9 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="centerDialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="sure"> 确定 </el-button>
+        <el-button type="primary" @click="sure" :loading="lod">
+          确定
+        </el-button>
       </span>
     </template>
   </el-dialog>
@@ -167,7 +169,9 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="centerDialogVisible7 = false">取消</el-button>
-        <el-button type="primary" @click="sure2"> 确定 </el-button>
+        <el-button type="primary" @click="sure2" :loading="lod">
+          确定
+        </el-button>
       </span>
     </template>
   </el-dialog>
@@ -228,12 +232,17 @@ const sure = () => {
         });
         refund();
       }
+    })
+    .finally(() => {
+      lod.value = false;
+      mon.value = 0;
+      msg.value = "";
+      centerDialogVisible7.value = false;
     });
-  mon.value = 0;
-  msg.value = "";
-  centerDialogVisible.value = false;
 };
+const lod = ref(false);
 const sure2 = () => {
+  lod.value = true;
   api
     .post("trade/cashTradeRefund", {
       sid: router.currentRoute.value.query.id,
@@ -259,10 +268,13 @@ const sure2 = () => {
         });
         refund();
       }
+    })
+    .finally(() => {
+      lod.value = false;
+      mon.value = 0;
+      msg.value = "";
+      centerDialogVisible7.value = false;
     });
-  mon.value = 0;
-  msg.value = "";
-  centerDialogVisible7.value = false;
 };
 
 const flag = ref(true);

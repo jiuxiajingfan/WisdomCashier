@@ -63,7 +63,7 @@
       <el-main>
         <el-scrollbar>
           <el-tabs
-            v-model="editableTabsValue"
+            v-model="focus"
             type="card"
             class="demo-tabs"
             closable
@@ -133,8 +133,6 @@ const contraction = () => {
     buttonWidth.value = "200px";
   }
 };
-let tabIndex = 2;
-const editableTabsValue = ref("2");
 const editableTabs = ref([
   {
     title: "我的信息",
@@ -142,20 +140,26 @@ const editableTabs = ref([
     content: "myMessage",
   },
 ]);
+const focus = ref("myMessage");
+const mapTab = new Map();
+mapTab.set("myMessage", "myMessage");
 const addTab = (targetName, component, title) => {
-  cnt.value = cnt.value + 1;
-  const newTabName = `${++tabIndex}`;
-  console.log(targetName);
-  editableTabs.value.push({
-    title: title,
-    name: newTabName,
-    content: component,
-  });
-  editableTabsValue.value = newTabName;
+  if (mapTab.get(component) !== component) {
+    cnt.value = cnt.value + 1;
+    editableTabs.value.push({
+      title: title,
+      name: component,
+      content: component,
+    });
+    mapTab.set(component, component);
+    focus.value = component;
+  } else {
+    focus.value = component;
+  }
 };
 const removeTab = (targetName) => {
   const tabs = editableTabs.value;
-  let activeName = editableTabsValue.value;
+  let activeName = focus.value;
   if (activeName === targetName) {
     tabs.forEach((tab, index) => {
       if (tab.name === targetName) {
@@ -166,8 +170,8 @@ const removeTab = (targetName) => {
       }
     });
   }
-
-  editableTabsValue.value = activeName;
+  mapTab.delete(targetName);
+  focus.value = activeName;
   editableTabs.value = tabs.filter((tab) => tab.name !== targetName);
 };
 </script>

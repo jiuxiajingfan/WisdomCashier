@@ -101,7 +101,13 @@
     >
     </el-pagination>
   </div>
-  <el-dialog v-model="dialogFormVisible" title="新增商品" width="900px" center>
+  <el-dialog
+    v-model="dialogFormVisible"
+    title="新增商品"
+    width="900px"
+    center
+    @close="del"
+  >
     <el-form
       :model="form"
       ref="formref"
@@ -160,17 +166,42 @@
           prop="shelfLife"
         >
           <el-input style="width: 190px" v-model.number="form.shelfLife" />
+        </el-form-item>
+      </div>
+      <div>
+        <el-form-item label="商品分类" :label-width="formLabelWidth">
+          <el-select
+            v-model="form.type"
+            class="m-2"
+            placeholder="Select"
+            size="large"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
         </el-form-item>
       </div>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogFormVisible = false">离开</el-button>
-        <el-button type="primary" @click="save"> 保存 </el-button>
+        <el-button type="primary" @click="save" :loading="lod">
+          保存
+        </el-button>
       </span>
     </template>
   </el-dialog>
-  <el-dialog v-model="dialogFormVisible3" title="更新商品" width="900px" center>
+  <el-dialog
+    v-model="dialogFormVisible3"
+    title="更新商品"
+    width="900px"
+    center
+    @close="del"
+  >
     <el-form
       :model="form"
       ref="formref"
@@ -231,11 +262,30 @@
           <el-input style="width: 190px" v-model.number="form.shelfLife" />
         </el-form-item>
       </div>
+      <div>
+        <el-form-item label="商品分类" :label-width="formLabelWidth">
+          <el-select
+            v-model="form.type"
+            class="m-2"
+            placeholder="Select"
+            size="large"
+          >
+            <el-option
+              v-for="item in options"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
+      </div>
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="dialogFormVisible3 = false">离开</el-button>
-        <el-button type="primary" @click="save2"> 保存 </el-button>
+        <el-button @click="clear7">离开</el-button>
+        <el-button type="primary" @click="save2" :loading="lod">
+          保存
+        </el-button>
       </span>
     </template>
   </el-dialog>
@@ -275,6 +325,7 @@ let currentText = "";
 let sid = ref(1);
 var reg = /^[0-9]*$/;
 const router = useRouter();
+const options = ref([]);
 const form = reactive({
   name: "",
   metrology: "",
@@ -286,11 +337,14 @@ const form = reactive({
   profit: 0,
   shelfLife: "",
   num: 0,
+  type: "",
 });
 const formref = ref();
+const lod = ref(false);
 const save = () => {
   formref.value.validate((valid) => {
     if (valid) {
+      lod.value = true;
       api
         .post("/Goods/addGood", {
           name: form.name,
@@ -303,8 +357,10 @@ const save = () => {
           num: form.num,
           profit: form.price_out - form.price_in,
           metrology: form.metrology,
+          type: form.type,
         })
         .then((res) => {
+          lod.value = false;
           Utils.showMessage(res.data.code, res.data.msg);
           if (res.data.code === 200) {
             dialogFormVisible.value = false;
@@ -319,6 +375,7 @@ const save = () => {
 const save2 = () => {
   formref.value.validate((valid) => {
     if (valid) {
+      lod.value = true;
       api
         .post("/Goods/updateGood", {
           name: form.name,
@@ -331,11 +388,13 @@ const save2 = () => {
           num: form.num,
           profit: form.price_out - form.price_in,
           metrology: form.metrology,
+          type: form.type,
         })
         .then((res) => {
+          lod.value = false;
           Utils.showMessage(res.data.code, res.data.msg);
           if (res.data.code === 200) {
-            dialogFormVisible.value = false;
+            dialogFormVisible3.value = false;
             del();
             searchText.value = "";
             queryTaskList();
@@ -354,6 +413,7 @@ const del = () => {
   form.date = "";
   form.metrology = "";
   form.profit = 0;
+  form.type = "";
 };
 const leave = () => {
   dialogFormVisible2.value = false;
@@ -361,7 +421,20 @@ const leave = () => {
 };
 onBeforeMount(() => {
   queryTaskList();
+  api
+    .get("Shop/getCategory", {
+      params: {
+        sid: router.currentRoute.value.query.id,
+      },
+    })
+    .then((res) => {
+      options.value = res.data.data;
+    });
 });
+const clear7 = () => {
+  dialogFormVisible3.value = false;
+  del();
+};
 const queryTaskList = () => {
   sid.value = router.currentRoute.value.query.id;
   if (currentText != searchText.value) {
@@ -497,6 +570,7 @@ const updateGood = (row) => {
   form.shelfLife = row.shelfLife;
   form.price_out = row.priceOut;
   form.price_in = row.priceIn;
+  form.type = row.type;
   dialogFormVisible3.value = true;
 };
 const deleteGood = (row) => {

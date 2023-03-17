@@ -45,78 +45,90 @@
     <template #footer>
       <span class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="add"> 确定 </el-button>
+        <el-button type="primary" @click="add" :loading="loding">
+          确定
+        </el-button>
+      </span>
+    </template>
+  </el-dialog>
+  <el-dialog v-model="dialogVisible2" title="删除标签" width="30%">
+    <span>确认删除该分类吗？</span>
+    <template #footer>
+      <span class="dialog-footer">
+        <el-button @click="dialogVisible2 = false">取消</el-button>
+        <el-button type="primary" @click="del"> 确认 </el-button>
       </span>
     </template>
   </el-dialog>
 </template>
 
 <script setup>
-import { nextTick, ref } from "vue";
+import { nextTick, onMounted, ref } from "vue";
 import { ElInput } from "element-plus";
+import api from "@/api/api";
+import router from "@/router";
+import utils from "@/utils/utils";
 const inputmodel = ref("");
-const inputValue = ref("");
 const dialogVisible = ref(false);
+const dialogVisible2 = ref(false);
+const loding = ref(false);
+const delc = ref("");
 const add = () => {
-  console.log("hello");
+  loding.value = true;
+  api
+    .get("Shop/addCategory", {
+      params: {
+        sid: router.currentRoute.value.query.id,
+        category: inputmodel.value.trim(),
+      },
+    })
+    .then((res) => {
+      dialogVisible.value = false;
+      inputmodel.value = "";
+      utils.showMessage(res.data.code, res.data.msg);
+      flush();
+    })
+    .finally(() => {
+      loding.value = false;
+    });
 };
-const dynamicTags = ref([
-  "Tag 1",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-  "Tag 2",
-  "Tag 3",
-]);
-const inputVisible = ref(false);
-const InputRef = ref();
+const flush = () => {
+  api
+    .get("Shop/getCategory", {
+      params: {
+        sid: router.currentRoute.value.query.id,
+      },
+    })
+    .then((res) => {
+      dynamicTags.value = res.data.data;
+    });
+};
+const del = () => {
+  loding.value = true;
+  api
+    .get("Shop/delCategory", {
+      params: {
+        sid: router.currentRoute.value.query.id,
+        category: delc.value,
+      },
+    })
+    .then((res) => {
+      flush();
+      dialogVisible2.value = false;
+      utils.showMessage(res.data.code, res.data.msg);
+    })
+    .finally(() => {
+      loding.value = false;
+    });
+};
+onMounted(() => {
+  flush();
+});
+const dynamicTags = ref([]);
 
 const handleClose = (tag) => {
-  dynamicTags.value.splice(dynamicTags.value.indexOf(tag), 1);
-};
-
-const showInput = () => {
-  inputVisible.value = true;
-  nextTick(() => {
-    console.log();
-  });
-};
-
-const handleInputConfirm = () => {
-  if (inputValue.value) {
-    dynamicTags.value.push(inputValue.value);
-  }
-  inputVisible.value = false;
-  inputValue.value = "";
+  delc.value = tag;
+  dialogVisible2.value = true;
 };
 </script>
 

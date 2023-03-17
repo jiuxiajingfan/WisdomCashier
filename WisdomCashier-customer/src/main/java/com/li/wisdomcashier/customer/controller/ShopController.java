@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.ShopQueryDTO;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
+import com.li.wisdomcashier.base.service.ShopCategoryService;
 import com.li.wisdomcashier.base.service.ShopService;
 import com.li.wisdomcashier.base.entity.vo.ShopVO;
 import io.swagger.annotations.Api;
@@ -29,6 +30,9 @@ public class ShopController {
     @Resource
     private ShopService shopService;
 
+    @Resource
+    private ShopCategoryService shopCategoryService;
+
     @ApiOperation(value = "获取用户相关店铺信息")
     @GetMapping("/getUserShop")
     private R<List<ShopVO>> getUserShop(String shopName){
@@ -44,5 +48,23 @@ public class ShopController {
     @GetMapping("/getShopMenu")
     public R<List<SysMenu>> getMenu(String shopId){
         return shopService.getMenu(Long.parseLong(shopId));
+    }
+
+    @ApiOperation(value = "获取店铺分类")
+    @GetMapping("/getCategory")
+    R<List<String>> getCategory(String sid){
+        return shopCategoryService.getCategory(sid);
+    }
+
+    @ApiOperation(value = "新增店铺分类")
+    @GetMapping("/addCategory")
+    R<String> addCategory(String sid, String category){
+        return shopCategoryService.addCategory(sid,category);
+    }
+
+    @ApiOperation(value = "删除店铺分类")
+    @GetMapping("/delCategory")
+    R<String> delCategory(String sid, String category){
+        return shopCategoryService.delCategory(sid, category);
     }
 }
