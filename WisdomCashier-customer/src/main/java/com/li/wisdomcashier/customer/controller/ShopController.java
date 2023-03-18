@@ -2,6 +2,7 @@ package com.li.wisdomcashier.customer.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.ShopMessageDTO;
 import com.li.wisdomcashier.base.entity.dto.ShopQueryDTO;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
 import com.li.wisdomcashier.base.service.ShopCategoryService;
@@ -11,6 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.domain.Page;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -66,5 +68,16 @@ public class ShopController {
     @GetMapping("/delCategory")
     R<String> delCategory(String sid, String category){
         return shopCategoryService.delCategory(sid, category);
+    }
+
+    @ApiOperation(value = "店铺信息")
+    @GetMapping("/getShopMessageByID")
+    public R<ShopVO> getShopMessageByID(String sid){
+        return shopService.getShopMessageByID(sid);
+    }
+    @ApiOperation(value = "更新店铺信息")
+    @PostMapping("/updateShopMessage")
+    public R<String> updateShopMessage(@RequestBody @Validated ShopMessageDTO shopMessageDTO){
+        return shopService.updateShopMessage(shopMessageDTO);
     }
 }

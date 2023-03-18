@@ -2,6 +2,7 @@ package com.li.wisdomcashier.base.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.ShopMessageDTO;
 import com.li.wisdomcashier.base.entity.dto.ShopQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Shop;
 import com.baomidou.mybatisplus.extension.service.IService;
@@ -33,5 +34,14 @@ public interface ShopService extends IService<Shop> {
      * @return
      */
     R<List<SysMenu>> getMenu(Long shopId);
+
+    R<ShopVO> getShopMessageByID(String sid);
+
+    /**
+     * 更新
+     * @param shopMessageDTO
+     * @return
+     */
+    R<String> updateShopMessage(ShopMessageDTO shopMessageDTO);
 
 }

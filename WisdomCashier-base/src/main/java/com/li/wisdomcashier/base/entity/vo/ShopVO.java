@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * @ClassName ShopVo
  * @Description TODO
@@ -19,4 +21,8 @@ public class ShopVO {
     String shopName;
     @ApiModelProperty(value = "权限")
     Integer role;
+    LocalDateTime createTime;
+    String desc;
+    Integer wx;
+    Integer zfb;
 }

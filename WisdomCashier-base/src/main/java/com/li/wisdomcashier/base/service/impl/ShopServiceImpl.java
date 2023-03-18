@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.ShopMessageDTO;
 import com.li.wisdomcashier.base.entity.dto.ShopQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Role;
 import com.li.wisdomcashier.base.entity.po.Shop;
@@ -30,6 +31,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -112,6 +114,41 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
             centerMenu.setChildren(sysMenuMapper.getChildrens(role, centerMenu.getMenuId(),MenuEnum.SHOPMENU.getCode()));
         }
         return R.ok(userCenterMenu);
+    }
+
+    @Override
+    public R<ShopVO> getShopMessageByID(String sid) {
+        //管理员接口
+        if(!UserUtils.hasPermissions(Long.parseLong(sid),RoleEnum.SHOPADMIN.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
+        Shop shop = shopMapper.selectOne(Wrappers.lambdaQuery(Shop.class).eq(Shop::getId, Long.parseLong(sid)).eq(Shop::getStatus,0));
+        if(Objects.isNull(shop)){
+            return R.error("不存在店铺或该店铺已被封禁！");
+        }
+        ShopVO shopVO = new ShopVO();
+        shopVO.setShopName(shop.getShopName());
+        shopVO.setDesc(shop.getTip());
+        shopVO.setCreateTime(shop.getGmtCreate());
+        shopVO.setId(shop.getId());
+        shopVO.setWx(shop.getWxStatus());
+        shopVO.setZfb(shop.getZfbStatus());
+        return R.ok(shopVO);
+    }
+
+    @Override
+    public R<String> updateShopMessage(ShopMessageDTO shopMessageDTO) {
+        //管理员接口
+        if(!UserUtils.hasPermissions(Long.parseLong(shopMessageDTO.getSid()),RoleEnum.SHOPADMIN.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
+        Shop shop = shopMapper.selectOne(Wrappers.lambdaQuery(Shop.class).eq(Shop::getId, Long.parseLong(shopMessageDTO.getSid())).eq(Shop::getStatus,0));
+        if(Objects.isNull(shop)){
+            return R.error("不存在店铺或该店铺已被封禁！");
+        }
+        shop.setShopName(shopMessageDTO.getName());
+        shop.setTip(shopMessageDTO.getDesc());
+        return R.ok(shopMapper.updateById(shop)==1?"更新成功！":"更新失败，请联系系统管理员！");
     }
 
 

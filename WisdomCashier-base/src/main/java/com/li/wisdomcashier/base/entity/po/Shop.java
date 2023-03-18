@@ -61,4 +61,10 @@ public class Shop implements Serializable {
     @TableField("auth_wx")
     private String authWx;
 
+    @TableField("zfb_status")
+    private Integer zfbStatus;
+
+    @TableField("wx_status")
+    private Integer wxStatus;
+
 }
