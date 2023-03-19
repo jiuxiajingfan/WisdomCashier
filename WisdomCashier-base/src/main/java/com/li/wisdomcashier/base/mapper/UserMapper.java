@@ -13,10 +13,4 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
  * @since 2022-10-11
  */
 public interface UserMapper extends BaseMapper<User> {
-    /**
-     * 根据账号查询用户
-     * @param name
-     * @return
-     */
-   UserBean selectUserByname(String name);
 }

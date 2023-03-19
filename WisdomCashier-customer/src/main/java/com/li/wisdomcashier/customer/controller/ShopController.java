@@ -2,9 +2,11 @@ package com.li.wisdomcashier.customer.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.QueryEmDTO;
 import com.li.wisdomcashier.base.entity.dto.ShopMessageDTO;
 import com.li.wisdomcashier.base.entity.dto.ShopQueryDTO;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
+import com.li.wisdomcashier.base.entity.vo.UserVo;
 import com.li.wisdomcashier.base.service.ShopCategoryService;
 import com.li.wisdomcashier.base.service.ShopService;
 import com.li.wisdomcashier.base.entity.vo.ShopVO;
@@ -75,9 +77,16 @@ public class ShopController {
     public R<ShopVO> getShopMessageByID(String sid){
         return shopService.getShopMessageByID(sid);
     }
+
     @ApiOperation(value = "更新店铺信息")
     @PostMapping("/updateShopMessage")
     public R<String> updateShopMessage(@RequestBody @Validated ShopMessageDTO shopMessageDTO){
         return shopService.updateShopMessage(shopMessageDTO);
+    }
+
+    @ApiOperation(value = "店铺人员列表")
+    @PostMapping("/getEmploree")
+    public R<IPage<UserVo>> getEmploree(@RequestBody @Validated QueryEmDTO queryEmDTO){
+        return shopService.getEmploree(queryEmDTO);
     }
 }

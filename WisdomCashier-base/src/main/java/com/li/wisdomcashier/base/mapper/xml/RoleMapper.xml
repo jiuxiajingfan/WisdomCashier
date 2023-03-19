@@ -2,4 +2,20 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.li.wisdomcashier.base.mapper.RoleMapper">
 
+    <select id="selectPerson" resultMap="mp">
+        select a.user_id as id, min(a.role) as roleEnum
+        from (select * from t_role where shop_id = #{sid} order by user_id desc, role asc) a
+        group by a.user_id
+        order by roleEnum
+        limit #{current} , #{pageSize}
+    </select>
+    <select id="selectPersonCount" resultType="java.lang.Integer">
+        select count(*)
+                from (select distinct(user_id) from t_role where shop_id = #{sid}) a
+    </select>
+
+    <resultMap id="mp" type="com.li.wisdomcashier.base.entity.vo.UserVo" autoMapping="false">
+        <result column="id" property="id"></result>
+        <result column="roleEnum" property="roleEnum"></result>
+    </resultMap>
 </mapper>

@@ -175,10 +175,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<Role> roles = roleMapper.selectList(Wrappers.lambdaQuery(Role.class)
                 .eq(Role::getUserId, user.getId()));
         for (Role role : roles) {
-            //超级管理员
+            //店主
             if (role.getRole() == 1) {
-                roleList.add("admin");
-                permissionList.add("all");
+                roleList.add("shopmaster");
+                permissionList.add(role.getShopId().toString() + "1");
             }
             //店铺管理员
             else if (role.getRole() == 2) {
@@ -325,8 +325,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Subject subject = SecurityUtils.getSubject();
         List<SysMenu> userCenterMenu = new ArrayList<>();
         Integer role;
-        if (subject.hasRole("admin")) {
-            role = RoleEnum.ADMIN.getCode();
+        if (subject.hasRole("shopmaster")) {
+            role = RoleEnum.SHOPMASTER.getCode();
         } else if (subject.hasRole("shopadmin")) {
             role = RoleEnum.SHOPADMIN.getCode();
         } else {

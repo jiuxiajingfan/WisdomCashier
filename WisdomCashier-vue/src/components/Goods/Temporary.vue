@@ -6,6 +6,7 @@
       height="calc(100vh - 230px)"
       empty-text="暂无即将过期产品"
     >
+      <el-table-column prop="gid" label="商品条码" width="auto" />
       <el-table-column prop="name" label="商品名" width="auto" />
       <el-table-column prop="metrology" label="单位" width="auto" />
       <el-table-column
@@ -28,18 +29,6 @@
       />
       <el-table-column prop="num" label="数量" width="auto" />
       <el-table-column prop="deadline" label="过期时间" width="auto" />
-      <el-table-column label="操作">
-        <template #default="scope">
-          <el-button
-            link
-            type="primary"
-            size="large"
-            @click="updateGood(scope.row)"
-          >
-            更新
-          </el-button>
-        </template>
-      </el-table-column>
     </el-table>
     <el-pagination
       :hide-on-single-page="false"
@@ -68,9 +57,7 @@ let pageSize = ref(20);
 onBeforeMount(() => {
   queryTaskList();
 });
-const sid = ref();
 const queryTaskList = () => {
-  sid.value = router.currentRoute.value.query.id;
   api
     .post("Goods/getGoodTemporaryPage", {
       current: current.value,

@@ -13,7 +13,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum RoleEnum {
-    ADMIN(1,"系统管理员"),
+    SHOPMASTER(1,"店主"),
     SHOPADMIN(2,"店铺管理员"),
     SHOP(3,"店铺用户"),
 

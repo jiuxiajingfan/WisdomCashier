@@ -116,6 +116,9 @@ let TradeDigital = defineAsyncComponent(() =>
 let ShopMessage = defineAsyncComponent(() =>
   import("../../components/Shop/ShopMessage")
 );
+let PersonManage = defineAsyncComponent(() =>
+  import("../../components/Shop/PersonManage")
+);
 let Temporary = defineAsyncComponent(() =>
   import("../../components/Goods/Temporary")
 );

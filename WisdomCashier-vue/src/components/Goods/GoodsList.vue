@@ -33,12 +33,13 @@
             <el-icon
               v-if="scope.row.picUrl == null"
               class="avatar-uploader-icon"
+              style="width: 60px; height: 60px"
             >
               <Plus />
             </el-icon>
             <el-image
               v-else-if="scope.row.picUrl != null"
-              style="width: 100px; height: 100px"
+              style="width: 60px; height: 60px"
               :src="scope.row.picUrl"
               fit="fit"
             />
@@ -319,7 +320,7 @@ const formLabelWidth = "140px";
 let good = ref([]);
 let current = ref(1);
 let total = ref(0);
-let pageSize = ref(20);
+let pageSize = ref(10);
 let searchText = ref("");
 let currentText = "";
 let sid = ref(1);

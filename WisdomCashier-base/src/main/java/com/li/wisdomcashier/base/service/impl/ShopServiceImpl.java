@@ -7,17 +7,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.QueryEmDTO;
 import com.li.wisdomcashier.base.entity.dto.ShopMessageDTO;
 import com.li.wisdomcashier.base.entity.dto.ShopQueryDTO;
-import com.li.wisdomcashier.base.entity.po.Role;
-import com.li.wisdomcashier.base.entity.po.Shop;
-import com.li.wisdomcashier.base.entity.po.SysMenu;
+import com.li.wisdomcashier.base.entity.po.*;
+import com.li.wisdomcashier.base.entity.vo.UserVo;
 import com.li.wisdomcashier.base.enums.MenuEnum;
 import com.li.wisdomcashier.base.enums.ResultStatus;
 import com.li.wisdomcashier.base.enums.RoleEnum;
-import com.li.wisdomcashier.base.mapper.RoleMapper;
-import com.li.wisdomcashier.base.mapper.ShopMapper;
-import com.li.wisdomcashier.base.mapper.SysMenuMapper;
+import com.li.wisdomcashier.base.mapper.*;
 import com.li.wisdomcashier.base.service.ShopService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.entity.vo.ShopVO;
@@ -28,10 +26,8 @@ import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -53,6 +49,9 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
 
     @Resource
     private SysMenuMapper sysMenuMapper;
+
+    @Resource
+    private UserMapper userMapper;
 
     @Override
     public R<List<ShopVO>> getUserShop(String shopName) {
@@ -149,6 +148,56 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
         shop.setShopName(shopMessageDTO.getName());
         shop.setTip(shopMessageDTO.getDesc());
         return R.ok(shopMapper.updateById(shop)==1?"更新成功！":"更新失败，请联系系统管理员！");
+    }
+
+    @Override
+    public R<IPage<UserVo>> getEmploree(QueryEmDTO queryEmDTO) {
+        //店主接口
+        if(!UserUtils.hasPermissions(Long.parseLong(queryEmDTO.getSid()),RoleEnum.SHOPMASTER.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
+        Shop shop = shopMapper.selectOne(Wrappers.lambdaQuery(Shop.class).eq(Shop::getId, Long.parseLong(queryEmDTO.getSid())).eq(Shop::getStatus,0));
+        if(Objects.isNull(shop)){
+            return R.error("不存在店铺或该店铺已被封禁！");
+        }
+        Integer total = roleMapper.selectPersonCount(queryEmDTO.getSid());
+        if(total == 0)
+        {
+            return R.ok(new Page<>());
+        }
+        List<UserVo> userVos = roleMapper.selectPerson(Long.parseLong(queryEmDTO.getSid()), (queryEmDTO.getCurrent()-1) * queryEmDTO.getPageSize(), queryEmDTO.getPageSize());
+        List<Long> userID = userVos.stream().map(UserVo::getId).collect(Collectors.toList());
+        Map<Long, User> userMap = userMapper.selectList(Wrappers.lambdaQuery(User.class).in(User::getId, userID))
+                .stream().collect(Collectors.toMap(User::getId, Function.identity()));
+        List<UserVo> collect = userVos.stream().map(e -> {
+            Integer tmp = e.getRoleEnum();
+            UserVo copy = CglibUtil.copy(userMap.get(e.getId()), UserVo.class);
+            copy.setRoleEnum(tmp);
+            return copy;
+        }).collect(Collectors.toList());
+        Page<UserVo> userVoPage = new Page<>();
+        userVoPage.setTotal(total);
+        userVoPage.setCurrent(queryEmDTO.getCurrent());
+        userVoPage.setRecords(collect);
+        userVoPage.setSize(queryEmDTO.getPageSize());
+        return R.ok(userVoPage);
+    }
+
+    @Override
+    public R<String> addEmploree(String sid, String pid) {
+        //店主接口
+        if(!UserUtils.hasPermissions(Long.parseLong(sid),RoleEnum.SHOPMASTER.getCode())){
+            throw new AuthorizationException("无权操作！");
+        }
+        User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getId, Long.parseLong(pid)));
+        if(Objects.isNull(user)){
+            return R.error("查无此人！请检查用户ID是否错误！");
+        }
+        Role role = new Role();
+        role.setShopId(Long.parseLong(sid));
+        role.setRole(RoleEnum.SHOP.getCode());
+        role.setUserId(user.getId());
+        return R.ok(roleMapper.insert(role)==1?"新增成功":"新增失败！请联系系统管理员！") ;
     }
 
 

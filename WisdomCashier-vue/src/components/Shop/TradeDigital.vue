@@ -35,7 +35,8 @@
       <div id="container2"
     /></el-col>
     <el-col :span="24">
-      <h2 style="font-size: 30px">收入变化</h2>
+      <h2 v-show="isCollapse === true" style="font-size: 30px">收入变化</h2>
+      <h2 v-show="isCollapse === false" style="font-size: 30px">订单变化</h2>
     </el-col>
   </el-row>
   <el-row style="margin-top: 8%">
