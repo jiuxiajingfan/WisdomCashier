@@ -41,12 +41,4 @@ public class FileController {
         String upload = minIoUtils.upload(file);
         return R.ok(address+"/"+bucketName+"/"+upload);
     }
-
-
-    @PostMapping("/uploadBase64")
-    public R<String> uploadBase64(@RequestBody String url) {
-        String upload = minIoUtils.base64ConvertPNG(url);
-        return R.ok(address+"/"+bucketName+"/"+upload);
-    }
-
 }

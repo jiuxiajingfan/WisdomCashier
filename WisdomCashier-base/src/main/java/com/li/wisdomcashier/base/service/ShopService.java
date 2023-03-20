@@ -13,7 +13,7 @@ import java.util.List;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author Nine
@@ -22,14 +22,22 @@ import java.util.List;
 public interface ShopService extends IService<Shop> {
     /**
      * 获取用户相关店铺
+     * @Param shopName 店铺名 非必要参数
      * @return
      */
-   R<List<ShopVO>> getUserShop(String shopName);
+    R<List<ShopVO>> getUserShop(String shopName);
 
-   R<IPage<ShopVO>> getUserShopPage(ShopQueryDTO shopQueryDTO);
+    /**
+     * 获取用户相关店铺
+     *
+     * @param shopQueryDTO
+     * @return
+     */
+    R<IPage<ShopVO>> getUserShopPage(ShopQueryDTO shopQueryDTO);
 
     /**
      * 获取店铺菜单
+     *
      * @param shopId
      * @return
      */
@@ -39,6 +47,7 @@ public interface ShopService extends IService<Shop> {
 
     /**
      * 更新
+     *
      * @param shopMessageDTO
      * @return
      */
@@ -46,6 +55,7 @@ public interface ShopService extends IService<Shop> {
 
     /**
      * 员工列表
+     *
      * @param queryEmDTO
      * @return
      */
@@ -53,15 +63,17 @@ public interface ShopService extends IService<Shop> {
 
     /**
      * 新增员工
+     *
      * @param sid 店铺id
      * @param pid 员工id
      * @return
      */
-    R<String> addEmploree(String sid,String pid);
+    R<String> addEmploree(String sid, String pid);
 
 
     /**
      * 修改权限
+     *
      * @param approvalDTO
      * @return
      */
@@ -69,11 +81,11 @@ public interface ShopService extends IService<Shop> {
 
     /**
      * 删除员工
+     *
      * @param deleteDTO
      * @return
      */
     R<String> deleteEmploree(DeleteDTO deleteDTO);
-
 
 
 }

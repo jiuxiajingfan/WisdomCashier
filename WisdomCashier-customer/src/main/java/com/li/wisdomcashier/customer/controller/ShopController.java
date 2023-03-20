@@ -45,7 +45,7 @@ public class ShopController {
     private R<List<ShopVO>> getUserShop(String shopName){
         return shopService.getUserShop(shopName);
     }
-    @ApiModelProperty(value = "分页获取用户相关店铺")
+    @ApiOperation(value = "分页获取用户相关店铺")
     @PostMapping("/getUserShopPage")
     private R<IPage<ShopVO>> getUserShopPage(@RequestBody ShopQueryDTO shopQueryDTO){
         return shopService.getUserShopPage(shopQueryDTO);
