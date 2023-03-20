@@ -19,7 +19,7 @@
     </el-button>
   </dev>
   <div class="table">
-    <el-table :data="good" height="calc(100vh - 230px)">
+    <el-table :data="good" height="calc(100vh - 230px)" v-loading="lod">
       <el-table-column prop="pic" label="图片">
         <template v-slot="scope">
           <el-upload
@@ -437,6 +437,7 @@ const clear7 = () => {
   del();
 };
 const queryTaskList = () => {
+  lod.value = true;
   sid.value = router.currentRoute.value.query.id;
   if (currentText != searchText.value) {
     current.value = 1;
@@ -454,6 +455,9 @@ const queryTaskList = () => {
       current.value = res.data.data.current;
       total.value = res.data.data.total;
       if (good.value.length === 0) dialogFormVisible2.value = true;
+    })
+    .finally(() => {
+      lod.value = false;
     });
 };
 const taskCurrentChange = (cnt) => {
@@ -576,11 +580,9 @@ const updateGood = (row) => {
 };
 const deleteGood = (row) => {
   api
-    .get("/Goods/deleteGood", {
-      params: {
-        sid: router.currentRoute.value.query.id,
-        gid: row,
-      },
+    .post("/Goods/deleteGood", {
+      sid: router.currentRoute.value.query.id,
+      id: row,
     })
     .then((res) => {
       utils.showMessage(res.data.code, res.data.msg);

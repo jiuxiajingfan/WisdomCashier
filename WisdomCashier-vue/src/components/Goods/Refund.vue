@@ -11,7 +11,7 @@
     </template>
   </el-input>
   <h2 style="font-size: 20px; margin-top: 50px">订单详情</h2>
-  <el-table :data="trade" height="calc(50vh - 230px)">
+  <el-table :data="trade" height="calc(50vh - 230px)" v-loading="lod">
     <el-table-column type="expand">
       <div m="4">
         <el-table :data="tradeDetail">
@@ -52,7 +52,7 @@
     <el-table-column prop="operater" label="交易员" width="auto" />
   </el-table>
   <h2 style="font-size: 20px; margin-top: 50px">退款详情</h2>
-  <el-table :data="tradeRefund" height="calc(50vh - 230px)">
+  <el-table :data="tradeRefund" height="calc(50vh - 230px)" v-loading="lod">
     <el-table-column prop="no" label="退款流水号" width="auto" />
     <el-table-column prop="money" label="退款金额" width="auto" />
     <el-table-column label="退款状态" width="auto">
@@ -304,6 +304,7 @@ const refund = () => {
     });
 };
 const queryTaskList = () => {
+  lod.value = true;
   if (searchText.value === "") {
     utils.showMessage(400, "请输入订单号");
     return;
@@ -331,6 +332,9 @@ const queryTaskList = () => {
       } else {
         utils.showErrMessage(res.data.msg);
       }
+    })
+    .finally(() => {
+      lod.value = false;
     });
 };
 const type = ref("0");

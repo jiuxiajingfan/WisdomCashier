@@ -8,9 +8,7 @@ import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.common.R;
-import com.li.wisdomcashier.base.entity.dto.QueryEmDTO;
-import com.li.wisdomcashier.base.entity.dto.ShopMessageDTO;
-import com.li.wisdomcashier.base.entity.dto.ShopQueryDTO;
+import com.li.wisdomcashier.base.entity.dto.*;
 import com.li.wisdomcashier.base.entity.po.*;
 import com.li.wisdomcashier.base.entity.vo.UserVo;
 import com.li.wisdomcashier.base.enums.MenuEnum;
@@ -185,6 +183,37 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
         role.setRole(RoleEnum.SHOP.getCode());
         role.setUserId(user.getId());
         return R.ok(roleMapper.insert(role)==1?"新增成功":"新增失败！请联系系统管理员！") ;
+    }
+
+    @Override
+    public R<String> changeRole(ApprovalDTO approvalDTO) {
+        //店主接口
+        UserUtils.hasPermissions(approvalDTO.getSid(), RoleEnum.SHOPMASTER.getCode());
+        Role role = roleMapper.selectOne(Wrappers.lambdaQuery(Role.class)
+                .eq(Role::getShopId, Long.parseLong(approvalDTO.getSid()))
+                .eq(Role::getUserId, Long.parseLong(approvalDTO.getPid())));
+        if(Objects.isNull(role)){
+            return R.error("参数错误！");
+        }
+        role.setRole(approvalDTO.getType());
+        return R.ok(roleMapper.updateById(role)==1?"更新成功！":"更新失败，请联系系统管理员！");
+    }
+
+    @Override
+    public R<String> deleteEmploree(DeleteDTO deleteDTO) {
+        //店主接口
+        UserUtils.hasPermissions(deleteDTO.getSid(), RoleEnum.SHOPMASTER.getCode());
+        Role role = roleMapper.selectOne(Wrappers.lambdaQuery(Role.class)
+                .eq(Role::getShopId, Long.parseLong(deleteDTO.getSid()))
+                .eq(Role::getUserId, Long.parseLong(deleteDTO.getId())));
+        if(Objects.isNull(role)){
+            return R.error("参数错误！");
+        }
+        //不允许自己删自己
+        if(Long.parseLong(deleteDTO.getId()) == UserUtils.getUser().getId()){
+            return R.error("无法删除自己！");
+        }
+        return R.ok(roleMapper.deleteById(role)==1?"更新成功！":"更新失败，请联系系统管理员！");
     }
 
 

@@ -1,6 +1,11 @@
 <template>
   <div>
-    <el-form :inline="true" :model="formInline" style="width: 100%">
+    <el-form
+      :inline="true"
+      :model="formInline"
+      style="width: 100%"
+      v-loading="lod"
+    >
       <el-form-item label="交易流水号">
         <el-input v-model="formInline.id" />
       </el-form-item>
@@ -40,7 +45,7 @@
   </div>
   <div>
     <div class="table">
-      <el-table :data="trade" height="calc(100vh - 230px)">
+      <el-table :data="trade" height="calc(100vh - 230px)" v-loading="lod">
         <el-table-column prop="id" label="流水号" width="auto" />
         <el-table-column prop="income" label="金额" width="auto" />
         <el-table-column label="交易状态" width="auto">
@@ -132,6 +137,7 @@ const formInline = reactive({
   date: "",
   type: [],
 });
+let lod = ref(false);
 const querydetail = (row) => {
   api
     .get("trade/queryGoodsById", {
@@ -152,6 +158,7 @@ onBeforeMount(() => {
   queryTaskList();
 });
 const queryTaskList = () => {
+  lod.value = true;
   api
     .post("trade/queryTradePage", {
       id: formInline.id,
@@ -166,6 +173,9 @@ const queryTaskList = () => {
       trade.value = res.data.data.records;
       current.value = res.data.data.current;
       total.value = res.data.data.total;
+    })
+    .finally(() => {
+      lod.value = false;
     });
 };
 let current = ref(1);

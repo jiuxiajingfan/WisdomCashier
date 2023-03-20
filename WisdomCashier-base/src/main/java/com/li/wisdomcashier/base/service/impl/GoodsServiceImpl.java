@@ -11,6 +11,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.BuyGoodDTO;
+import com.li.wisdomcashier.base.entity.dto.DeleteDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Goods;
@@ -240,10 +241,10 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     }
 
     @Override
-    public R<String> deleteGood(String sid, String gid) {
+    public R<String> deleteGood(DeleteDTO deleteDTO) {
         //管理员接口
-        UserUtils.hasPermissions(sid, RoleEnum.SHOPADMIN.getCode());
-        Goods goods = goodsMapper.selectOne(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, gid));
+        UserUtils.hasPermissions(deleteDTO.getSid(), RoleEnum.SHOPADMIN.getCode());
+        Goods goods = goodsMapper.selectOne(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, deleteDTO.getId()));
         if(Objects.isNull(goods))
             return R.error("不存在该商品！");
         return goodsMapper.deleteById(goods) ==1?R.ok("删除成功！"):R.error("删除失败,请联系管理员查看问题");

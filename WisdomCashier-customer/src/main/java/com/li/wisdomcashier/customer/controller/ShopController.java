@@ -2,10 +2,7 @@ package com.li.wisdomcashier.customer.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
-import com.li.wisdomcashier.base.entity.dto.ApprovalDTO;
-import com.li.wisdomcashier.base.entity.dto.QueryEmDTO;
-import com.li.wisdomcashier.base.entity.dto.ShopMessageDTO;
-import com.li.wisdomcashier.base.entity.dto.ShopQueryDTO;
+import com.li.wisdomcashier.base.entity.dto.*;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
 import com.li.wisdomcashier.base.entity.vo.ApplyVO;
 import com.li.wisdomcashier.base.entity.vo.UserVo;
@@ -112,5 +109,17 @@ public class ShopController {
     @PostMapping("/approval")
     public R<String> approval(@RequestBody @Validated ApprovalDTO approvalDTO){
         return applyService.approval(approvalDTO);
+    }
+
+    @ApiOperation(value = "权限更改")
+    @PostMapping("/changeRole")
+    public R<String> changeRole(@RequestBody @Validated ApprovalDTO approvalDTO){
+        return shopService.changeRole(approvalDTO);
+    }
+
+    @ApiOperation(value = "删除员工")
+    @PostMapping("/deleteEmploree")
+    public R<String> deleteEmploree(@RequestBody @Validated DeleteDTO deleteDTO) {
+        return shopService.deleteEmploree(deleteDTO);
     }
 }

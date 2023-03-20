@@ -3,6 +3,7 @@ package com.li.wisdomcashier.base.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.BuyGoodDTO;
+import com.li.wisdomcashier.base.entity.dto.DeleteDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Goods;
@@ -75,12 +76,11 @@ public interface GoodsService extends IService<Goods> {
     void failTradeLogAsunc(String tradeNo,Long sid,Integer type);
 
     /**
-     * 删除商品
-     * @param sid
-     * @param gid
+     *
+     * @param deleteDTO
      * @return
      */
-    R<String> deleteGood(String sid,String gid);
+    R<String> deleteGood(DeleteDTO deleteDTO);
 
     /**
      * 获取临期商品

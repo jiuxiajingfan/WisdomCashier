@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.common.UnCheck;
 import com.li.wisdomcashier.base.entity.dto.BuyGoodDTO;
+import com.li.wisdomcashier.base.entity.dto.DeleteDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Goods;
@@ -72,10 +73,10 @@ public class GoodsController {
         return goodsService.getRandID();
     }
 
-    @GetMapping("/deleteGood")
+    @PostMapping("/deleteGood")
     @ApiOperation(value = "删除商品")
-    public R<String> deleteGood(String sid, String gid){
-        return goodsService.deleteGood(sid, gid);
+    public R<String> deleteGood(@RequestBody @Validated DeleteDTO deleteDTO){
+        return goodsService.deleteGood(deleteDTO);
     }
 
 

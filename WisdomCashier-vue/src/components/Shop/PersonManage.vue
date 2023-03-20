@@ -6,7 +6,7 @@
   </el-row>
   <dev class="searchBox" style="width: 100%; text-align: center">
     <el-input
-      placeholder="请输入要搜索的商品名或条形码"
+      placeholder="请输入要搜索的员工姓名"
       v-model="searchText"
       class="input-with-select"
       @keyup.enter="queryTaskList"
@@ -33,7 +33,7 @@
     </el-badge>
   </dev>
   <div class="table">
-    <el-table :data="good" height="calc(100vh - 230px)">
+    <el-table :data="good" height="calc(100vh - 230px)" v-loading="lod">
       <el-table-column prop="pic" label="头像">
         <template v-slot="scope">
           <el-image :src="scope.row.image" style="width: 60px; height: 60px">
@@ -44,23 +44,35 @@
       <el-table-column prop="userNickname" label="姓名" width="auto" />
       <el-table-column prop="phone" label="电话" width="auto" />
       <el-table-column prop="email" label="邮箱" width="auto" />
-      <el-table-column prop="roleEnum" label="用户权限" width="auto" />
+      <el-table-column label="用户权限" width="auto">
+        <template #default="scope">
+          <span>
+            {{ tradetype[scope.row.roleEnum - 1] }}
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作">
         <template #default="scope">
           <el-button
             link
             type="primary"
             size="large"
-            @click="updateGood(scope.row)"
+            @click="change(scope.row.roleEnum, scope.row.id)"
+            :disabled="scope.row.roleEnum === 1"
           >
-            更新
+            更改权限
           </el-button>
           <el-popconfirm
             title="确定要删除吗?"
-            @confirm="deleteGood(scope.row.gid)"
+            @confirm="addEmploree4(scope.row.id)"
           >
             <template #reference>
-              <el-button link type="primary">删除</el-button>
+              <el-button
+                link
+                type="primary"
+                :disabled="scope.row.roleEnum === 1"
+                >删除</el-button
+              >
             </template>
           </el-popconfirm>
         </template>
@@ -88,7 +100,7 @@
       <el-input
         ref="zfbinput"
         v-model="userPayID"
-        @keyup.enter="alipayP"
+        @keyup.enter="addEmploree"
       ></el-input>
       <template #footer>
         <span class="dialog-footer">
@@ -116,21 +128,41 @@
               link
               type="primary"
               size="large"
-              @click="addEmploree2(scope.row.userId, 2)"
+              @click="addEmploree2(scope.row.userId, 3)"
             >
-              同意
+              拒绝
             </el-button>
             <el-popconfirm
-              title="确定要删除吗?"
-              @confirm="deleteGood(scope.row.gid)"
+              title="确定要通过审批吗?"
+              @confirm="addEmploree2(scope.row.userId, 2)"
             >
               <template #reference>
-                <el-button link type="primary">拒绝</el-button>
+                <el-button link type="primary">通过</el-button>
               </template>
             </el-popconfirm>
           </template>
         </el-table-column>
       </el-table>
+    </el-dialog>
+    <el-dialog v-model="dialogVisiblezfb2" title="更改权限" width="30%">
+      <h2 style="font-size: 30px">设置权限为：</h2>
+      <el-select v-model="type" placeholder="Select" default-first-option="1">
+        <el-option
+          v-for="item in options"
+          :key="item.value"
+          :label="item.label"
+          :value="item.value"
+          :disabled="item.disabled"
+        />
+      </el-select>
+      <template #footer>
+        <span class="dialog-footer">
+          <el-button @click="dialogVisiblezfb2 = false">取消</el-button>
+          <el-button type="primary" @click="addEmploree3" :loading="lod">
+            确定
+          </el-button>
+        </span>
+      </template>
     </el-dialog>
   </div>
 </template>
@@ -147,10 +179,28 @@ let total = ref(0);
 let pageSize = ref(10);
 let searchText = ref("");
 let dialogVisiblezfb = ref(false);
+let dialogVisiblezfb2 = ref(false);
 let lod = ref(false);
 let currentText = "";
 let userPayID = ref("");
 let apply = ref([]);
+const type = ref();
+const type2 = ref("");
+const change = (res, res2) => {
+  type2.value = res2;
+  type.value = res;
+  dialogVisiblezfb2.value = true;
+};
+const options = [
+  {
+    value: 2,
+    label: "店铺管理员",
+  },
+  {
+    value: 3,
+    label: "收银员",
+  },
+];
 const queryTaskList2 = () => {
   api
     .get("Shop/getApplyList", {
@@ -163,6 +213,7 @@ const queryTaskList2 = () => {
     });
 };
 const queryTaskList = () => {
+  lod.value = true;
   if (currentText != searchText.value) {
     current.value = 1;
     currentText = searchText.value;
@@ -177,6 +228,9 @@ const queryTaskList = () => {
       good.value = res.data.data.records;
       current.value = res.data.data.current;
       total.value = res.data.data.total;
+    })
+    .finally(() => {
+      lod.value = false;
     });
 };
 const addEmploree2 = (res, res2) => {
@@ -191,6 +245,23 @@ const addEmploree2 = (res, res2) => {
       utils.showMessage(res.data.code, res.data.msg);
       queryTaskList2();
       queryTaskList();
+    })
+    .finally(() => {
+      lod.value = false;
+    });
+};
+const addEmploree3 = () => {
+  lod.value = true;
+  api
+    .post("Shop/changeRole", {
+      sid: router.currentRoute.value.query.id,
+      pid: type2.value,
+      type: type.value,
+    })
+    .then((res) => {
+      utils.showMessage(res.data.code, res.data.msg);
+      queryTaskList();
+      dialogVisiblezfb2.value = false;
     })
     .finally(() => {
       lod.value = false;
@@ -212,6 +283,22 @@ const addEmploree = () => {
     .finally(() => {
       lod.value = false;
       dialogVisiblezfb.value = false;
+      userPayID.value = "";
+    });
+};
+const addEmploree4 = (res) => {
+  lod.value = true;
+  api
+    .post("Shop/deleteEmploree", {
+      sid: router.currentRoute.value.query.id,
+      id: res,
+    })
+    .then((res) => {
+      utils.showMessage(res.data.code, res.data.msg);
+      queryTaskList();
+    })
+    .finally(() => {
+      lod.value = false;
     });
 };
 onBeforeMount(() => {
@@ -229,6 +316,7 @@ const taskSizeChange = (ps) => {
   pageSize.value = ps;
   queryTaskList();
 };
+let tradetype = ["店长", "店铺管理员", "收银员"];
 </script>
 
 <style scoped lang="scss">

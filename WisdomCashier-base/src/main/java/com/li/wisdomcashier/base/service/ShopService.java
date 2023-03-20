@@ -2,9 +2,7 @@ package com.li.wisdomcashier.base.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
-import com.li.wisdomcashier.base.entity.dto.QueryEmDTO;
-import com.li.wisdomcashier.base.entity.dto.ShopMessageDTO;
-import com.li.wisdomcashier.base.entity.dto.ShopQueryDTO;
+import com.li.wisdomcashier.base.entity.dto.*;
 import com.li.wisdomcashier.base.entity.po.Shop;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
@@ -60,6 +58,21 @@ public interface ShopService extends IService<Shop> {
      * @return
      */
     R<String> addEmploree(String sid,String pid);
+
+
+    /**
+     * 修改权限
+     * @param approvalDTO
+     * @return
+     */
+    R<String> changeRole(ApprovalDTO approvalDTO);
+
+    /**
+     * 删除员工
+     * @param deleteDTO
+     * @return
+     */
+    R<String> deleteEmploree(DeleteDTO deleteDTO);
 
 
 

@@ -2,6 +2,8 @@ package com.li.wisdomcashier.base.entity.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
@@ -28,6 +30,8 @@ public class ApprovalDTO {
     /**
      * 结果
      */
+    @Max(value = 3)
+    @Min(value = 2)
     @NotNull(message = "结果不能为空")
     Integer type;
 }

@@ -116,6 +116,7 @@ public class AccountController {
     }
 
 
+
     @ApiOperation(value = "请求菜单")
     @GetMapping("/getUserCenterMenu")
     public  R<List<SysMenu>> getUserCenterMenu(){

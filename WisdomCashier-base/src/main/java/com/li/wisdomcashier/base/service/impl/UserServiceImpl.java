@@ -42,6 +42,8 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -177,22 +179,22 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         for (Role role : roles) {
             //店主
             if (role.getRole() == 1) {
-                roleList.add("shopmaster");
-                permissionList.add(role.getShopId().toString() + "1");
+                roleList.addAll(Arrays.asList(role.getShopId().toString()+"shopmaster",role.getShopId().toString()+"shopadmin",role.getShopId().toString()+"shop"));
+                permissionList.addAll(Arrays.asList(role.getShopId().toString() + "1",role.getShopId().toString() + "2",role.getShopId().toString() + "3"));
             }
             //店铺管理员
             else if (role.getRole() == 2) {
-                roleList.add("shopadmin");
-                permissionList.add(role.getShopId().toString() + "2");
+                roleList.addAll(Arrays.asList(role.getShopId().toString()+"shopadmin",role.getShopId().toString()+"shop"));
+                permissionList.addAll(Arrays.asList(role.getShopId().toString() + "2",role.getShopId().toString() + "3"));
             }
             //店员
             else if (role.getRole() == 3) {
-                roleList.add("shop");
-                permissionList.add(role.getShopId().toString() + "3");
+                roleList.addAll(Arrays.asList(role.getShopId().toString()+"shop"));
+                permissionList.addAll(Arrays.asList(role.getShopId().toString() + "3"));
             }
         }
         userBean.setPermission(permissionList);
-        userBean.setRole(roleList.stream().distinct().collect(Collectors.toList()));
+        userBean.setRole(roleList);
         return userBean;
     }
 
@@ -324,14 +326,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public R<List<SysMenu>> getUserCenterMenu() {
         Subject subject = SecurityUtils.getSubject();
         List<SysMenu> userCenterMenu = new ArrayList<>();
-        Integer role;
-        if (subject.hasRole("shopmaster")) {
-            role = RoleEnum.SHOPMASTER.getCode();
-        } else if (subject.hasRole("shopadmin")) {
-            role = RoleEnum.SHOPADMIN.getCode();
-        } else {
-            role = RoleEnum.SHOP.getCode();
-        }
+        Integer role = RoleEnum.SHOPMASTER.getCode();
         userCenterMenu = sysMenuMapper.getUserCenterMenu(role, MenuEnum.USERCENTER.getCode());
         for (SysMenu centerMenu : userCenterMenu) {
             centerMenu.setChildren(sysMenuMapper.getChildrens(role, centerMenu.getMenuId(), MenuEnum.USERCENTER.getCode()));
