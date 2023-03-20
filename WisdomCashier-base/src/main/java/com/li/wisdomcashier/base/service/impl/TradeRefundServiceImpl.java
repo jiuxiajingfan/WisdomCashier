@@ -12,7 +12,6 @@ import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.UserUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -64,9 +63,8 @@ public class TradeRefundServiceImpl extends ServiceImpl<TradeRefundMapper, Trade
     public R<List<TradeRefund>> queryRefund(Long sid, Long id) {
         if(Objects.isNull(sid)||Objects.isNull(id))
             return R.error("参数错误！");
-        if(!UserUtils.hasPermissions(sid, RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        //管理员接口
+        UserUtils.hasPermissions(sid.toString(), RoleEnum.SHOPADMIN.getCode());
         List<TradeRefund> tradeRefunds = tradeRefundMapper.selectList(Wrappers.lambdaQuery(TradeRefund.class)
                 .eq(TradeRefund::getSid, id)
         );

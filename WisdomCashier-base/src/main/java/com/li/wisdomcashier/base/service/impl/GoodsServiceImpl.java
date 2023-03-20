@@ -30,7 +30,6 @@ import com.li.wisdomcashier.base.service.TradeGoodsService;
 import com.li.wisdomcashier.base.util.UserUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -101,9 +100,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Override
     public R<String> addGood(GoodDTO good) {
-        if(!UserUtils.hasPermissions(Long.parseLong(good.getSid()), RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(good.getSid(), RoleEnum.SHOP.getCode());
         List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, good.getGid()).eq(Goods::getSid, Long.parseLong(good.getSid())));
         if(!CollectionUtils.isEmpty(goods)){
             return R.error("该条码已存在库中！添加失败");
@@ -124,9 +121,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Override
     public R<IPage<Goods>> getGoodPage(GoodQueryDTO goodQueryDTO) {
-        if(!UserUtils.hasPermissions(Long.parseLong(goodQueryDTO.getSid()), RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(goodQueryDTO.getSid(), RoleEnum.SHOP.getCode());
         Boolean flag = true;
         //判断是商品名还是条形码
         if(!StringUtils.isBlank(goodQueryDTO.getGid())) {
@@ -146,9 +141,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Override
     public R<String> updateGood(GoodDTO good) {
-        if(!UserUtils.hasPermissions(Long.parseLong(good.getSid()), RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(good.getSid(), RoleEnum.SHOP.getCode());
         Goods goods = goodsMapper.selectOne(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, good.getGid()).eq(Goods::getSid, Long.parseLong(good.getSid())));
         if(Objects.isNull(goods)){
             return R.error("不存在该商品！");
@@ -169,9 +162,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Override
     public R<GoodsVO> getGood(String gid, Long sid) {
-        if(!UserUtils.hasPermissions(sid, RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(sid.toString(), RoleEnum.SHOP.getCode());
         List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, gid).eq(Goods::getSid, sid));
         if(CollectionUtils.isEmpty(goods)){
             return R.error("不存在该商品！");
@@ -185,9 +176,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     @Override()
     @Transactional(rollbackFor = Exception.class)
     public R<String> buyGood(BuyGoodDTO buyGoodDTO) {
-        if(!UserUtils.hasPermissions(Long.parseLong(buyGoodDTO.getSid()), RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(buyGoodDTO.getSid(), RoleEnum.SHOP.getCode());
         try {
             if(buyGoodDTO.getStatus()==TradeEnum.FINISH.getCode()) {
                 Trade trade = new Trade();
@@ -252,10 +241,8 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Override
     public R<String> deleteGood(String sid, String gid) {
-        //仅店长可删除
-        if(!UserUtils.hasPermissions(Long.parseLong(sid), RoleEnum.SHOPADMIN.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        //管理员接口
+        UserUtils.hasPermissions(sid, RoleEnum.SHOPADMIN.getCode());
         Goods goods = goodsMapper.selectOne(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, gid));
         if(Objects.isNull(goods))
             return R.error("不存在该商品！");
@@ -264,9 +251,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Override
     public R<IPage<Goods>> getGoodTemporaryPage(GoodQueryDTO goodQueryDTO) {
-        if(!UserUtils.hasPermissions(Long.parseLong(goodQueryDTO.getSid()), RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(goodQueryDTO.getSid(), RoleEnum.SHOP.getCode());
         LambdaQueryWrapper<Goods> wrapper = Wrappers.lambdaQuery(Goods.class)
                 .eq(Goods::getSid,Long.parseLong(goodQueryDTO.getSid()))
                 .le(Goods::getDeadline, LocalDate.now().plusDays(7));

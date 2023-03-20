@@ -2,6 +2,7 @@ package com.li.wisdomcashier.base.entity.dto;
 
 import lombok.Data;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
@@ -20,6 +21,6 @@ public class QueryTradeDTO extends PageDTO {
     private LocalDate startTime;
     private LocalDate endTime;
     private List<Integer> status;
-    @NotNull(message = "店铺id不能为空")
+    @NotBlank(message = "店铺id不能为空")
     private String sid;
 }

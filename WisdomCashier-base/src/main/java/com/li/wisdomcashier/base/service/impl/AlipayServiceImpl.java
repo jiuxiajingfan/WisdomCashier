@@ -26,7 +26,6 @@ import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.li.wisdomcashier.base.util.RedisUtils;
 import com.li.wisdomcashier.base.util.UserUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -97,10 +96,8 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Override
     public R<PayDTO> aliPay(AliPayDTO aliPayDTO) {
+       UserUtils.hasPermissions(aliPayDTO.getShopName(), RoleEnum.SHOP.getCode());
         Shop shop = shopMapper.selectById(Long.parseLong(aliPayDTO.getShopName()));
-        if(!UserUtils.hasPermissions(shop.getId(), RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
         User user = UserUtils.getUser();
         if (redisUtils.hasKey("aliPay" + user.getId()))
             return R.error("存在一笔订单未处理，请先处理！");
@@ -109,13 +106,21 @@ public class AlipayServiceImpl implements AlipayService {
         String id = IdUtil.getSnowflake().nextIdStr();
         redisUtils.set("aliPay" + user.getId(), id, 60);
         AlipayTradePayModel model = new AlipayTradePayModel();
-        /** 商户订单号，商户自定义，需保证在商户端不重复，如：20200612000001 **/
+        /**
+         * 商户订单号，商户自定义，需保证在商户端不重复，如：20200612000001
+         **/
         model.setOutTradeNo(redisUtils.get("aliPay" + user.getId()).toString());
-        /**订单标题 **/
+        /**
+         * 订单标题
+         **/
         model.setSubject(shop.getShopName()+"消费");
-        /** 订单金额，精确到小数点后两位 **/
+        /**
+         * 订单金额，精确到小数点后两位
+         **/
         model.setTotalAmount(aliPayDTO.getPrice());
-        /** 订单描述 **/
+        /**
+         * 订单描述
+         **/
         model.setBody(aliPayDTO.getShopName() + "购物支付");
         model.setAuthCode(aliPayDTO.getUserID());
         model.setOperatorId(aliPayDTO.getOperatorId());
@@ -166,9 +171,7 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Override
     public R<String> cancelPay(String tradeNo,Long sid) {
-        if(!UserUtils.hasPermissions(sid, RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(sid.toString(), RoleEnum.SHOP.getCode());
         AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         User user = UserUtils.getUser();
         redisUtils.del("aliPay" + user.getId());
@@ -188,9 +191,7 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Override
     public R<String> closePay(String tradeNo,Long sid) {
-        if(!UserUtils.hasPermissions(sid, RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(sid.toString(), RoleEnum.SHOP.getCode());
         AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         User user = UserUtils.getUser();
         redisUtils.del("aliPay" + user.getId());
@@ -233,9 +234,7 @@ public class AlipayServiceImpl implements AlipayService {
     @Override
     public R<String> refundPay(RefundDTO refundDTO) {
         //店铺管理员才能退款
-        if(!UserUtils.hasPermissions(Long.parseLong(refundDTO.getSid()), RoleEnum.SHOPADMIN.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(refundDTO.getSid(), RoleEnum.SHOPADMIN.getCode());
         //检查是否有现金退款
         TradeRefund tradeRefund = new TradeRefund();
         User user = UserUtils.getUser();
@@ -302,9 +301,7 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Override
     public R<String> queryRefund(RefundDTO refundDTO) {
-        if(!UserUtils.hasPermissions(Long.parseLong(refundDTO.getSid()), RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(refundDTO.getSid(), RoleEnum.SHOP.getCode());
         AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         AlipayTradeFastpayRefundQueryRequest request = new AlipayTradeFastpayRefundQueryRequest();
         AlipayTradeFastpayRefundQueryModel model = new AlipayTradeFastpayRefundQueryModel();

@@ -164,6 +164,12 @@
             <artifactId>core</artifactId>
             <version>3.3.3</version>
         </dependency>
+<!--        时间类型序列化-->
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <version> 2.13.4</version>
+        </dependency>
     </dependencies>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

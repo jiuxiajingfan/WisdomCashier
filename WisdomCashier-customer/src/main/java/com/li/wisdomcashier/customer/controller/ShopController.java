@@ -2,11 +2,14 @@ package com.li.wisdomcashier.customer.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.ApprovalDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryEmDTO;
 import com.li.wisdomcashier.base.entity.dto.ShopMessageDTO;
 import com.li.wisdomcashier.base.entity.dto.ShopQueryDTO;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
+import com.li.wisdomcashier.base.entity.vo.ApplyVO;
 import com.li.wisdomcashier.base.entity.vo.UserVo;
+import com.li.wisdomcashier.base.service.ApplyService;
 import com.li.wisdomcashier.base.service.ShopCategoryService;
 import com.li.wisdomcashier.base.service.ShopService;
 import com.li.wisdomcashier.base.entity.vo.ShopVO;
@@ -33,6 +36,9 @@ import java.util.List;
 public class ShopController {
     @Resource
     private ShopService shopService;
+
+    @Resource
+    private ApplyService applyService;
 
     @Resource
     private ShopCategoryService shopCategoryService;
@@ -88,5 +94,23 @@ public class ShopController {
     @PostMapping("/getEmploree")
     public R<IPage<UserVo>> getEmploree(@RequestBody @Validated QueryEmDTO queryEmDTO){
         return shopService.getEmploree(queryEmDTO);
+    }
+
+    @ApiOperation(value = "新增店铺人员")
+    @GetMapping("/addEmploree")
+    public R<String> addEmploree(String sid, String pid){
+        return shopService.addEmploree(sid,pid);
+    }
+
+    @ApiOperation(value = "员工申请列表")
+    @GetMapping("/getApplyList")
+    public R<List<ApplyVO>> getApplyList(String sid){
+        return applyService.getApplyList(sid);
+    }
+
+    @ApiOperation(value = "审批申请")
+    @PostMapping("/approval")
+    public R<String> approval(@RequestBody @Validated ApprovalDTO approvalDTO){
+        return applyService.approval(approvalDTO);
     }
 }

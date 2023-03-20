@@ -109,7 +109,7 @@ const c1 = (res) => {
     innerRadius: 0.64,
     meta: {
       value: {
-        formatter: (v) => `¥ ${v}`,
+        formatter: (v) => `¥ ${v.toFixed(2)}`,
       },
     },
     label: {

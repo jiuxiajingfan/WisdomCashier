@@ -22,15 +22,11 @@ import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.li.wisdomcashier.base.service.TradeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.UserUtils;
-import org.apache.shiro.authz.AuthorizationException;
-import org.simpleframework.xml.util.Entry;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -63,9 +59,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
     public R<List<TradeVO>> queryLeast(Long sid) {
         if (Objects.isNull(sid))
             return R.error("店铺ID不能为空！");
-        if (!UserUtils.hasPermissions(sid, RoleEnum.SHOP.getCode())) {
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(sid.toString(), RoleEnum.SHOP.getCode());
         List<Trade> trades = tradeMapper.selectLesat(sid, UserUtils.getUser().getId());
         List<TradeVO> collect = trades.stream().map(e -> {
                     TradeVO copy = CglibUtil.copy(e, TradeVO.class);
@@ -86,9 +80,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
 
     @Override
     public R<IPage<TradeVO>> queryTradePage(QueryTradeDTO queryTradeDTO) {
-        if (!UserUtils.hasPermissions(Long.parseLong(queryTradeDTO.getSid()), RoleEnum.SHOP.getCode())) {
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(queryTradeDTO.getSid(), RoleEnum.SHOP.getCode());
         if (!Objects.isNull(queryTradeDTO.getEndTime())) {
             if (queryTradeDTO.getStartTime().compareTo(queryTradeDTO.getEndTime()) == 0) {
                 queryTradeDTO.setEndTime(queryTradeDTO.getEndTime().plusDays(1));
@@ -116,9 +108,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
     @Override
     public R<String> cashTradeRefund(RefundDTO refundDTO) {
         //店铺管理员才能退款
-        if(!UserUtils.hasPermissions(Long.parseLong(refundDTO.getSid()), RoleEnum.SHOPADMIN.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(refundDTO.getSid(), RoleEnum.SHOPADMIN.getCode());
         Trade trade = tradeMapper.selectById(Long.parseLong(refundDTO.getTradeNo()));
         List<TradeRefund> tradeRefunds = tradeRefundMapper.selectList(Wrappers.lambdaQuery(TradeRefund.class).eq(TradeRefund::getSid, Long.parseLong(refundDTO.getTradeNo())));
         BigDecimal reduce = tradeRefunds.stream().filter(e->
@@ -146,9 +136,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
     @Override
     public R<List<List<EChartVO>>>  currentTradeMoney(QueryMoneyDTO queryMoneyDTO) {
         //店铺管理员权限接口
-        if(!UserUtils.hasPermissions(Long.parseLong(queryMoneyDTO.getSid()), RoleEnum.SHOPADMIN.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(queryMoneyDTO.getSid(), RoleEnum.SHOPADMIN.getCode());
         //月份处理
         if(queryMoneyDTO.getTimeType()==1){
             LocalDateTime tt = queryMoneyDTO.getTimeEnd();
@@ -171,7 +159,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
             return R.error("区间内暂无数据！");
         }
         List<String> date = this.getDate(queryMoneyDTO.getTimeStart(), queryMoneyDTO.getTimeEnd(), queryMoneyDTO.getTimeType());
-        ArrayList<List<EChartVO>> ans = new ArrayList<List<EChartVO>>();
+        ArrayList<List<EChartVO>> ans = new ArrayList<>();
 
         //折线图
         ArrayList<EChartVO> area = new ArrayList<>();

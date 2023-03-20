@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.cglib.CglibUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.common.R;
@@ -97,9 +98,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     public R<List<SysMenu>> getMenu(Long shopId) {
         if(shopId == null)
             return R.error("参数错误！");
-        if(!UserUtils.hasPermissions(shopId,RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(shopId.toString(), RoleEnum.SHOP.getCode());
         Subject subject = SecurityUtils.getSubject();
         List<SysMenu> userCenterMenu = new ArrayList<>();
         Integer role;
@@ -117,14 +116,8 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
 
     @Override
     public R<ShopVO> getShopMessageByID(String sid) {
-        //管理员接口
-        if(!UserUtils.hasPermissions(Long.parseLong(sid),RoleEnum.SHOPADMIN.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
-        Shop shop = shopMapper.selectOne(Wrappers.lambdaQuery(Shop.class).eq(Shop::getId, Long.parseLong(sid)).eq(Shop::getStatus,0));
-        if(Objects.isNull(shop)){
-            return R.error("不存在店铺或该店铺已被封禁！");
-        }
+        //店主接口
+        Shop shop = UserUtils.hasPermissions(sid, RoleEnum.SHOPMASTER.getCode());
         ShopVO shopVO = new ShopVO();
         shopVO.setShopName(shop.getShopName());
         shopVO.setDesc(shop.getTip());
@@ -137,14 +130,8 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
 
     @Override
     public R<String> updateShopMessage(ShopMessageDTO shopMessageDTO) {
-        //管理员接口
-        if(!UserUtils.hasPermissions(Long.parseLong(shopMessageDTO.getSid()),RoleEnum.SHOPADMIN.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
-        Shop shop = shopMapper.selectOne(Wrappers.lambdaQuery(Shop.class).eq(Shop::getId, Long.parseLong(shopMessageDTO.getSid())).eq(Shop::getStatus,0));
-        if(Objects.isNull(shop)){
-            return R.error("不存在店铺或该店铺已被封禁！");
-        }
+        //店主接口
+        Shop shop = UserUtils.hasPermissions(shopMessageDTO.getSid(), RoleEnum.SHOPMASTER.getCode());
         shop.setShopName(shopMessageDTO.getName());
         shop.setTip(shopMessageDTO.getDesc());
         return R.ok(shopMapper.updateById(shop)==1?"更新成功！":"更新失败，请联系系统管理员！");
@@ -153,13 +140,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     @Override
     public R<IPage<UserVo>> getEmploree(QueryEmDTO queryEmDTO) {
         //店主接口
-        if(!UserUtils.hasPermissions(Long.parseLong(queryEmDTO.getSid()),RoleEnum.SHOPMASTER.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
-        Shop shop = shopMapper.selectOne(Wrappers.lambdaQuery(Shop.class).eq(Shop::getId, Long.parseLong(queryEmDTO.getSid())).eq(Shop::getStatus,0));
-        if(Objects.isNull(shop)){
-            return R.error("不存在店铺或该店铺已被封禁！");
-        }
+        UserUtils.hasPermissions(queryEmDTO.getSid(), RoleEnum.SHOPMASTER.getCode());
         Integer total = roleMapper.selectPersonCount(queryEmDTO.getSid());
         if(total == 0)
         {
@@ -185,13 +166,19 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
 
     @Override
     public R<String> addEmploree(String sid, String pid) {
-        //店主接口
-        if(!UserUtils.hasPermissions(Long.parseLong(sid),RoleEnum.SHOPMASTER.getCode())){
-            throw new AuthorizationException("无权操作！");
+        if(StringUtils.isBlank(sid)||StringUtils.isBlank(pid))
+        {
+            return R.error("参数为空！");
         }
+        //店主接口
+        UserUtils.hasPermissions(sid, RoleEnum.SHOPMASTER.getCode());
         User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getId, Long.parseLong(pid)));
         if(Objects.isNull(user)){
             return R.error("查无此人！请检查用户ID是否错误！");
+        }
+        List<Role> roles = roleMapper.selectList(Wrappers.lambdaQuery(Role.class).eq(Role::getUserId, Long.parseLong(pid)).eq(Role::getShopId,Long.parseLong(sid)));
+        if(!roles.isEmpty()){
+            return R.ok("新增成功！");
         }
         Role role = new Role();
         role.setShopId(Long.parseLong(sid));

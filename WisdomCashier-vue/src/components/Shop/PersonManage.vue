@@ -22,13 +22,15 @@
       @click="openadd"
       >新增员工
     </el-button>
-    <el-button
-      style="margin-left: 20px"
-      icon="Plus"
-      type="primary"
-      @click="openadd"
-      >申请列表
-    </el-button>
+    <el-badge :value="apply.length" :hidden="apply.length === 0">
+      <el-button
+        style="margin-left: 20px"
+        icon="Plus"
+        type="primary"
+        @click="dialogTableVisible = true"
+        >申请列表
+      </el-button>
+    </el-badge>
   </dev>
   <div class="table">
     <el-table :data="good" height="calc(100vh - 230px)">
@@ -91,9 +93,44 @@
       <template #footer>
         <span class="dialog-footer">
           <el-button @click="dialogVisiblezfb = false">取消</el-button>
-          <el-button type="primary" @click="addEmploree"> 确定 </el-button>
+          <el-button type="primary" @click="addEmploree" :loading="lod">
+            确定
+          </el-button>
         </span>
       </template>
+    </el-dialog>
+    <el-dialog
+      v-model="dialogTableVisible"
+      title="申请列表"
+      width="50%"
+      align-center="true"
+    >
+      <el-table :data="apply" height="calc(30vh)" v-loading="lod">
+        <el-table-column property="userId" label="用户ID" width="auto" />
+        <el-table-column property="name" label="姓名" width="auto" />
+        <el-table-column property="phone" label="电话" width="auto" />
+        <el-table-column property="gmtCreate" label="申请时间" width="auto" />
+        <el-table-column label="操作">
+          <template #default="scope">
+            <el-button
+              link
+              type="primary"
+              size="large"
+              @click="addEmploree2(scope.row.userId, 2)"
+            >
+              同意
+            </el-button>
+            <el-popconfirm
+              title="确定要删除吗?"
+              @confirm="deleteGood(scope.row.gid)"
+            >
+              <template #reference>
+                <el-button link type="primary">拒绝</el-button>
+              </template>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-dialog>
   </div>
 </template>
@@ -102,14 +139,29 @@
 import { onBeforeMount, ref } from "vue";
 import api from "@/api/api";
 import router from "@/router";
+import utils from "@/utils/utils";
+let dialogTableVisible = ref(false);
 let good = ref([]);
 let current = ref(1);
 let total = ref(0);
 let pageSize = ref(10);
 let searchText = ref("");
 let dialogVisiblezfb = ref(false);
+let lod = ref(false);
 let currentText = "";
 let userPayID = ref("");
+let apply = ref([]);
+const queryTaskList2 = () => {
+  api
+    .get("Shop/getApplyList", {
+      params: {
+        sid: router.currentRoute.value.query.id,
+      },
+    })
+    .then((res) => {
+      apply.value = res.data.data;
+    });
+};
 const queryTaskList = () => {
   if (currentText != searchText.value) {
     current.value = 1;
@@ -127,11 +179,44 @@ const queryTaskList = () => {
       total.value = res.data.data.total;
     });
 };
-const addEmploree = () =>{
-  console.log(1); 
+const addEmploree2 = (res, res2) => {
+  lod.value = true;
+  api
+    .post("Shop/approval", {
+      sid: router.currentRoute.value.query.id,
+      pid: res,
+      type: res2,
+    })
+    .then((res) => {
+      utils.showMessage(res.data.code, res.data.msg);
+      queryTaskList2();
+      queryTaskList();
+    })
+    .finally(() => {
+      lod.value = false;
+    });
+};
+const addEmploree = () => {
+  lod.value = true;
+  api
+    .get("Shop/addEmploree", {
+      params: {
+        sid: router.currentRoute.value.query.id,
+        pid: userPayID.value.trim(),
+      },
+    })
+    .then((res) => {
+      utils.showMessage(res.data.code, res.data.msg);
+      queryTaskList();
+    })
+    .finally(() => {
+      lod.value = false;
+      dialogVisiblezfb.value = false;
+    });
 };
 onBeforeMount(() => {
   queryTaskList();
+  queryTaskList2();
 });
 const openadd = () => {
   dialogVisiblezfb.value = true;

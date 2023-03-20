@@ -9,7 +9,6 @@ import com.li.wisdomcashier.base.service.ShopCategoryService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.UserUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.authz.AuthorizationException;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -36,9 +35,7 @@ public class ShopCategoryServiceImpl extends ServiceImpl<ShopCategoryMapper, Sho
         if(StringUtils.isBlank(sid))
             return R.error("店铺ID不能为空！");
         //店铺管理员权限接口
-        if(!UserUtils.hasPermissions(Long.parseLong(sid), RoleEnum.SHOP.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(sid, RoleEnum.SHOPADMIN.getCode());
         List<ShopCategory> shopCategories = shopCategoryMapper.selectList(Wrappers.lambdaQuery(ShopCategory.class).eq(ShopCategory::getShopId, Long.parseLong(sid)));
         List<String> collect = shopCategories.stream().map(ShopCategory::getCategory).collect(Collectors.toList());
         return R.ok(collect);
@@ -51,9 +48,7 @@ public class ShopCategoryServiceImpl extends ServiceImpl<ShopCategoryMapper, Sho
         if(StringUtils.isBlank(category))
             return R.error("分类不能为空！");
         //店铺管理员权限接口
-        if(!UserUtils.hasPermissions(Long.parseLong(sid), RoleEnum.SHOPADMIN.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(sid, RoleEnum.SHOPADMIN.getCode());
         ShopCategory shopCategory = shopCategoryMapper.selectOne(Wrappers.lambdaQuery(ShopCategory.class).eq(ShopCategory::getShopId, Long.parseLong(sid)).eq(ShopCategory::getCategory, category));
         if(!Objects.isNull(shopCategory)){
             return R.error("该分类已经存在，请勿重复添加！");
@@ -71,9 +66,7 @@ public class ShopCategoryServiceImpl extends ServiceImpl<ShopCategoryMapper, Sho
         if(StringUtils.isBlank(category))
             return R.error("分类不能为空！");
         //店铺管理员权限接口
-        if(!UserUtils.hasPermissions(Long.parseLong(sid), RoleEnum.SHOPADMIN.getCode())){
-            throw new AuthorizationException("无权操作！");
-        }
+        UserUtils.hasPermissions(sid, RoleEnum.SHOPADMIN.getCode());
         ShopCategory shopCategory = shopCategoryMapper.selectOne(Wrappers.lambdaQuery(ShopCategory.class).eq(ShopCategory::getShopId, Long.parseLong(sid)).eq(ShopCategory::getCategory, category));
         if(Objects.isNull(shopCategory)){
             return R.error("不存在该分类！");
