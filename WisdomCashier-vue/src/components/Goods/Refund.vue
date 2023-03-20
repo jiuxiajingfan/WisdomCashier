@@ -280,7 +280,7 @@ const sure2 = () => {
 const flag = ref(true);
 const refund = () => {
   api
-    .get("tradeRefund/queryRefund", {
+    .get("trade/queryRefund", {
       params: {
         id: searchText.value,
         sid: router.currentRoute.value.query.id,

@@ -6,8 +6,10 @@ import com.li.wisdomcashier.base.entity.dto.QueryMoneyDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
 import com.li.wisdomcashier.base.entity.dto.RefundDTO;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
+import com.li.wisdomcashier.base.entity.po.TradeRefund;
 import com.li.wisdomcashier.base.entity.vo.EChartVO;
 import com.li.wisdomcashier.base.entity.vo.TradeVO;
+import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.li.wisdomcashier.base.service.TradeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
@@ -32,6 +34,9 @@ import java.util.List;
 public class TradeController {
     @Resource
     private TradeService tradeService;
+
+    @Resource
+    private TradeRefundService tradeRefundService;
 
     @GetMapping("/queryLeast")
     @ApiOperation(value = "查询店铺最近十笔交易记录")
@@ -62,6 +67,12 @@ public class TradeController {
     @ApiOperation(value = "最近交易")
     public R<List<List<EChartVO>>> currentTradeMoney(@RequestBody @Validated QueryMoneyDTO queryMoneyDTO){
         return tradeService.currentTradeMoney(queryMoneyDTO);
+    }
+
+    @GetMapping("/queryRefund")
+    @ApiOperation(value = "查询退款记录")
+    R<List<TradeRefund>> queryRefund(String id, String sid){
+        return tradeRefundService.queryRefund(Long.parseLong(sid),Long.parseLong(id));
     }
 }
 
