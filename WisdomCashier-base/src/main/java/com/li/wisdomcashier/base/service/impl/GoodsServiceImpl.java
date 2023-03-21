@@ -113,6 +113,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         }
         copy.setPriceOut(new BigDecimal(good.getPriceOut()));
         copy.setPriceIn(new BigDecimal(good.getPriceIn()));
+        copy.setPriceVip(new BigDecimal(good.getPriceVip()));
         copy.setProfit(copy.getPriceOut().subtract(copy.getPriceIn()));
         copy.setSid(Long.parseLong(good.getSid()));
         copy.setDeadline(good.getDate().plusDays(good.getShelfLife()));
@@ -149,7 +150,8 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         }
         goods.setPriceOut(new BigDecimal(good.getPriceOut()));
         goods.setPriceIn(new BigDecimal(good.getPriceIn()));
-        if(goods.getPriceOut().compareTo(goods.getPriceIn())<0)
+        goods.setPriceVip(new BigDecimal(good.getPriceVip()));
+        if(goods.getPriceOut().compareTo(goods.getPriceIn())<0 || goods.getPriceVip().compareTo(goods.getPriceIn()) < 0)
             return R.error("售价不能小于进价！");
         goods.setProfit(goods.getPriceOut().subtract(goods.getPriceIn()));
         if(good.getDate()==null)
@@ -171,6 +173,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         GoodsVO copy = CglibUtil.copy(goods.get(0), GoodsVO.class);
         copy.setPriceOut(String.format("%.2f",goods.get(0).getPriceOut()));
         copy.setPriceIn(String.format("%.2f",goods.get(0).getPriceIn()));
+        copy.setPriceVip(String.format("%.2f",goods.get(0).getPriceVip()));
         return R.ok(copy);
     }
 

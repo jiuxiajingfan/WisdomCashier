@@ -31,6 +31,10 @@ public class GoodDTO {
     @ApiModelProperty("售价")
     private String priceOut;
 
+    @NotNull(message = "商品售价不能为空！")
+    @ApiModelProperty("Vip售价")
+    private String priceVip;
+
     @NotNull(message = "商店id不能为空!")
     @ApiModelProperty("商店id")
 

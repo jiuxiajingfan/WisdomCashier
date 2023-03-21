@@ -122,6 +122,9 @@ let PersonManage = defineAsyncComponent(() =>
 let Temporary = defineAsyncComponent(() =>
   import("../../components/Goods/Temporary")
 );
+let VipManage = defineAsyncComponent(() =>
+  import("../../components/VipManage/VipManage")
+);
 const router = useRouter();
 onBeforeMount(() => {
   api

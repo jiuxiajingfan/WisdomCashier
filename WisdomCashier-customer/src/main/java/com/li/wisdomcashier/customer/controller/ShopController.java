@@ -6,10 +6,12 @@ import com.li.wisdomcashier.base.entity.dto.*;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
 import com.li.wisdomcashier.base.entity.vo.ApplyVO;
 import com.li.wisdomcashier.base.entity.vo.UserVo;
+import com.li.wisdomcashier.base.entity.vo.VipVO;
 import com.li.wisdomcashier.base.service.ApplyService;
 import com.li.wisdomcashier.base.service.ShopCategoryService;
 import com.li.wisdomcashier.base.service.ShopService;
 import com.li.wisdomcashier.base.entity.vo.ShopVO;
+import com.li.wisdomcashier.base.service.VipService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -39,6 +41,9 @@ public class ShopController {
 
     @Resource
     private ShopCategoryService shopCategoryService;
+
+    @Resource
+    private VipService vipService;
 
     @ApiOperation(value = "获取用户相关店铺信息")
     @GetMapping("/getUserShop")
@@ -121,5 +126,28 @@ public class ShopController {
     @PostMapping("/deleteEmploree")
     public R<String> deleteEmploree(@RequestBody @Validated DeleteDTO deleteDTO) {
         return shopService.deleteEmploree(deleteDTO);
+    }
+
+    @ApiOperation(value = "会员列表（部分信息）")
+    @PostMapping("/getVipPage")
+    public R<IPage<VipVO>> getVipPage(@RequestBody @Validated GoodQueryDTO goodQueryDTO){
+        return vipService.getVipPage(goodQueryDTO);
+    }
+    @ApiOperation(value = "新增会员")
+    @PostMapping("/addVip")
+    public R<String> addVip(@RequestBody @Validated AddVipDTO addVipDTO){
+        return vipService.addVip(addVipDTO);
+    }
+
+    @ApiOperation(value = "会员续费")
+    @PostMapping("/renewalVip")
+    public R<String> renewalVip(@RequestBody @Validated RenewalDTO renewalDTO){
+        return vipService.renewalVip(renewalDTO);
+    }
+
+    @ApiOperation(value = "判断是否是会员")
+    @GetMapping("/isVip")
+    public R<Integer> isVip(String sid, String phone) {
+        return vipService.isVip(sid, phone);
     }
 }

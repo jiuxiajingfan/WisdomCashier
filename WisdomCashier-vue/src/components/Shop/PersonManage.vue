@@ -25,7 +25,7 @@
     <el-badge :value="apply.length" :hidden="apply.length === 0">
       <el-button
         style="margin-left: 20px"
-        icon="Plus"
+        icon="Document"
         type="primary"
         @click="dialogTableVisible = true"
         >申请列表
@@ -33,7 +33,7 @@
     </el-badge>
   </dev>
   <div class="table">
-    <el-table :data="good" height="calc(100vh - 230px)" v-loading="lod">
+    <el-table :data="good" height="calc(100vh - 280px)" v-loading="lod">
       <el-table-column prop="pic" label="头像">
         <template v-slot="scope">
           <el-image :src="scope.row.image" style="width: 60px; height: 60px">

@@ -18,6 +18,8 @@ public class GoodsVO {
 
     private String priceOut;
 
+    private String priceVip;
+
     private String picUrl;
 
     private String metrology;

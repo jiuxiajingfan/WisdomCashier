@@ -17,16 +17,16 @@
                   @click="queryTaskList"
                   :disabled="searchText.trim().length === 0"
                   :loading="lod"
-                  >搜索</el-button
-                >
+                  >搜索
+                </el-button>
               </template>
             </el-input>
             <el-button
               type="primary"
               style="margin-left: 10px"
               @click="dialogVisiblegd = true"
-              >挂单</el-button
-            >
+              >挂单
+            </el-button>
             <el-dialog v-model="dialogVisiblegd" title="挂单" width="30%">
               <h2 style="font-size: 30px">如需备注请输入备注</h2>
               <el-input v-model="tips" @keyup.enter="hangclick"></el-input>
@@ -48,13 +48,24 @@
               <el-table-column label="编号" prop="gid"></el-table-column>
               <el-table-column label="数量" prop="num"></el-table-column>
               <el-table-column label="单价" prop="priceOut"></el-table-column>
+              <el-table-column prop="priceVip" label="会员价" width="auto" />
               <el-table-column label="总价">
-                <template v-slot="scope">
+                <template v-if="isVip.value === 0" v-slot="scope">
                   {{
                     math
                       .multiply(
                         math.bignumber(scope.row.num),
                         math.bignumber(scope.row.priceOut)
+                      )
+                      .toFixed(2)
+                  }}
+                </template>
+                <template v-else v-slot="scope">
+                  {{
+                    math
+                      .multiply(
+                        math.bignumber(scope.row.num),
+                        math.bignumber(scope.row.priceVip)
                       )
                       .toFixed(2)
                   }}
@@ -122,8 +133,8 @@
                     link
                     type="primary"
                     @click="getHangon(scope.row.id)"
-                    >取单</el-button
-                  >
+                    >取单
+                  </el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -210,15 +221,15 @@
                 </div>
                 <div style="margin-top: 60px">
                   <el-button size="large" @click="dele(lastData.gid)"
-                    >删除</el-button
-                  >
+                    >删除
+                  </el-button>
                   <el-button
                     type="primary"
                     size="large"
                     style="margin-left: 20px"
                     @click="sure(lastData.gid)"
-                    >确定</el-button
-                  >
+                    >确定
+                  </el-button>
                 </div>
               </div>
             </div>
@@ -247,9 +258,23 @@
                     :strokeWidth="1"
                     style="margin-right: 10px"
                   />
-                  挂单详情</el-button
-                >
+                  挂单详情
+                </el-button>
               </el-badge>
+              <el-button
+                size="large"
+                style="margin-left: 30px; margin-top: 5px; height: 80%"
+                @click="vipcheckf"
+              >
+                <inspection
+                  theme="outline"
+                  size="28"
+                  fill="#333"
+                  :strokeWidth="1"
+                  style="margin-right: 10px"
+                />
+                会员验证
+              </el-button>
               <el-button
                 size="large"
                 style="margin-left: 30px; margin-top: 5px; height: 80%"
@@ -263,8 +288,8 @@
                   :strokeWidth="1"
                   style="margin-right: 10px"
                 />
-                现金结算</el-button
-              >
+                现金结算
+              </el-button>
               <el-button
                 size="large"
                 style="margin-left: 30px; margin-top: 5px; height: 80%"
@@ -278,8 +303,8 @@
                   :strokeWidth="1"
                   style="margin-right: 10px"
                 />
-                支付宝结算</el-button
-              >
+                支付宝结算
+              </el-button>
               <el-button
                 size="large"
                 style="margin-left: 30px; margin-top: 5px; height: 80%"
@@ -292,8 +317,8 @@
                   :strokeWidth="1"
                   style="margin-right: 10px"
                 />
-                微信结算</el-button
-              >
+                微信结算
+              </el-button>
               <el-button
                 size="large"
                 style="margin-left: 30px; margin-top: 5px; height: 80%"
@@ -306,36 +331,9 @@
                   :strokeWidth="1"
                   style="margin-right: 10px"
                 />
-                最近交易</el-button
-              >
+                最近交易
+              </el-button>
             </el-scrollbar>
-            <el-dialog
-              v-model="moneyCharge"
-              title="现金收款"
-              :center="true"
-              align-center
-            >
-              <h2>应收款： {{ sumM.toFixed(2) }} 元</h2>
-              <div>
-                <label style="font-size: 20px">实际付款：</label>
-                <el-input
-                  style="margin-left: 20px; width: 300px"
-                  v-model="giveMoney"
-                ></el-input>
-              </div>
-              <h2>找零：{{ (giveMoney - sumM).toFixed(2) }}</h2>
-              <template #footer>
-                <span class="dialog-footer">
-                  <el-button @click="moneyCharge = false"> 离开 </el-button>
-                  <el-button
-                    type="primary"
-                    @click="buy(1, '', '')"
-                    :loading="lod"
-                    >确认</el-button
-                  >
-                </span>
-              </template>
-            </el-dialog>
             <el-dialog
               v-model="dialogFormVisible"
               title="新增商品"
@@ -379,10 +377,24 @@
                     :label-width="formLabelWidth"
                     prop="price_out"
                   >
-                    <el-input
-                      style="width: 190px"
-                      v-model.number="form.price_out"
-                    />
+                    <el-input style="width: 190px" v-model="form.price_out" />
+                  </el-form-item>
+                  <el-form-item
+                    label="会员价"
+                    :label-width="formLabelWidth"
+                    prop="price_vip"
+                  >
+                    <el-input style="width: 190px" v-model="form.price_vip" />
+                  </el-form-item>
+                  <el-form-item label="商品分类" :label-width="formLabelWidth">
+                    <el-select v-model="form.type" style="width: 190px">
+                      <el-option
+                        v-for="item in options"
+                        :key="item"
+                        :label="item"
+                        :value="item"
+                      />
+                    </el-select>
                   </el-form-item>
                 </div>
                 <div>
@@ -420,23 +432,6 @@
                     />
                   </el-form-item>
                 </div>
-                <div>
-                  <el-form-item label="商品分类" :label-width="formLabelWidth">
-                    <el-select
-                      v-model="form.type"
-                      class="m-2"
-                      placeholder="Select"
-                      size="large"
-                    >
-                      <el-option
-                        v-for="item in options"
-                        :key="item"
-                        :label="item"
-                        :value="item"
-                      />
-                    </el-select>
-                  </el-form-item>
-                </div>
               </el-form>
               <template #footer>
                 <span class="dialog-footer">
@@ -460,21 +455,78 @@
               </template>
             </el-dialog>
             <el-dialog
-              v-model="dialogVisiblezfb"
-              title="支付宝支付"
-              width="30%"
-              @focus="this.$refs['zfbinput'].focus()"
+              v-model="moneyCharge"
+              title="现金收款"
+              :center="true"
+              align-center
+              width="40%"
             >
-              <h2 style="font-size: 30px">请扫描或输入顾客付款条形码</h2>
-              <el-input
-                ref="zfbinput"
-                v-model="userPayID"
-                @keyup.enter="alipayP"
-              ></el-input>
+              <el-row>
+                <el-col :span="8" />
+                <el-col :span="16">
+                  <h2>应收款： {{ sumM.toFixed(2) }} 元</h2>
+                  <div>
+                    <label style="font-size: 20px">实际付款：</label>
+                    <el-input
+                      style="margin-left: 20px; width: 300px"
+                      v-model="giveMoney"
+                    ></el-input>
+                  </div>
+                  <h2>找零：{{ (giveMoney - sumM).toFixed(2) }}</h2>
+                </el-col>
+              </el-row>
               <template #footer>
                 <span class="dialog-footer">
-                  <el-button @click="dialogVisiblezfb = false">取消</el-button>
-                  <el-button type="primary" @click="alipayP"> 确定 </el-button>
+                  <el-button
+                    @click="
+                      moneyCharge = false;
+                      giveMoney = '';
+                    "
+                  >
+                    离开
+                  </el-button>
+                  <el-button
+                    type="primary"
+                    @click="buy(1, '', '')"
+                    :loading="lod"
+                    >确认</el-button
+                  >
+                </span>
+              </template>
+            </el-dialog>
+            <el-dialog
+              v-model="vipcheck"
+              title="会员验证 "
+              :center="true"
+              align-center
+              width="30%"
+            >
+              <el-row>
+                <el-col :span="8" />
+                <el-col :span="16">
+                  <h2>请扫描或输入会员号</h2>
+                </el-col>
+                <el-col :span="5" />
+                <el-col :span="16">
+                  <el-input
+                    style="margin-left: 20px; width: 300px"
+                    v-model="vipNo"
+                  ></el-input>
+                </el-col>
+              </el-row>
+              <template #footer>
+                <span class="dialog-footer">
+                  <el-button
+                    @click="
+                      vipcheck = false;
+                      vipNo = '';
+                    "
+                  >
+                    离开
+                  </el-button>
+                  <el-button type="primary" @click="vipcheckFun" :loading="lod"
+                    >确认</el-button
+                  >
                 </span>
               </template>
             </el-dialog>
@@ -497,6 +549,7 @@ import {
   PaperMoney,
   Save,
   TransactionOrder,
+  Inspection,
 } from "@icon-park/vue-next";
 import Utils from "@/utils/utils";
 import { ElLoading, ElNotification } from "element-plus";
@@ -504,6 +557,7 @@ import pinia from "@/store/store";
 import { storeToRefs } from "pinia/dist/pinia";
 import { useHangStore } from "@/store/hangon";
 import { useTradeStore } from "@/store/trade";
+
 const Hang = useHangStore(pinia);
 const Trade = useTradeStore(pinia);
 const { hangList } = storeToRefs(Hang);
@@ -517,6 +571,7 @@ let lastData = reactive({
   num: 1,
   priceOut: "",
   priceIn: "",
+  priceVip: "",
   picUrl: "",
   metrology: "",
   gid: "",
@@ -561,6 +616,30 @@ const openadd = () => {
   }
   dialogFormVisible.value = true;
 };
+const vipcheckFun = () => {
+  lod.value = true;
+  api
+    .get("Shop/isVip", {
+      params: {
+        sid: router.currentRoute.value.query.id,
+        phone: vipNo.value,
+      },
+    })
+    .then((res) => {
+      if (res.data.data === 1) {
+        utils.showMessage(200, "校验成功，是会员用户");
+        isVip.value = 1;
+        vipcheck.value = false;
+      } else {
+        utils.showMessage(400, "校验失败，非会员用户或会员已过期");
+        vipNo.value = "";
+      }
+    })
+    .finally((res) => {
+      lod.value = false;
+      console.log("ISVIP:" + isVip.value);
+    });
+};
 const queryTaskList = () => {
   lod.value = true;
   api
@@ -579,6 +658,7 @@ const queryTaskList = () => {
           picUrl: res.data.data.picUrl,
           priceOut: res.data.data.priceOut,
           priceIn: res.data.data.priceIn,
+          priceVip: res.data.data.priceVip,
           gid: searchText.value.trim(),
           type: res.data.data.type,
         });
@@ -590,6 +670,7 @@ const queryTaskList = () => {
         lastData.picUrl = res.data.data.picUrl;
         lastData.priceOut = res.data.data.priceOut;
         lastData.priceIn = res.data.data.priceIn;
+        lastData.priceVip = res.data.data.priceVip;
         lastData.gid = searchText.value.trim();
         lastData.type = res.data.data.type;
         searchText.value = "";
@@ -616,6 +697,7 @@ const onRowClick = (row, column, event) => {
   lastData.picUrl = row.picUrl;
   lastData.priceOut = row.priceOut;
   lastData.priceIn = row.priceIn;
+  lastData.priceVip = row.priceVip;
   lastData.type = row.type;
   lastData.gid = row.gid;
   picshow.value = true;
@@ -627,11 +709,17 @@ const dele = (gid) => {
   utils.showMessage(200, "删除商品成功！");
 };
 const moneyCharge = ref(false);
+const vipcheck = ref(false);
+const isVip = ref(0);
 const giveMoney = ref(0);
 let sumM = ref(0);
 const onMonery = () => {
   moneyCharge.value = true;
 };
+const vipcheckf = () => {
+  vipcheck.value = true;
+};
+
 const buy = (type, no, remoteID) => {
   lod.value = true;
   api
@@ -707,6 +795,7 @@ const form = reactive({
   gid: "",
   price_in: 0,
   price_out: 0,
+  price_vip: 0,
   sid: router.currentRoute.value.query.id,
   date: "",
   profit: 0,
@@ -714,7 +803,7 @@ const form = reactive({
   num: 0,
   type: "",
 });
-
+const vipNo = ref("");
 const alipayP = () => {
   // caclSum();
   const loading = ElLoading.service({
@@ -895,6 +984,23 @@ const rules = reactive({
       trigger: "blur",
     },
   ],
+  price_vip: [
+    {
+      required: true,
+      message: "请输入商品售价",
+      trigger: "blur",
+    },
+    {
+      validator: (rule, value, callback) => {
+        if (!isNumber(value)) {
+          callback(new Error("请输入数字值"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
+  ],
   shelfLife: [
     { required: true, message: "请输入商品保质期天数", trigger: "blur" },
     { type: "number", message: "保质期必须是数字" },
@@ -1027,21 +1133,25 @@ onBeforeMount(() => {
   width: 400px;
   margin: 0 !important;
 }
+
 .aside {
   border: 1px dashed var(--el-border-color);
   border-radius: 6px;
   border-style: solid;
 }
+
 .el-main {
   border: 1px dashed var(--el-border-color);
   border-radius: 6px;
   border-style: solid;
 }
+
 .el-footer {
   border: 1px var(--el-border-color);
   border-radius: 6px;
   border-style: solid;
 }
+
 .scr1 {
   height: calc(100vh - 130px);
 }

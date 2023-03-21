@@ -44,6 +44,9 @@ public class Goods implements Serializable {
     @TableField(value ="price_out",numericScale = "2")
     private BigDecimal priceOut;
 
+    @TableField(value = "price_vip",numericScale = "2")
+    private BigDecimal priceVip;
+
     @TableField("sid")
     private Long sid;
 

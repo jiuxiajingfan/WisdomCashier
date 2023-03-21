@@ -61,6 +61,12 @@
         :formatter="rounding"
       />
       <el-table-column
+        prop="priceVip"
+        label="会员价"
+        width="auto"
+        :formatter="rounding"
+      />
+      <el-table-column
         prop="profit"
         label="利润"
         width="auto"
@@ -140,6 +146,23 @@
         >
           <el-input style="width: 190px" v-model="form.price_out" />
         </el-form-item>
+        <el-form-item
+          label="会员价"
+          :label-width="formLabelWidth"
+          prop="price_vip"
+        >
+          <el-input style="width: 190px" v-model="form.price_vip" />
+        </el-form-item>
+        <el-form-item label="商品分类" :label-width="formLabelWidth">
+          <el-select v-model="form.type" style="width: 190px">
+            <el-option
+              v-for="item in options"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
+        </el-form-item>
       </div>
       <div>
         <el-form-item label="数量" :label-width="formLabelWidth" prop="num">
@@ -167,23 +190,6 @@
           prop="shelfLife"
         >
           <el-input style="width: 190px" v-model.number="form.shelfLife" />
-        </el-form-item>
-      </div>
-      <div>
-        <el-form-item label="商品分类" :label-width="formLabelWidth">
-          <el-select
-            v-model="form.type"
-            class="m-2"
-            placeholder="Select"
-            size="large"
-          >
-            <el-option
-              v-for="item in options"
-              :key="item"
-              :label="item"
-              :value="item"
-            />
-          </el-select>
         </el-form-item>
       </div>
     </el-form>
@@ -333,6 +339,7 @@ const form = reactive({
   gid: "",
   price_in: 0,
   price_out: 0,
+  price_vip: 0,
   sid: router.currentRoute.value.query.id,
   date: "",
   profit: 0,
@@ -511,6 +518,23 @@ const rules = reactive({
     },
   ],
   price_out: [
+    {
+      required: true,
+      message: "请输入商品售价",
+      trigger: "blur",
+    },
+    {
+      validator: (rule, value, callback) => {
+        if (!isNumber(value)) {
+          callback(new Error("请输入数字值"));
+        } else {
+          callback();
+        }
+      },
+      trigger: "blur",
+    },
+  ],
+  price_vip: [
     {
       required: true,
       message: "请输入商品售价",
