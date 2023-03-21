@@ -28,6 +28,7 @@ import com.li.wisdomcashier.base.service.AlipayService;
 import com.li.wisdomcashier.base.service.GoodsService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.service.TradeGoodsService;
+import com.li.wisdomcashier.base.service.TradeService;
 import com.li.wisdomcashier.base.util.UserUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -75,6 +76,9 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Resource
     private AlipayService alipayService;
+
+    @Resource
+    private TradeService tradeService;
 
     @Override
     public R<Goods> reqGood(String gid) {
@@ -196,20 +200,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                     trade.setId(Long.parseLong(buyGoodDTO.getId()));
                 }
                 tradeMapper.insert(trade);
-                List<TradeGoods> collect = buyGoodDTO.getGoods().stream().map(e -> {
-                    TradeGoods tradeGoods1 = new TradeGoods();
-                    tradeGoods1.setGid(e.getGid());
-                    tradeGoods1.setName(e.getName());
-                    tradeGoods1.setTradeId(trade.getId());
-                    tradeGoods1.setNum(e.getNum());
-                    tradeGoods1.setPrice(e.getPriceOut());
-                    tradeGoods1.setPriceIn(e.getPriceIn());
-                    tradeGoods1.setType(e.getType());
-                    tradeGoods1.setPriceOutSum(e.getPriceOut().multiply(new BigDecimal(e.getNum())));
-                    tradeGoods1.setPriceInSum(e.getPriceIn().multiply(new BigDecimal(e.getNum())));
-                    return tradeGoods1;
-                }).collect(Collectors.toList());
-                tradeGoodsService.saveBatch(collect);
+                tradeService.AsyncSaveGood(buyGoodDTO.getGoods(),trade.getId());
             }
             else{
                 this.failTradeLogAsunc(buyGoodDTO.getRemoteNo(), Long.parseLong(buyGoodDTO.getSid()),buyGoodDTO.getType());

@@ -5,6 +5,7 @@ import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.QueryMoneyDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
 import com.li.wisdomcashier.base.entity.dto.RefundDTO;
+import com.li.wisdomcashier.base.entity.po.Goods;
 import com.li.wisdomcashier.base.entity.po.Trade;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
@@ -50,5 +51,7 @@ public interface TradeService extends IService<Trade> {
      * @return
      */
     R<List<List<EChartVO>>> currentTradeMoney(QueryMoneyDTO queryMoneyDTO);
+
+    void AsyncSaveGood(List<Goods> goodsList, Long id);
 }
 

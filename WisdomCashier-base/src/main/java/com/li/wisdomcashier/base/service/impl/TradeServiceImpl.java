@@ -9,6 +9,7 @@ import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.QueryMoneyDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
 import com.li.wisdomcashier.base.entity.dto.RefundDTO;
+import com.li.wisdomcashier.base.entity.po.Goods;
 import com.li.wisdomcashier.base.entity.po.Trade;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
 import com.li.wisdomcashier.base.entity.po.TradeRefund;
@@ -18,10 +19,12 @@ import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.TradeGoodsMapper;
 import com.li.wisdomcashier.base.mapper.TradeMapper;
 import com.li.wisdomcashier.base.mapper.TradeRefundMapper;
+import com.li.wisdomcashier.base.service.TradeGoodsService;
 import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.li.wisdomcashier.base.service.TradeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.UserUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -45,6 +48,9 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
 
     @Resource
     private TradeMapper tradeMapper;
+
+    @Resource
+    TradeGoodsService tradeGoodsService;
 
     @Resource
     private TradeGoodsMapper tradeGoodsMapper;
@@ -210,6 +216,29 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
         }
         ans.add(pie2);
         return R.ok(ans);
+    }
+
+    @Override
+    @Async
+    public void AsyncSaveGood(List<Goods> goodsList,Long id) {
+        try {
+            List<TradeGoods> collect = goodsList.stream().map(e -> {
+                TradeGoods tradeGoods1 = new TradeGoods();
+                tradeGoods1.setGid(e.getGid());
+                tradeGoods1.setName(e.getName());
+                tradeGoods1.setTradeId(id);
+                tradeGoods1.setNum(e.getNum());
+                tradeGoods1.setPrice(e.getPriceOut());
+                tradeGoods1.setPriceIn(e.getPriceIn());
+                tradeGoods1.setType(e.getType());
+                tradeGoods1.setPriceOutSum(e.getPriceOut().multiply(new BigDecimal(e.getNum())));
+                tradeGoods1.setPriceInSum(e.getPriceIn().multiply(new BigDecimal(e.getNum())));
+                return tradeGoods1;
+            }).collect(Collectors.toList());
+            tradeGoodsService.saveBatch(collect);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
 

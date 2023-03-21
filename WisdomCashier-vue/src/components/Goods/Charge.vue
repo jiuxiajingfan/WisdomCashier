@@ -50,22 +50,14 @@
               <el-table-column label="单价" prop="priceOut"></el-table-column>
               <el-table-column prop="priceVip" label="会员价" width="auto" />
               <el-table-column label="总价">
-                <template v-if="isVip.value === 0" v-slot="scope">
+                <template v-slot="scope">
                   {{
                     math
                       .multiply(
                         math.bignumber(scope.row.num),
-                        math.bignumber(scope.row.priceOut)
-                      )
-                      .toFixed(2)
-                  }}
-                </template>
-                <template v-else v-slot="scope">
-                  {{
-                    math
-                      .multiply(
-                        math.bignumber(scope.row.num),
-                        math.bignumber(scope.row.priceVip)
+                        math.bignumber(
+                          isVip === 1 ? scope.row.priceVip : scope.row.priceOut
+                        )
                       )
                       .toFixed(2)
                   }}
@@ -731,6 +723,7 @@ const buy = (type, no, remoteID) => {
       remoteNo: no,
       status: 3,
       id: remoteID,
+      vip: isVip.value,
     })
     .then((res) => {
       if (res.data.code === 200) {
@@ -926,7 +919,9 @@ const getSummaries = (param) => {
     if (index === 0) {
       sums[index] = "总计";
     } else if (index === len - 1) {
-      const values = data.map((item) => Number(item.priceOut * item.num));
+      const values = data.map((item) =>
+        Number((isVip.value === 1 ? item.priceVip : item.priceOut) * item.num)
+      );
       if (!values.every((value) => isNaN(value))) {
         sums[index] = values.reduce((prev, curr) => {
           const value = Number(curr);

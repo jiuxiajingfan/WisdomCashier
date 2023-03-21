@@ -46,4 +46,6 @@ public class BuyGoodDTO {
     String msg;
 
     String id;
+
+    Integer vip;
 }
