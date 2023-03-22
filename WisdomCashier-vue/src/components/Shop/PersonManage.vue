@@ -36,7 +36,10 @@
     <el-table :data="good" height="calc(100vh - 280px)" v-loading="lod">
       <el-table-column prop="pic" label="头像">
         <template v-slot="scope">
-          <el-image :src="scope.row.image" style="width: 60px; height: 60px">
+          <el-image
+            :src="scope.row.image + '?' + new Date().getTime()"
+            style="width: 60px; height: 60px"
+          >
           </el-image>
         </template>
       </el-table-column>

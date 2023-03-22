@@ -99,7 +99,6 @@ onBeforeMount(() => {
   api.get("Shop/getUserShop").then((res) => {
     shops.value = res.data.data;
   });
-  console.log(shops.value);
   api.post("/user/getUser").then((res) => {
     let data = res.data.data;
     user.setId(data.id);
@@ -131,7 +130,6 @@ const searchShop = () => {
 };
 window.onresize = () => {
   tableheight.value = document.documentElement.clientHeight * 0.32;
-  console.log(tableheight.value);
 };
 const handleCommand = (command) => {
   if (command === "a") {

@@ -176,7 +176,7 @@
                   shape="square"
                   :size="200"
                   fit="fit"
-                  :src="lastData.picUrl"
+                  :src="lastData.picUrl + '?' + new Date().getTime()"
                   style="margin-top: 30px"
                 />
               </div>
@@ -326,6 +326,25 @@
                 最近交易
               </el-button>
             </el-scrollbar>
+            <el-dialog
+              v-model="dialogVisiblezfb"
+              title="支付宝支付"
+              width="30%"
+              @focus="this.$refs['zfbinput'].focus()"
+            >
+              <h2 style="font-size: 30px">请扫描或输入顾客付款条形码</h2>
+              <el-input
+                ref="zfbinput"
+                v-model="userPayID"
+                @keyup.enter="alipayP"
+              ></el-input>
+              <template #footer>
+                <span class="dialog-footer">
+                  <el-button @click="dialogVisiblezfb = false">取消</el-button>
+                  <el-button type="primary" @click="alipayP"> 确定 </el-button>
+                </span>
+              </template>
+            </el-dialog>
             <el-dialog
               v-model="dialogFormVisible"
               title="新增商品"
@@ -503,6 +522,7 @@
                   <el-input
                     style="margin-left: 20px; width: 300px"
                     v-model="vipNo"
+                    @keydown.enter="vipcheckFun"
                   ></el-input>
                 </el-col>
               </el-row>
@@ -724,6 +744,7 @@ const buy = (type, no, remoteID) => {
       status: 3,
       id: remoteID,
       vip: isVip.value,
+      phone: vipNo.value,
     })
     .then((res) => {
       if (res.data.code === 200) {
@@ -733,6 +754,7 @@ const buy = (type, no, remoteID) => {
         sumM.value = 0;
         giveMoney.value = 0;
         picshow.value = false;
+        isVip.value = 0;
       } else {
         utils.showMessage(res.data.code, "结算失败请重试或联系管理员！");
       }
@@ -868,6 +890,8 @@ const alipayP = () => {
                 remoteNo: res.data.data.remoteID,
                 status: 2,
                 id: res.data.data.shopID,
+                vip: isVip.value,
+                phone: vipNo.value,
               });
               loading.close();
               ElNotification({
@@ -898,6 +922,8 @@ const alipayP = () => {
             remoteNo: res.data.data.remoteID,
             status: 7,
             id: res.data.data.shopID,
+            vip: isVip.value,
+            phone: vipNo.value,
           });
           loading.close();
           ElNotification({

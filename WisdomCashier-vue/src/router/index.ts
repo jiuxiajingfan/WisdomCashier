@@ -66,7 +66,6 @@ router.beforeEach((to, from, next) => {
     const token = store.getToken;
     if (to.path === "/login") {
       if (token && token != "null") {
-        console.log("有token登录" + token);
         next("/choiceShop");
       } else {
         next();

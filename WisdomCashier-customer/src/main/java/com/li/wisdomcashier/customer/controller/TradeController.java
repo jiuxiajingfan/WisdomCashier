@@ -2,9 +2,11 @@ package com.li.wisdomcashier.customer.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryMoneyDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
 import com.li.wisdomcashier.base.entity.dto.RefundDTO;
+import com.li.wisdomcashier.base.entity.po.Goods;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
 import com.li.wisdomcashier.base.entity.po.TradeRefund;
 import com.li.wisdomcashier.base.entity.vo.EChartVO;
@@ -73,6 +75,12 @@ public class TradeController {
     @ApiOperation(value = "查询退款记录")
     R<List<TradeRefund>> queryRefund(String id, String sid){
         return tradeRefundService.queryRefund(Long.parseLong(sid),Long.parseLong(id));
+    }
+
+    @PostMapping("/getGoodRankPage")
+    @ApiOperation(value = "最近交易")
+    R<List<Goods>> getGoodRankPage(@RequestBody @Validated GoodQueryDTO goodQueryDTO){
+        return tradeService.getGoodRankPage(goodQueryDTO);
     }
 }
 

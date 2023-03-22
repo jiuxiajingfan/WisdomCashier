@@ -150,4 +150,10 @@ public class ShopController {
     public R<Integer> isVip(String sid, String phone) {
         return vipService.isVip(sid, phone);
     }
+
+    @ApiOperation(value = "会员推送列表")
+    @PostMapping("/getVipPushPage")
+    public R<IPage<VipVO>> getVipPushPage(@RequestBody @Validated VipQueryDTO goodQueryDTO){
+        return vipService.getVipPushPage(goodQueryDTO);
+    }
 }

@@ -42,7 +42,6 @@ api.interceptors.response.use(
     }
   },
   (error) => {
-    console.log("响应错误");
     if (error.response) {
       if (error.response.data instanceof Blob) {
         // 如果是文件操作的返回，由后续进行处理

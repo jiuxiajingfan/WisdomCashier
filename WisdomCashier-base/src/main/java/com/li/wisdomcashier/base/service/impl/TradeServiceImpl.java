@@ -6,16 +6,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryMoneyDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
 import com.li.wisdomcashier.base.entity.dto.RefundDTO;
-import com.li.wisdomcashier.base.entity.po.Goods;
-import com.li.wisdomcashier.base.entity.po.Trade;
-import com.li.wisdomcashier.base.entity.po.TradeGoods;
-import com.li.wisdomcashier.base.entity.po.TradeRefund;
+import com.li.wisdomcashier.base.entity.po.*;
 import com.li.wisdomcashier.base.entity.vo.EChartVO;
 import com.li.wisdomcashier.base.entity.vo.TradeVO;
 import com.li.wisdomcashier.base.enums.RoleEnum;
+import com.li.wisdomcashier.base.mapper.GoodsMapper;
 import com.li.wisdomcashier.base.mapper.TradeGoodsMapper;
 import com.li.wisdomcashier.base.mapper.TradeMapper;
 import com.li.wisdomcashier.base.mapper.TradeRefundMapper;
@@ -61,10 +60,15 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
     @Resource
     private TradeRefundMapper tradeRefundMapper;
 
+    @Resource
+    private GoodsMapper goodsMapper;
+
+
     @Override
     public R<List<TradeVO>> queryLeast(Long sid) {
-        if (Objects.isNull(sid))
+        if (Objects.isNull(sid)) {
             return R.error("店铺ID不能为空！");
+        }
         UserUtils.hasPermissions(sid.toString(), RoleEnum.SHOP.getCode());
         List<Trade> trades = tradeMapper.selectLesat(sid, UserUtils.getUser().getId());
         List<TradeVO> collect = trades.stream().map(e -> {
@@ -117,8 +121,8 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
         UserUtils.hasPermissions(refundDTO.getSid(), RoleEnum.SHOPADMIN.getCode());
         Trade trade = tradeMapper.selectById(Long.parseLong(refundDTO.getTradeNo()));
         List<TradeRefund> tradeRefunds = tradeRefundMapper.selectList(Wrappers.lambdaQuery(TradeRefund.class).eq(TradeRefund::getSid, Long.parseLong(refundDTO.getTradeNo())));
-        BigDecimal reduce = tradeRefunds.stream().filter(e->
-                e.getStatus()==1
+        BigDecimal reduce = tradeRefunds.stream().filter(e ->
+                e.getStatus() == 1
         ).map(TradeRefund::getMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
         TradeRefund tradeRefund = new TradeRefund();
         tradeRefund.setSid(Long.parseLong(refundDTO.getTradeNo()));
@@ -128,7 +132,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
         tradeRefund.setOperater(UserUtils.getUser().getId());
         tradeRefund.setType(1);
         tradeRefund.setMoney(new BigDecimal(refundDTO.getMoney()));
-        if(reduce.add(new BigDecimal(refundDTO.getMoney())).compareTo(trade.getIncome())>0){
+        if (reduce.add(new BigDecimal(refundDTO.getMoney())).compareTo(trade.getIncome()) > 0) {
             tradeRefund.setStatus(0);
             tradeRefund.setErrMsg("总退款金额大于付款！");
             tradeRefundService.TradeRefundRecord(tradeRefund);
@@ -140,28 +144,27 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
     }
 
     @Override
-    public R<List<List<EChartVO>>>  currentTradeMoney(QueryMoneyDTO queryMoneyDTO) {
+    public R<List<List<EChartVO>>> currentTradeMoney(QueryMoneyDTO queryMoneyDTO) {
         //店铺管理员权限接口
         UserUtils.hasPermissions(queryMoneyDTO.getSid(), RoleEnum.SHOPADMIN.getCode());
         //月份处理
-        if(queryMoneyDTO.getTimeType()==1){
+        if (queryMoneyDTO.getTimeType() == 1) {
             LocalDateTime tt = queryMoneyDTO.getTimeEnd();
             LocalDateTime tt2 = queryMoneyDTO.getTimeStart();
-            queryMoneyDTO.setTimeEnd(LocalDateTime.of(tt.getYear(),tt.plusMonths(1).getMonth(),1,0,0,0));
-            queryMoneyDTO.setTimeStart(LocalDateTime.of(tt2.getYear(),tt2.getMonth(),1,0,0,0));
+            queryMoneyDTO.setTimeEnd(LocalDateTime.of(tt.getYear(), tt.plusMonths(1).getMonth(), 1, 0, 0, 0));
+            queryMoneyDTO.setTimeStart(LocalDateTime.of(tt2.getYear(), tt2.getMonth(), 1, 0, 0, 0));
         }
         List<Trade> trades = tradeMapper.selectList(Wrappers.lambdaQuery(Trade.class)
                 .eq(Trade::getSid, Long.parseLong(queryMoneyDTO.getSid()))
                 .le(Trade::getCreateTime, queryMoneyDTO.getTimeEnd())
                 .ge(Trade::getCreateTime, queryMoneyDTO.getTimeStart())
-                .in(Trade::getStatus, Arrays.asList(3,4,5,6))
+                .in(Trade::getStatus, Arrays.asList(3, 4, 5, 6))
         );
         //月份处理
-        if(queryMoneyDTO.getTimeType()==1){
+        if (queryMoneyDTO.getTimeType() == 1) {
             queryMoneyDTO.setTimeEnd(queryMoneyDTO.getTimeEnd().minusDays(1));
         }
-        if(trades.isEmpty())
-        {
+        if (trades.isEmpty()) {
             return R.error("区间内暂无数据！");
         }
         List<String> date = this.getDate(queryMoneyDTO.getTimeStart(), queryMoneyDTO.getTimeEnd(), queryMoneyDTO.getTimeType());
@@ -169,7 +172,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
 
         //折线图
         ArrayList<EChartVO> area = new ArrayList<>();
-        if(queryMoneyDTO.getType() == 0) {
+        if (queryMoneyDTO.getType() == 0) {
             //计算金额
             Map<String, BigDecimal> collect = trades.stream().collect(Collectors.groupingBy(e ->
                             e.getCreateTime().format(queryMoneyDTO.getTimeType() == 0 ? DateTimeFormatter.ISO_DATE : DateTimeFormatter.ofPattern("yyyy-MM")),
@@ -181,7 +184,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
                 area.add(eChartVO);
             });
             ans.add(area);
-        }else{
+        } else {
             //计算订单数
             Map<String, List<Trade>> collect = trades.stream().collect(Collectors.groupingBy(e ->
                     e.getCreateTime().format(queryMoneyDTO.getTimeType() == 0 ? DateTimeFormatter.ISO_DATE : DateTimeFormatter.ofPattern("yyyy-MM"))));
@@ -201,8 +204,8 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
         BigDecimal out = tradeGoods.stream().map(TradeGoods::getPriceOutSum).reduce(BigDecimal.ZERO, BigDecimal::add);
         BigDecimal in = tradeGoods.stream().map(TradeGoods::getPriceInSum).reduce(BigDecimal.ZERO, BigDecimal::add);
         ArrayList<EChartVO> pie = new ArrayList<>();
-        pie.add(new EChartVO("成本",in.toString()));
-        pie.add(new EChartVO("利润",out.subtract(in).toString()));
+        pie.add(new EChartVO("成本", in.toString()));
+        pie.add(new EChartVO("利润", out.subtract(in).toString()));
         ans.add(pie);
 
         //饼图2
@@ -210,7 +213,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
                 Collectors.reducing(BigDecimal.ZERO, TradeGoods::getPriceOutSum, BigDecimal::add)));
         ArrayList<EChartVO> pie2 = new ArrayList<>();
         Iterator<Map.Entry<String, BigDecimal>> iterator = collect2.entrySet().iterator();
-        while(iterator.hasNext()){
+        while (iterator.hasNext()) {
             Map.Entry<String, BigDecimal> next = iterator.next();
             pie2.add(new EChartVO(next.getKey(), next.getValue().toString()));
         }
@@ -220,7 +223,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
 
     @Override
     @Async
-    public void AsyncSaveGood(List<Goods> goodsList,Long id) {
+    public void AsyncSaveGood(List<Goods> goodsList, Long id, boolean isVip,String sid) {
         try {
             List<TradeGoods> collect = goodsList.stream().map(e -> {
                 TradeGoods tradeGoods1 = new TradeGoods();
@@ -228,11 +231,18 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
                 tradeGoods1.setName(e.getName());
                 tradeGoods1.setTradeId(id);
                 tradeGoods1.setNum(e.getNum());
-                tradeGoods1.setPrice(e.getPriceOut());
+                if (isVip) {
+                    tradeGoods1.setPrice(e.getPriceVip());
+                } else {
+                    tradeGoods1.setPrice(e.getPriceOut());
+                }
                 tradeGoods1.setPriceIn(e.getPriceIn());
                 tradeGoods1.setType(e.getType());
-                tradeGoods1.setPriceOutSum(e.getPriceOut().multiply(new BigDecimal(e.getNum())));
+                tradeGoods1.setPriceOutSum(tradeGoods1.getPrice().multiply(new BigDecimal(e.getNum())));
                 tradeGoods1.setPriceInSum(e.getPriceIn().multiply(new BigDecimal(e.getNum())));
+                Goods goods = goodsMapper.selectOne(Wrappers.lambdaQuery(Goods.class).eq(Goods::getSid, Long.parseLong(sid)).eq(Goods::getGid, e.getGid()));
+                goods.setNum(goods.getNum() - e.getNum());
+                goodsMapper.updateById(goods);
                 return tradeGoods1;
             }).collect(Collectors.toList());
             tradeGoodsService.saveBatch(collect);
@@ -241,25 +251,57 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
         }
     }
 
+    @Override
+    public R<List<Goods>> getGoodRankPage(GoodQueryDTO goodQueryDTO) {
+        UserUtils.hasPermissions(goodQueryDTO.getSid(), RoleEnum.SHOPMASTER.getCode());
+        List<Trade> trades = tradeMapper.selectList(Wrappers.lambdaQuery(Trade.class)
+                .eq(Trade::getSid, Long.parseLong(goodQueryDTO.getSid()))
+                .le(Trade::getCreateTime, LocalDateTime.now())
+                .ge(Trade::getCreateTime, LocalDateTime.now().minusMonths(1))
+                .in(Trade::getStatus, Arrays.asList(3, 4, 5, 6))
+        );
+        List<Long> collect1 = trades.stream().map(e -> e.getId()).collect(Collectors.toList());
+        List<TradeGoods> tradeGoods = tradeGoodsMapper.selectList(Wrappers.lambdaQuery(TradeGoods.class).in(TradeGoods::getTradeId, collect1));
+        Map<String, Integer> collect = tradeGoods.stream().collect(Collectors.groupingBy(TradeGoods::getGid, Collectors.summingInt(TradeGoods::getNum)));
+        ArrayList<String> strings = new ArrayList<>();
+        Iterator<Map.Entry<String, Integer>> iterator = collect.entrySet().iterator();
+        while(iterator.hasNext()){
+            Map.Entry<String, Integer> next = iterator.next();
+            strings.add(next.getKey());
+        }
+        List<Goods> collect2 = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class)
+                .eq(Goods::getSid, Long.parseLong(goodQueryDTO.getSid()))
+                .in(Goods::getGid, strings)
+        ).stream().map(e ->
+        {
+            e.setNum(collect.get(e.getGid()));
+            return e;
+        }).collect(Collectors.toList());
+        collect2.sort(Comparator.comparing(Goods::getNum).reversed());
+        return R.ok(collect2);
+
+    }
+
 
     /**
      * 获取日期区间
-     * @param a 起始
-     * @param b 结束
+     *
+     * @param a    起始
+     * @param b    结束
      * @param type 返回值类型 0日 1月
      * @return
      */
-    public List<String> getDate(LocalDateTime a,LocalDateTime b,Integer type){
+    public List<String> getDate(LocalDateTime a, LocalDateTime b, Integer type) {
         List<String> ans = new ArrayList<>();
         //日
-        if(type == 0) {
+        if (type == 0) {
             while (a.isBefore(b)) {
                 ans.add(a.format(DateTimeFormatter.ISO_DATE));
                 a = a.plusDays(1);
             }
         }
         //月
-        else{
+        else {
             while (a.isBefore(b)) {
                 ans.add(a.format(DateTimeFormatter.ofPattern("yyyy-MM")));
                 a = a.plusMonths(1);

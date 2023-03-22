@@ -10,6 +10,7 @@ import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.AddVipDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.dto.RenewalDTO;
+import com.li.wisdomcashier.base.entity.dto.VipQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Vip;
 import com.li.wisdomcashier.base.entity.vo.VipVO;
 import com.li.wisdomcashier.base.enums.RoleEnum;
@@ -18,10 +19,14 @@ import com.li.wisdomcashier.base.mapper.VipMapper;
 import com.li.wisdomcashier.base.service.VipService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.UserUtils;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -88,7 +93,7 @@ public class VipServiceImpl extends ServiceImpl<VipMapper, Vip> implements VipSe
         if(Objects.isNull(vip)){
             return R.error("不存在该会员！");
         }
-        if(vip.getStatus()==VipEnum.LIMITED.getCode()) {
+        if(vip.getStatus().equals(VipEnum.LIMITED.getCode())) {
             vip.setGmtLimit(LocalDateTime.now().plusMonths(renewalDTO.getLimit()));
             vip.setStatus(VipEnum.ACTIVE.getCode());
         }else {
@@ -99,13 +104,46 @@ public class VipServiceImpl extends ServiceImpl<VipMapper, Vip> implements VipSe
 
     @Override
     public R<Integer> isVip(String sid, String phone) {
-        if(StringUtils.isBlank(sid)||StringUtils.isBlank(phone))
+        if(StringUtils.isBlank(sid)||StringUtils.isBlank(phone)) {
             return R.error("参数错误！");
+        }
         //普通接口
         UserUtils.hasPermissions(sid, RoleEnum.SHOP.getCode());
         return R.ok(vipMapper.selectCount(Wrappers.lambdaQuery(Vip.class)
                 .eq(Vip::getPhone, phone)
                 .eq(Vip::getShopId, Long.parseLong(sid))
                 .eq(Vip::getStatus, VipEnum.ACTIVE.getCode())));
+    }
+
+    @Async
+    @Override
+    public void addIntegration(String phone, String sum,String sid) {
+        BigDecimal bigDecimal = new BigDecimal(sum);
+        BigDecimal multiply = bigDecimal.multiply(new BigDecimal(100));
+        Vip vip = vipMapper.selectOne(Wrappers.lambdaQuery(Vip.class)
+                .eq(Vip::getPhone,phone)
+                .eq(Vip::getShopId, Long.parseLong(sid)));
+        vip.setIntegration(vip.getIntegration() + multiply.intValue());
+        vip.setLevel(vip.getIntegration()/100000);
+        vipMapper.updateById(vip);
+    }
+
+    @Override
+    public R<IPage<VipVO>> getVipPushPage(VipQueryDTO goodQueryDTO) {
+        //普通接口
+        UserUtils.hasPermissions(goodQueryDTO.getSid(), RoleEnum.SHOP.getCode());
+        LambdaQueryWrapper<Vip> wrapper = Wrappers.lambdaQuery(Vip.class)
+                .eq(Vip::getShopId, Long.parseLong(goodQueryDTO.getSid()))
+                .in(!CollectionUtils.isEmpty(goodQueryDTO.getAge()), Vip::getAge, goodQueryDTO.getAge())
+                .in(!CollectionUtils.isEmpty(goodQueryDTO.getSex()), Vip::getSex, goodQueryDTO.getSex())
+                .in(!CollectionUtils.isEmpty(goodQueryDTO.getLevel()), Vip::getLevel, goodQueryDTO.getLevel())
+                .in(!CollectionUtils.isEmpty(goodQueryDTO.getStatus()), Vip::getStatus, goodQueryDTO.getStatus());
+        IPage<Vip> Page =new Page(goodQueryDTO.getCurrent(),goodQueryDTO.getPageSize());
+        IPage<VipVO> convert = vipMapper.selectPage(Page, wrapper).convert(e -> {
+            VipVO copy = CglibUtil.copy(e, VipVO.class);
+            copy.setId(e.getPhone());
+            return copy;
+        });
+        return R.ok(convert);
     }
 }

@@ -40,7 +40,7 @@
             <el-image
               v-else-if="scope.row.picUrl != null"
               style="width: 60px; height: 60px"
-              :src="scope.row.picUrl"
+              :src="scope.row.picUrl + '?' + new Date().getTime()"
               fit="fit"
             />
           </el-upload>
@@ -72,7 +72,7 @@
         width="auto"
         :formatter="rounding"
       />
-      <el-table-column prop="num" label="数量" width="auto" />
+      <el-table-column prop="num" label="库存" width="auto" />
       <el-table-column prop="deadline" label="过期时间" width="auto" />
       <el-table-column label="操作">
         <template #default="scope">
@@ -211,10 +211,10 @@
   >
     <el-form
       :model="form"
-      ref="formref"
       :inline="true"
       label-position="left"
       style="margin-left: 10%"
+      ref="formref"
       :rules="rules"
     >
       <div>
@@ -239,6 +239,23 @@
           prop="price_out"
         >
           <el-input style="width: 190px" v-model="form.price_out" />
+        </el-form-item>
+        <el-form-item
+          label="会员价"
+          :label-width="formLabelWidth"
+          prop="price_vip"
+        >
+          <el-input style="width: 190px" v-model="form.price_vip" />
+        </el-form-item>
+        <el-form-item label="商品分类" :label-width="formLabelWidth">
+          <el-select v-model="form.type" style="width: 190px">
+            <el-option
+              v-for="item in options"
+              :key="item"
+              :label="item"
+              :value="item"
+            />
+          </el-select>
         </el-form-item>
       </div>
       <div>
@@ -267,23 +284,6 @@
           prop="shelfLife"
         >
           <el-input style="width: 190px" v-model.number="form.shelfLife" />
-        </el-form-item>
-      </div>
-      <div>
-        <el-form-item label="商品分类" :label-width="formLabelWidth">
-          <el-select
-            v-model="form.type"
-            class="m-2"
-            placeholder="Select"
-            size="large"
-          >
-            <el-option
-              v-for="item in options"
-              :key="item"
-              :label="item"
-              :value="item"
-            />
-          </el-select>
         </el-form-item>
       </div>
     </el-form>
@@ -390,6 +390,7 @@ const save2 = () => {
           gid: form.gid,
           priceIn: form.price_in,
           priceOut: form.price_out,
+          priceVip: form.price_vip,
           sid: form.sid,
           date: form.date,
           shelfLife: form.shelfLife,
@@ -407,6 +408,9 @@ const save2 = () => {
             searchText.value = "";
             queryTaskList();
           }
+        })
+        .finally(() => {
+          lod.value = false;
         });
     }
   });
@@ -600,6 +604,7 @@ const updateGood = (row) => {
   form.price_out = row.priceOut;
   form.price_in = row.priceIn;
   form.type = row.type;
+  form.price_vip = row.priceVip;
   dialogFormVisible3.value = true;
 };
 const deleteGood = (row) => {

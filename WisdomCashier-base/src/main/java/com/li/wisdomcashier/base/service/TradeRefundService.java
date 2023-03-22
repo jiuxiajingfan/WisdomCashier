@@ -1,6 +1,9 @@
 package com.li.wisdomcashier.base.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
+import com.li.wisdomcashier.base.entity.po.GoodsVO;
 import com.li.wisdomcashier.base.entity.po.TradeRefund;
 import com.baomidou.mybatisplus.extension.service.IService;
 import org.springframework.scheduling.annotation.Scheduled;

@@ -107,6 +107,9 @@ let Refund = defineAsyncComponent(() =>
   import("." + "./../components/Goods/Refund")
 );
 let test = defineAsyncComponent(() => import("../../components/Goods/test"));
+let Volume = defineAsyncComponent(() =>
+  import("../../components/Goods/Volume")
+);
 let ClassificationManage = defineAsyncComponent(() =>
   import("../../components/Goods/ClassificationManage.vue")
 );
@@ -124,6 +127,9 @@ let Temporary = defineAsyncComponent(() =>
 );
 let VipManage = defineAsyncComponent(() =>
   import("../../components/VipManage/VipManage")
+);
+let MessagePush = defineAsyncComponent(() =>
+  import("../../components/VipManage/MessagePush")
 );
 const router = useRouter();
 onBeforeMount(() => {

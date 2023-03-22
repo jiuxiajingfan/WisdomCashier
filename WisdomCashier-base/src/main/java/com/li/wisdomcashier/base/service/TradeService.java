@@ -2,10 +2,12 @@ package com.li.wisdomcashier.base.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryMoneyDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
 import com.li.wisdomcashier.base.entity.dto.RefundDTO;
 import com.li.wisdomcashier.base.entity.po.Goods;
+import com.li.wisdomcashier.base.entity.po.GoodsVO;
 import com.li.wisdomcashier.base.entity.po.Trade;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.base.entity.po.TradeGoods;
@@ -52,6 +54,14 @@ public interface TradeService extends IService<Trade> {
      */
     R<List<List<EChartVO>>> currentTradeMoney(QueryMoneyDTO queryMoneyDTO);
 
-    void AsyncSaveGood(List<Goods> goodsList, Long id);
+    void AsyncSaveGood(List<Goods> goodsList, Long id,boolean isVip,String sid);
+
+
+    /**
+     * 商品排行
+     * @param goodQueryDTO
+     * @return
+     */
+    R<List<Goods>> getGoodRankPage(GoodQueryDTO goodQueryDTO);
 }
 

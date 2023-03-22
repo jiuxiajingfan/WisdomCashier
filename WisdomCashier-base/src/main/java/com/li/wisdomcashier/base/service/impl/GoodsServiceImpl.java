@@ -24,11 +24,8 @@ import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.enums.TradeEnum;
 import com.li.wisdomcashier.base.mapper.GoodsMapper;
 import com.li.wisdomcashier.base.mapper.TradeMapper;
-import com.li.wisdomcashier.base.service.AlipayService;
-import com.li.wisdomcashier.base.service.GoodsService;
+import com.li.wisdomcashier.base.service.*;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.li.wisdomcashier.base.service.TradeGoodsService;
-import com.li.wisdomcashier.base.service.TradeService;
 import com.li.wisdomcashier.base.util.UserUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -69,9 +66,6 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     private GoodsMapper goodsMapper;
 
     @Resource
-    private TradeGoodsService tradeGoodsService;
-
-    @Resource
     private TradeMapper tradeMapper;
 
     @Resource
@@ -79,6 +73,10 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
 
     @Resource
     private TradeService tradeService;
+
+
+    @Resource
+    private VipService vipService;
 
     @Override
     public R<Goods> reqGood(String gid) {
@@ -186,7 +184,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     public R<String> buyGood(BuyGoodDTO buyGoodDTO) {
         UserUtils.hasPermissions(buyGoodDTO.getSid(), RoleEnum.SHOP.getCode());
         try {
-            if(buyGoodDTO.getStatus()==TradeEnum.FINISH.getCode()) {
+            if(buyGoodDTO.getStatus().equals(TradeEnum.FINISH.getCode())) {
                 Trade trade = new Trade();
                 trade.setSid(Long.parseLong(buyGoodDTO.getSid()));
                 trade.setIncome(new BigDecimal(buyGoodDTO.getSum()));
@@ -200,7 +198,10 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
                     trade.setId(Long.parseLong(buyGoodDTO.getId()));
                 }
                 tradeMapper.insert(trade);
-                tradeService.AsyncSaveGood(buyGoodDTO.getGoods(),trade.getId());
+                tradeService.AsyncSaveGood(buyGoodDTO.getGoods(),trade.getId(),buyGoodDTO.getVip()==1,buyGoodDTO.getSid());
+                if(buyGoodDTO.getVip()==1){
+                    vipService.addIntegration(buyGoodDTO.getPhone(), buyGoodDTO.getSum(), buyGoodDTO.getSid());
+                }
             }
             else{
                 this.failTradeLogAsunc(buyGoodDTO.getRemoteNo(), Long.parseLong(buyGoodDTO.getSid()),buyGoodDTO.getType());
@@ -254,5 +255,6 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         Page<Goods> result = goodsMapper.selectPage(page, wrapper);
         return R.ok(result);
     }
+
 
 }

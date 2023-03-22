@@ -2,21 +2,26 @@ package com.li.wisdomcashier.base.entity.dto;
 
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * @ClassName GoodQueryDTO
+ * @ClassName VipQueryDTO
  * @Description TODO
  * @Author Nine
- * @Date 2023/2/27 15:54
+ * @Date 2023/3/22 16:26
  * @Version 1.0
  */
 @Data
-public class GoodQueryDTO extends PageDTO {
+public class VipQueryDTO extends PageDTO {
     @NotNull
     String sid;
 
-    String gid;
+    List<String> age;
+
+    List<String> sex;
+
+    List<Integer> status;
+
+    List<Integer> level;
 }

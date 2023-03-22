@@ -5,6 +5,7 @@ import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.AddVipDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.dto.RenewalDTO;
+import com.li.wisdomcashier.base.entity.dto.VipQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Vip;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.base.entity.vo.VipVO;
@@ -28,4 +29,14 @@ public interface VipService extends IService<Vip> {
     R<String> renewalVip(RenewalDTO renewalDTO);
 
     R<Integer> isVip(String sid,String phone);
+
+    /**
+     * 会员积分
+     * @param phone
+     * @param sum
+     * @param sid
+     */
+    void addIntegration(String phone,String sum,String sid);
+
+    R<IPage<VipVO>> getVipPushPage(VipQueryDTO goodQueryDTO);
 }

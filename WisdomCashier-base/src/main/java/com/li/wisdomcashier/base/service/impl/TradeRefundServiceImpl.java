@@ -1,7 +1,10 @@
 package com.li.wisdomcashier.base.service.impl;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
+import com.li.wisdomcashier.base.entity.po.GoodsVO;
 import com.li.wisdomcashier.base.entity.po.Trade;
 import com.li.wisdomcashier.base.entity.po.TradeRefund;
 import com.li.wisdomcashier.base.enums.RoleEnum;
@@ -85,4 +88,5 @@ public class TradeRefundServiceImpl extends ServiceImpl<TradeRefundMapper, Trade
                 .set(Trade::getStatus,TradeEnum.FINAL.getCode())
         );
     }
+
 }

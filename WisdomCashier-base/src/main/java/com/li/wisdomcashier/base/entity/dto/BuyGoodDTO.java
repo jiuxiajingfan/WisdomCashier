@@ -48,4 +48,6 @@ public class BuyGoodDTO {
     String id;
 
     Integer vip;
+
+    String phone;
 }
