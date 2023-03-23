@@ -37,7 +37,6 @@ public class FileController {
 
     @PostMapping("/upload")
     public R<String> upload(MultipartFile file) {
-
         String upload = minIoUtils.upload(file);
         return R.ok(address+"/"+bucketName+"/"+upload);
     }

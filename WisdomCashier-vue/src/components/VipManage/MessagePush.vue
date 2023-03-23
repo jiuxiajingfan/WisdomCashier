@@ -144,6 +144,10 @@ const queryTaskList = () => {
       current: current.value,
       pageSize: pageSize.value,
       sid: router.currentRoute.value.query.id,
+      sex: formInline.sex,
+      age: formInline.age,
+      level: formInline.level,
+      status: formInline.status,
     })
     .then((res) => {
       good.value = res.data.data.records;

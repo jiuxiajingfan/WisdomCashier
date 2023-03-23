@@ -107,6 +107,9 @@ const openeds = [0];
 let myShop = defineAsyncComponent(() =>
   import("../../components/userCenter/myShop")
 );
+let CreateShop = defineAsyncComponent(() =>
+  import("../../components/Shop/CreateShop")
+);
 onBeforeMount(() => {
   api.get("account/getUserCenterMenu").then((res) => {
     menuData.value = res.data.data;

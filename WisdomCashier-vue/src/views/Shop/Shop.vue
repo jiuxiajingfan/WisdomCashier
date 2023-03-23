@@ -106,7 +106,6 @@ let Charge = defineAsyncComponent(() =>
 let Refund = defineAsyncComponent(() =>
   import("." + "./../components/Goods/Refund")
 );
-let test = defineAsyncComponent(() => import("../../components/Goods/test"));
 let Volume = defineAsyncComponent(() =>
   import("../../components/Goods/Volume")
 );

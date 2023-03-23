@@ -7,11 +7,8 @@ import com.li.wisdomcashier.base.entity.po.SysMenu;
 import com.li.wisdomcashier.base.entity.vo.ApplyVO;
 import com.li.wisdomcashier.base.entity.vo.UserVo;
 import com.li.wisdomcashier.base.entity.vo.VipVO;
-import com.li.wisdomcashier.base.service.ApplyService;
-import com.li.wisdomcashier.base.service.ShopCategoryService;
-import com.li.wisdomcashier.base.service.ShopService;
+import com.li.wisdomcashier.base.service.*;
 import com.li.wisdomcashier.base.entity.vo.ShopVO;
-import com.li.wisdomcashier.base.service.VipService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -44,6 +41,9 @@ public class ShopController {
 
     @Resource
     private VipService vipService;
+
+    @Resource
+    private ShopApplyService shopApplyService;
 
     @ApiOperation(value = "获取用户相关店铺信息")
     @GetMapping("/getUserShop")
@@ -155,5 +155,11 @@ public class ShopController {
     @PostMapping("/getVipPushPage")
     public R<IPage<VipVO>> getVipPushPage(@RequestBody @Validated VipQueryDTO goodQueryDTO){
         return vipService.getVipPushPage(goodQueryDTO);
+    }
+
+    @ApiOperation(value = "申请店铺")
+    @PostMapping("/applyShop")
+    public R<String> applyShop(@RequestBody @Validated ShopApplyDTO shopApplyDTO){
+        return shopApplyService.applyShop(shopApplyDTO);
     }
 }
