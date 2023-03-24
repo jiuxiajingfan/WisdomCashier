@@ -21,6 +21,7 @@ import com.li.wisdomcashier.base.util.UserUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -96,5 +97,45 @@ public class ApplyServiceImpl extends ServiceImpl<ApplyMapper, Apply> implements
             roleMapper.insert(role);
         }
         return R.ok("执行成功！");
+    }
+
+    @Override
+    public R<String> applyShop(String sid) {
+        if(StringUtils.isBlank(sid))
+            return R.error("参数错误！");
+        User user = UserUtils.getUser();
+        List<Apply> applies = applyMapper.selectList(Wrappers.lambdaQuery(Apply.class)
+                .eq(Apply::getShopId, Long.parseLong(sid))
+                .eq(Apply::getUserId, user.getId())
+                .eq(Apply::getStatus,ApplyEnum.WAIT.getCode()));
+        if(!applies.isEmpty()){
+            return R.error("请等待上份申请完成！");
+        }
+        Apply apply = new Apply();
+        apply.setStatus(ApplyEnum.WAIT.getCode());
+        apply.setUserId(user.getId());
+        apply.setShopId(Long.parseLong(sid));
+        apply.setGmtCreate(LocalDateTime.now());
+        return R.ok(applyMapper.insert(apply)==1?"申请成功":"申请失败！");
+    }
+
+    @Override
+    public R<List<ApplyVO>> getApplyListPer() {
+        User user = UserUtils.getUser();
+        List<Apply> applies = applyMapper.selectList(Wrappers.lambdaQuery(Apply.class)
+                .eq(Apply::getUserId, user.getId())
+                .orderByDesc(Apply::getGmtCreate)
+        );
+        if(applies.isEmpty()){
+            return R.ok(new ArrayList<>());
+        }
+        List<ApplyVO> result = applies.stream().map(e -> {
+            ApplyVO applyVO = new ApplyVO();
+            applyVO.setName(e.getShopId().toString());
+            applyVO.setGmtCreate(e.getGmtCreate());
+            applyVO.setUserId(Long.parseLong(e.getStatus().toString()));
+            return applyVO;
+        }).collect(Collectors.toList());
+        return R.ok(result);
     }
 }

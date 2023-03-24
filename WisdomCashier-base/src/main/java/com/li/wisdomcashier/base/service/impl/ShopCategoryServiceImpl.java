@@ -34,8 +34,7 @@ public class ShopCategoryServiceImpl extends ServiceImpl<ShopCategoryMapper, Sho
     public R<List<String>> getCategory(String sid) {
         if(StringUtils.isBlank(sid))
             return R.error("店铺ID不能为空！");
-        //店铺管理员权限接口
-        UserUtils.hasPermissions(sid, RoleEnum.SHOPADMIN.getCode());
+        UserUtils.hasPermissions(sid, RoleEnum.SHOP.getCode());
         List<ShopCategory> shopCategories = shopCategoryMapper.selectList(Wrappers.lambdaQuery(ShopCategory.class).eq(ShopCategory::getShopId, Long.parseLong(sid)));
         List<String> collect = shopCategories.stream().map(ShopCategory::getCategory).collect(Collectors.toList());
         return R.ok(collect);

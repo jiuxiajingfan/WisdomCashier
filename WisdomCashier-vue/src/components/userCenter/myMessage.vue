@@ -18,14 +18,21 @@
           >
             <el-form-item label="用户标识 :">
               {{ user.getId }}
-              <el-button
-                type="text"
-                :icon="CopyDocument"
-                style="margin-left: 5px"
-                class="copyBtn"
-                @click="copy"
-                circle
-              />
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                content="点击复制"
+                placement="top-start"
+              >
+                <el-button
+                  type="text"
+                  :icon="CopyDocument"
+                  style="margin-left: 5px"
+                  class="copyBtn"
+                  @click="copy"
+                  circle
+                />
+              </el-tooltip>
             </el-form-item>
             <el-form-item label="用户名 :">
               {{ user.getNickName }}

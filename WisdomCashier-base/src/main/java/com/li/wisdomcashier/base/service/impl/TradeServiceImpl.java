@@ -253,7 +253,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
 
     @Override
     public R<List<Goods>> getGoodRankPage(GoodQueryDTO goodQueryDTO) {
-        UserUtils.hasPermissions(goodQueryDTO.getSid(), RoleEnum.SHOPMASTER.getCode());
+        UserUtils.hasPermissions(goodQueryDTO.getSid(), RoleEnum.SHOPADMIN.getCode());
         List<Trade> trades = tradeMapper.selectList(Wrappers.lambdaQuery(Trade.class)
                 .eq(Trade::getSid, Long.parseLong(goodQueryDTO.getSid()))
                 .le(Trade::getCreateTime, LocalDateTime.now())

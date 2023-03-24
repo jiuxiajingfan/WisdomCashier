@@ -286,7 +286,7 @@
                 size="large"
                 style="margin-left: 30px; margin-top: 5px; height: 80%"
                 @click="dialogVisiblezfb = true"
-                :disabled="Trade.get.length === 0"
+                :disabled="Trade.get.length === 0 || status[1] === 0"
               >
                 <alipay
                   theme="outline"
@@ -300,7 +300,7 @@
               <el-button
                 size="large"
                 style="margin-left: 30px; margin-top: 5px; height: 80%"
-                :disabled="Trade.get.length === 0"
+                :disabled="Trade.get.length === 0 || status[0] === 0"
               >
                 <wechat
                   theme="outline"
@@ -1136,6 +1136,7 @@ const getStyle = (data) => {
     "display: block;"
   );
 };
+const status = ref([]);
 onBeforeMount(() => {
   api
     .get("Shop/getCategory", {
@@ -1145,6 +1146,15 @@ onBeforeMount(() => {
     })
     .then((res) => {
       options.value = res.data.data;
+    });
+  api
+    .get("Shop/getTradeStatus", {
+      params: {
+        sid: router.currentRoute.value.query.id,
+      },
+    })
+    .then((res) => {
+      status.value = res.data.data;
     });
 });
 </script>

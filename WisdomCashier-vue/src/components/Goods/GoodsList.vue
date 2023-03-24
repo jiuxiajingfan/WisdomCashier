@@ -24,11 +24,16 @@
         <template v-slot="scope">
           <el-upload
             class="avatar-uploader"
-            action="up"
+            ref="uploadRef"
+            action="#"
+            :before-upload="
+              (file) => {
+                return beforeUpload(file, scope.row.gid);
+              }
+            "
             :show-file-list="false"
             accept=".jpg,.jpeg,.JPG,.JPEG"
             data="multipartFile"
-            :auto-upload="false"
           >
             <el-icon
               v-if="scope.row.picUrl == null"
@@ -606,6 +611,29 @@ const updateGood = (row) => {
   form.type = row.type;
   form.price_vip = row.priceVip;
   dialogFormVisible3.value = true;
+};
+const beforeUpload = (file, id) => {
+  let fd = new FormData();
+  fd.append("file", file);
+  api
+    .post("/file/upload", fd, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => {
+      api
+        .post("Goods/updateGoodImg", {
+          shopID: router.currentRoute.value.query.id,
+          remoteID: id,
+          msg: res.data.msg,
+        })
+        .then((res) => {
+          utils.showMessage(res.data.code, res.data.msg);
+          queryTaskList();
+        });
+    });
+  return false;
 };
 const deleteGood = (row) => {
   api

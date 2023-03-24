@@ -11,6 +11,12 @@
         <el-button icon="Search" @click="queryTaskList" />
       </template>
     </el-input>
+    <el-button
+      style="margin-left: 30px"
+      type="primary"
+      @click="dialogTableVisible = true"
+      >申请加入</el-button
+    >
   </dev>
   <div class="mm">
     <div class="tables">
@@ -59,17 +65,52 @@
       </div>
     </div>
   </div>
+  <el-dialog
+    v-model="dialogTableVisible"
+    title="申请列表"
+    width="50%"
+    align-center="true"
+  >
+    <el-input
+      style="width: 80%"
+      placeholder="请输入要加入的店铺ID"
+      v-model="searchText2"
+      class="input-with-select"
+      @keyup.enter="queryTaskList2"
+    >
+      <template #append>
+        <el-button icon="Search" @click="queryTaskList2" />
+      </template>
+    </el-input>
+    <el-table :data="applyData" height="calc(30vh)">
+      <el-table-column property="name" label="店铺ID" width="auto" />
+      <el-table-column label="申请状态" width="auto">
+        <template #default="scope">
+          <div style="display: flex; align-items: center">
+            <i :style="getStyle(scope.row.userId - 1)"></i>
+            <span style="margin-left: 2px">
+              {{ tradetype2[scope.row.userId - 1].msg }}
+            </span>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column property="gmtCreate" label="申请时间" width="auto" />
+    </el-table>
+  </el-dialog>
 </template>
 <script setup>
 import { onBeforeMount, ref } from "vue";
 import api from "@/api/api";
 const shops = ref([]);
+const dialogTableVisible = ref(false);
 let current = ref(1);
 let total = ref(0);
 let pageSize = ref(20);
 let searchText = ref("");
+let searchText2 = ref("");
 let currentText = "";
 import { useRouter } from "vue-router";
+import utils from "@/utils/utils";
 const router = useRouter();
 onBeforeMount(() => {
   api
@@ -83,7 +124,34 @@ onBeforeMount(() => {
       current.value = res.data.data.current;
       total.value = res.data.data.total;
     });
+  queryTaskList3();
 });
+const lod = ref(false);
+const applyData = ref([]);
+const queryTaskList3 = () => {
+  api.post("Shop/getApplyListPer").then((res) => {
+    applyData.value = res.data.data;
+  });
+};
+const queryTaskList2 = () => {
+  lod.value = true;
+  api
+    .get("Shop/applyShop", {
+      params: {
+        sid: searchText2.value.trim(),
+      },
+    })
+    .then((res) => {
+      utils.showMessage(res.data.code, res.data.msg);
+      if (res.data.code === 200) {
+        searchText2.value = "";
+        queryTaskList3();
+      }
+    })
+    .finally(() => {
+      lod.value = true;
+    });
+};
 const queryTaskList = () => {
   if (currentText != searchText.value) {
     current.value = 1;
@@ -116,6 +184,22 @@ const go = (id) => {
       id: id,
     },
   });
+};
+let tradetype2 = [
+  { msg: "待审批", color: "#fffb09" },
+  { msg: "通过", color: "#00ff08" },
+  { msg: "拒绝", color: "#ff0000" },
+];
+const getStyle = (data) => {
+  return (
+    "background-color: " +
+    tradetype2[data].color +
+    ";\n" +
+    "width: 15px;\n" +
+    "height: 15px;\n" +
+    "border-radius: 50%;\n" +
+    "display: block;"
+  );
 };
 </script>
 

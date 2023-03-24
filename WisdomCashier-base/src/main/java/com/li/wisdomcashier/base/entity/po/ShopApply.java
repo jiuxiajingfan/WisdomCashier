@@ -61,5 +61,7 @@ public class ShopApply implements Serializable {
     @TableField("apply_id")
     private Long applyId;
 
+    @TableField("tips")
+    private String tips;
 
 }

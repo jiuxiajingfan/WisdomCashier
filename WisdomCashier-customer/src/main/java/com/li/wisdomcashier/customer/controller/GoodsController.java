@@ -3,10 +3,7 @@ package com.li.wisdomcashier.customer.controller;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.common.UnCheck;
-import com.li.wisdomcashier.base.entity.dto.BuyGoodDTO;
-import com.li.wisdomcashier.base.entity.dto.DeleteDTO;
-import com.li.wisdomcashier.base.entity.dto.GoodDTO;
-import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
+import com.li.wisdomcashier.base.entity.dto.*;
 import com.li.wisdomcashier.base.entity.po.Goods;
 import com.li.wisdomcashier.base.entity.po.GoodsVO;
 import com.li.wisdomcashier.base.service.GoodsService;
@@ -84,6 +81,12 @@ public class GoodsController {
     @ApiOperation(value = "获取临期商品")
     R<IPage<Goods>> getGoodTemporaryPage(@RequestBody @Validated GoodQueryDTO goodQueryDTO){
         return goodsService.getGoodTemporaryPage(goodQueryDTO);
+    }
+
+    @PostMapping("/updateGoodImg")
+    @ApiOperation(value = "更新商品图片")
+    public R<String> updateGoodImg(@RequestBody @Validated  PayDTO payDTO){
+        return goodsService.updateGoodImg(payDTO);
     }
 
 

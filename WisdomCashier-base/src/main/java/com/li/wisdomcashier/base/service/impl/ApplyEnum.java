@@ -15,7 +15,8 @@ import lombok.Getter;
 public enum ApplyEnum {
     WAIT(1,"待审批"),
     SUCCESS(2,"通过"),
-    REFUSE(3,"拒绝");
+    REFUSE(3,"拒绝"),
+    CHANEL(4,"撤销");
 
     private int code;
 

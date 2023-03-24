@@ -216,5 +216,14 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
         return R.ok(roleMapper.deleteById(role)==1?"更新成功！":"更新失败，请联系系统管理员！");
     }
 
+    @Override
+    public R<List<Integer>> getTradeStatus(String sid) {
+        Shop shop = UserUtils.hasPermissions(sid, RoleEnum.SHOP.getCode());
+        ArrayList<Integer> integers = new ArrayList<>();
+        integers.add(shop.getWxStatus());
+        integers.add(shop.getZfbStatus());
+        return R.ok(integers);
+    }
+
 
 }

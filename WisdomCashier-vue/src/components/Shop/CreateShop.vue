@@ -1,6 +1,16 @@
 <template>
-  <h2>申请开店</h2>
-  <el-card class="box-card">
+  <el-row>
+    <el-col :span="8" />
+    <el-col :span="8">
+      <h2>申请开店</h2>
+    </el-col>
+    <el-col :span="8">
+      <el-button type="primary" style="margin-top: 60px" @click="dia1"
+        >申请进度</el-button
+      >
+    </el-col>
+  </el-row>
+  <el-card class="box-card" style="margin-top: 10px">
     <template #header>
       <div class="card-header">
         <el-steps :active="active" align-center finish-status="success">
@@ -15,8 +25,13 @@
       <el-row>
         <el-col :span="4"></el-col>
         <el-col :span="16">
-          <el-form :model="form" label-width="120px">
-            <el-form-item label="店铺名">
+          <el-form
+            :model="form"
+            label-width="120px"
+            ref="fromref"
+            :rules="rules"
+          >
+            <el-form-item label="店铺名" prop="name">
               <el-input v-model="form.name" />
             </el-form-item>
             <el-form-item label="店铺分类">
@@ -26,7 +41,7 @@
                 <el-option label="餐饮" value="beijing" />
               </el-select>
             </el-form-item>
-            <el-form-item label="店铺描述">
+            <el-form-item label="店铺描述" prop="desc">
               <el-input v-model="form.desc" type="textarea" />
             </el-form-item>
           </el-form>
@@ -37,17 +52,22 @@
       <el-row>
         <el-col :span="4"></el-col>
         <el-col :span="16">
-          <el-form :model="form" label-width="150px">
-            <el-form-item label="社会统一信用代码">
+          <el-form
+            :model="form"
+            label-width="150px"
+            :rules="rules"
+            ref="fromref2"
+          >
+            <el-form-item label="社会统一信用代码" prop="resource">
               <el-input v-model="form.resource" />
             </el-form-item>
-            <el-form-item label="店铺营业执照">
+            <el-form-item label="店铺营业执照" prop="p1">
               <el-upload
                 action="#"
                 ref="uploadRef"
                 list-type="picture-card"
                 :before-upload="beforeUpload"
-                :on-success="test"
+                accept=".jpg,.jpeg,.JPG,.JPEG"
                 :auto-upload="false"
                 :file-list="fileList"
                 :on-change="fileChange"
@@ -81,11 +101,12 @@
                 <img w-full :src="dialogImageUrl" alt="Preview Image" />
               </el-dialog>
             </el-form-item>
-            <el-form-item label="执照人身份证正面">
+            <el-form-item label="执照人身份证正面" prop="p2">
               <el-upload
                 action="#"
                 ref="uploadRef2"
                 list-type="picture-card"
+                accept=".jpg,.jpeg,.JPG,.JPEG"
                 :auto-upload="false"
                 :file-list="fileList2"
                 :on-change="fileChange2"
@@ -117,11 +138,12 @@
                 </template>
               </el-upload>
             </el-form-item>
-            <el-form-item label="执照人身份证反面">
+            <el-form-item label="执照人身份证反面" prop="p3">
               <el-upload
                 action="#"
                 ref="uploadRef3"
                 list-type="picture-card"
+                accept=".jpg,.jpeg,.JPG,.JPEG"
                 :auto-upload="false"
                 :file-list="fileList3"
                 :before-upload="beforeUpload3"
@@ -248,8 +270,11 @@
         @click="next(1)"
         type="primary"
         :loading="lod"
-        >下一步</el-button
+        :disabled="disable"
       >
+        <span v-show="!disable">下一步</span>
+        <span v-show="disable">请等待上一份申请完成</span>
+      </el-button>
       <el-button
         v-if="active === 2"
         style="margin-top: 12px"
@@ -268,10 +293,46 @@
       >
     </div>
   </el-card>
+  <el-dialog
+    v-model="dialogTableVisible"
+    title="申请列表"
+    width="50%"
+    align-center="true"
+  >
+    <el-table :data="applyData" height="calc(30vh)">
+      <el-table-column property="name" label="店铺名" width="auto" />
+      <el-table-column label="申请状态" width="auto">
+        <template #default="scope">
+          <div style="display: flex; align-items: center">
+            <i :style="getStyle(scope.row.status - 1)"></i>
+            <span style="margin-left: 2px">
+              {{ tradetype2[scope.row.status - 1].msg }}
+            </span>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column property="gmtCreate" label="申请时间" width="auto" />
+      <el-table-column property="tips" label="备注" width="auto" />
+      <el-table-column label="操作">
+        <template #default="scope">
+          <el-popconfirm
+            title="确定要删除吗?"
+            @confirm="deleteGood(scope.row.id)"
+          >
+            <template #reference>
+              <el-button v-show="scope.row.status === 1" link type="primary"
+                >撤销</el-button
+              >
+            </template>
+          </el-popconfirm>
+        </template>
+      </el-table-column>
+    </el-table>
+  </el-dialog>
 </template>
 <script setup>
-import { reactive, ref } from "vue";
-
+import { onBeforeMount, reactive, ref } from "vue";
+const dialogTableVisible = ref(false);
 const form = reactive({
   name: "",
   region: "",
@@ -287,7 +348,23 @@ let hideUpload3 = ref(false);
 const lod = ref(false);
 const active = ref(0);
 const next = (res) => {
-  active.value += res;
+  if (res > 0) {
+    if (active.value === 0) {
+      fromref.value.validate((valid) => {
+        if (valid) {
+          active.value += res;
+        }
+      });
+    } else if (active.value === 1) {
+      fromref2.value.validate((valid) => {
+        if (valid) {
+          active.value += res;
+        }
+      });
+    }
+  } else {
+    active.value += res;
+  }
   if (active.value > 2 || active.value < 0) active.value = 0;
 };
 
@@ -308,6 +385,7 @@ const handleRemove = (file) => {
   fileList.value = list;
   if (fileList.value.length === 0) {
     hideUpload.value = false;
+    valiIconFlag1 = false;
   }
 };
 const handleRemove2 = (file) => {
@@ -320,6 +398,7 @@ const handleRemove2 = (file) => {
   fileList2.value = list;
   if (fileList2.value.length === 0) {
     hideUpload2.value = false;
+    valiIconFlag2 = false;
   }
 };
 const handleRemove3 = (file) => {
@@ -332,6 +411,7 @@ const handleRemove3 = (file) => {
   fileList3.value = list;
   if (fileList3.value.length === 0) {
     hideUpload3.value = false;
+    valiIconFlag3 = false;
   }
 };
 
@@ -344,6 +424,7 @@ const fileChange = (file, resfileList) => {
   if (fileList.value.length > 0) {
     img1P.value = fileList.value[0].url;
     hideUpload.value = true;
+    valiIconFlag1 = true;
   }
 };
 const fileChange2 = (file, resfileList) => {
@@ -351,6 +432,7 @@ const fileChange2 = (file, resfileList) => {
   if (fileList.value.length > 0) {
     img2P.value = fileList2.value[0].url;
     hideUpload2.value = true;
+    valiIconFlag2 = true;
   }
 };
 const fileChange3 = (file, resfileList) => {
@@ -358,6 +440,7 @@ const fileChange3 = (file, resfileList) => {
   if (fileList.value.length > 0) {
     img3P.value = fileList3.value[0].url;
     hideUpload3.value = true;
+    valiIconFlag3 = true;
   }
 };
 import api from "@/api/api";
@@ -473,6 +556,121 @@ const beforeUpload3 = (file, id) => {
 const img1P = ref("");
 const img2P = ref("");
 const img3P = ref("");
+const fromref = ref();
+const fromref2 = ref();
+let valiIconFlag1 = false;
+let valiIconFlag2 = false;
+let valiIconFlag3 = false;
+
+let valiIcon1 = (rule, value, callback) => {
+  if (!valiIconFlag1) {
+    callback(new Error("请上传"));
+  } else {
+    callback();
+  }
+};
+let valiIcon2 = (rule, value, callback) => {
+  if (!valiIconFlag2) {
+    callback(new Error("请上传"));
+  } else {
+    callback();
+  }
+};
+let valiIcon3 = (rule, value, callback) => {
+  if (!valiIconFlag3) {
+    callback(new Error("请上传"));
+  } else {
+    callback();
+  }
+};
+const rules = reactive({
+  name: [
+    { required: true, message: "请输入", trigger: "blur" },
+    {
+      min: 1,
+      max: 20,
+      message: "请正确输入",
+      trigger: "blur",
+    },
+  ],
+  region: [
+    { required: true, message: "请输入", trigger: "blur" },
+    {
+      min: 1,
+      max: 20,
+      message: "请正确输入",
+      trigger: "blur",
+    },
+  ],
+  resource: [
+    { required: true, message: "请输入", trigger: "blur" },
+    {
+      min: 1,
+      max: 20,
+      message: "请正确输入",
+      trigger: "blur",
+    },
+  ],
+  desc: [
+    { required: true, message: "请输入", trigger: "blur" },
+    {
+      min: 1,
+      max: 200,
+      message: "请正确输入",
+      trigger: "blur",
+    },
+  ],
+  p1: [{ required: true, validator: valiIcon1 }],
+  p2: [{ required: true, validator: valiIcon2 }],
+  p3: [{ required: true, validator: valiIcon3 }],
+});
+const disable = ref(false);
+const dia1 = () => {
+  dialogTableVisible.value = true;
+  api.post("Shop/getApply").then((res) => {
+    applyData.value = res.data.data.list;
+    disable.value = res.data.data.flag;
+  });
+};
+let applyData = ref([]);
+onBeforeMount(() => {
+  api.post("Shop/getApply").then((res) => {
+    applyData.value = res.data.data.list;
+    disable.value = res.data.data.flag;
+  });
+});
+let tradetype2 = [
+  { msg: "待审批", color: "#fffb09" },
+  { msg: "通过", color: "#00ff08" },
+  { msg: "拒绝", color: "#ff0000" },
+  { msg: "撤销", color: "#04f5ea" },
+];
+const deleteGood = (data) => {
+  api
+    .get("Shop/cancelApply", {
+      params: {
+        id: data,
+      },
+    })
+    .then((res) => {
+      utils.showMessage(res.data.code, res.data.msg);
+      api.post("Shop/getApply").then((res) => {
+        applyData.value = res.data.data.list;
+        disable.value = res.data.data.flag;
+      });
+    });
+};
+const getStyle = (data) => {
+  return (
+    "background-color: " +
+    tradetype2[data].color +
+    ";\n" +
+    "width: 15px;\n" +
+    "height: 15px;\n" +
+    "border-radius: 50%;\n" +
+    "display: block;"
+  );
+};
 </script>
 
 <style lang="scss">

@@ -87,5 +87,12 @@ public interface ShopService extends IService<Shop> {
      */
     R<String> deleteEmploree(DeleteDTO deleteDTO);
 
+    /**
+     * 获取交易方式状态
+     * @param sid
+     * @return
+     */
+    R<List<Integer>> getTradeStatus(String sid);
+
 
 }

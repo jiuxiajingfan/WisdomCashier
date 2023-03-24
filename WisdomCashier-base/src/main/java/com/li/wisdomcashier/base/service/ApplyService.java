@@ -29,4 +29,12 @@ public interface ApplyService extends IService<Apply> {
          * 审批申请
          */
         R<String> approval(ApprovalDTO approvalDTO);
+
+        /**
+         * 申请加入
+         * @return
+         */
+        R<String> applyShop(String sid);
+
+        R<List<ApplyVO>> getApplyListPer();
 }

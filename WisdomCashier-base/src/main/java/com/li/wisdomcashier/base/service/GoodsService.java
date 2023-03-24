@@ -2,10 +2,7 @@ package com.li.wisdomcashier.base.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
-import com.li.wisdomcashier.base.entity.dto.BuyGoodDTO;
-import com.li.wisdomcashier.base.entity.dto.DeleteDTO;
-import com.li.wisdomcashier.base.entity.dto.GoodDTO;
-import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
+import com.li.wisdomcashier.base.entity.dto.*;
 import com.li.wisdomcashier.base.entity.po.Goods;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.base.entity.po.GoodsVO;
@@ -88,5 +85,12 @@ public interface GoodsService extends IService<Goods> {
      * @return
      */
     R<IPage<Goods>> getGoodTemporaryPage(GoodQueryDTO goodQueryDTO);
+
+    /**
+     * 更新预览图
+     * @param payDTO
+     * @return
+     */
+    R<String> updateGoodImg(PayDTO payDTO);
 
 }

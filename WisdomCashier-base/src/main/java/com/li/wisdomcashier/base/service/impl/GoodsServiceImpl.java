@@ -10,10 +10,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.common.R;
-import com.li.wisdomcashier.base.entity.dto.BuyGoodDTO;
-import com.li.wisdomcashier.base.entity.dto.DeleteDTO;
-import com.li.wisdomcashier.base.entity.dto.GoodDTO;
-import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
+import com.li.wisdomcashier.base.entity.dto.*;
 import com.li.wisdomcashier.base.entity.po.Goods;
 import com.li.wisdomcashier.base.entity.po.GoodsVO;
 import com.li.wisdomcashier.base.entity.po.Trade;
@@ -254,6 +251,14 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         Page<Goods> page = new Page(goodQueryDTO.getCurrent(),goodQueryDTO.getPageSize());
         Page<Goods> result = goodsMapper.selectPage(page, wrapper);
         return R.ok(result);
+    }
+
+    @Override
+    public R<String> updateGoodImg(PayDTO payDTO) {
+        UserUtils.hasPermissions(payDTO.getShopID(), RoleEnum.SHOP.getCode());
+        Goods goods = goodsMapper.selectOne(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, payDTO.getRemoteID()));
+        goods.setPicUrl(payDTO.getMsg());
+        return R.ok(goodsMapper.updateById(goods)==1?"更新成功":"更新失败！");
     }
 
 

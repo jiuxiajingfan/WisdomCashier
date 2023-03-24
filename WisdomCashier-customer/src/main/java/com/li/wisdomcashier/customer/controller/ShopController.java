@@ -4,11 +4,8 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.*;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
-import com.li.wisdomcashier.base.entity.vo.ApplyVO;
-import com.li.wisdomcashier.base.entity.vo.UserVo;
-import com.li.wisdomcashier.base.entity.vo.VipVO;
+import com.li.wisdomcashier.base.entity.vo.*;
 import com.li.wisdomcashier.base.service.*;
-import com.li.wisdomcashier.base.entity.vo.ShopVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiModelProperty;
 import io.swagger.annotations.ApiOperation;
@@ -161,5 +158,35 @@ public class ShopController {
     @PostMapping("/applyShop")
     public R<String> applyShop(@RequestBody @Validated ShopApplyDTO shopApplyDTO){
         return shopApplyService.applyShop(shopApplyDTO);
+    }
+
+    @ApiOperation(value = "申请进度")
+    @PostMapping("/getApply")
+    public R<ShopApplyVO> getApply(){
+        return shopApplyService.getApply();
+    }
+
+    @ApiOperation(value = "个人申请加入店铺")
+    @GetMapping("/applyShop")
+    R<String> applyShop(String sid){
+        return applyService.applyShop(sid);
+    }
+
+    @ApiOperation(value = "个人申请加入店铺进度")
+    @PostMapping("/getApplyListPer")
+    R<List<ApplyVO>> getApplyListPer(){
+        return applyService.getApplyListPer();
+    }
+
+    @ApiOperation(value = "支持支付状态")
+    @GetMapping("/getTradeStatus")
+    R<List<Integer>> getTradeStatus(String sid){
+        return shopService.getTradeStatus(sid);
+    }
+
+    @ApiOperation(value = "撤销开店")
+    @GetMapping("/cancelApply")
+    public R<String> cancelApply(String id){
+        return shopApplyService.cancelApply(id);
     }
 }
