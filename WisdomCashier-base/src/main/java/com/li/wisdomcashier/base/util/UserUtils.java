@@ -56,7 +56,6 @@ public class UserUtils {
         Subject subject = SecurityUtils.getSubject();
         Claims claimByToken = jwtUtils.getClaimByToken(subject.getPrincipal().toString());
         User user = userUtils.userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getUserName, claimByToken.getSubject()));
-        System.out.println("hello");
         return  user;
     }
 

@@ -110,7 +110,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User convert = CglibUtil.copy(signUpDto, User.class);
         convert.setUserNickname("用户" + RandomUtil.randomString(6));
         convert.setStatus(0);
-        userMapper.insert(convert);
         return userMapper.insert(convert)==1?R.ok("注册成功！"):R.error("注册失败，请联系管理员！");
     }
 

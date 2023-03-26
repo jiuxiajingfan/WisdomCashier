@@ -50,8 +50,6 @@ public class UserRealm extends AuthorizingRealm {
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         simpleAuthorizationInfo.addRoles(user.getRole());
         simpleAuthorizationInfo.addStringPermissions(user.getPermission());
-        log.info("拥有角色{}",user.getRole());
-        log.info("拥有权限{}",user.getPermission());
         return simpleAuthorizationInfo;
     }
 
@@ -60,7 +58,6 @@ public class UserRealm extends AuthorizingRealm {
      */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
-        log.info("==========================认证");
         String token = (String) auth.getCredentials();
         // 解密获得username，用于和数据库进行对比
         Claims claim = jwtUtils.getClaimByToken(auth.getPrincipal().toString());

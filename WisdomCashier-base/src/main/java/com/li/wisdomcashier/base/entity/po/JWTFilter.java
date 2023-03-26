@@ -51,7 +51,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean isLoginAttempt(ServletRequest request, ServletResponse response) {
-        log.info("JwtFilter.isLoginAttempt");
         HttpServletRequest req = (HttpServletRequest) request;
         String token = req.getHeader("Authorization");
         return token != null;
@@ -62,7 +61,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
      */
     @Override
     protected boolean executeLogin(ServletRequest httpServletRequest, ServletResponse httpServletResponse) throws AuthenticationException{
-        log.info("JwtFilter.executeLogin");
         HttpServletRequest request = (HttpServletRequest) httpServletRequest;
         String authorization = request.getHeader(HttpHeaders.AUTHORIZATION);
         JwtUtils jwtUtils = getBean(JwtUtils.class, request);
@@ -94,7 +92,6 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 
     @Override
     protected boolean isAccessAllowed(ServletRequest servletRequest, ServletResponse response, Object mappedValue) {
-        log.info("JwtFilter.isAccessAllowed");
         HttpServletResponse res = WebUtils.toHttp(response);
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         WebApplicationContext ctx = RequestContextUtils.findWebApplicationContext(request);

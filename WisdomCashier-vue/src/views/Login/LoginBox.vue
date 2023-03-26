@@ -251,9 +251,6 @@ const register = () => {
             res.data.code,
             res.data.code == 0 ? res.data.data : res.data.msg
           );
-        })
-        .catch((err) => {
-          utils.showErrMessage(err.response.data.msg);
         });
     }
   });
