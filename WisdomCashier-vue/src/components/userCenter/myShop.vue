@@ -34,14 +34,6 @@
                 link
                 type="primary"
                 size="large"
-                v-if="scope.row.role < 3"
-              >
-                管理
-              </el-button>
-              <el-button
-                link
-                type="primary"
-                size="large"
                 @click="go(scope.row.id)"
               >
                 进入

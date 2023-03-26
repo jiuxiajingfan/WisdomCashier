@@ -364,6 +364,7 @@ const save = () => {
           gid: form.gid,
           priceIn: form.price_in,
           priceOut: form.price_out,
+          priceVip: form.price_vip,
           sid: form.sid,
           date: form.date,
           shelfLife: form.shelfLife,

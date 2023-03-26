@@ -20,14 +20,6 @@ const routes: Array<RouteRecordRaw> = [
     component: loginPage,
   },
   {
-    path: "/choiceShop",
-    name: "choiceShop",
-    component: choiceShop,
-    meta: {
-      auth: true,
-    },
-  },
-  {
     path: "/userCenter",
     name: "userCenter",
     component: userCenter,
@@ -66,7 +58,7 @@ router.beforeEach((to, from, next) => {
     const token = store.getToken;
     if (to.path === "/login") {
       if (token && token != "null") {
-        next("/choiceShop");
+        next("/userCenter");
       } else {
         next();
       }

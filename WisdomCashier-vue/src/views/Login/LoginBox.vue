@@ -262,6 +262,9 @@ import api from "@/api/api";
 import utils from "@/utils/utils";
 import { useAuthStore } from "@/store/auth";
 import router from "@/router";
+import pinia from "@/store/store";
+import { useUserStore } from "@/store/user";
+import { storeToRefs } from "pinia/dist/pinia";
 export default {
   name: "loginBox",
   components: { Verify },
@@ -305,7 +308,17 @@ export default {
             utils.showMessage(res.data.code, res.data.msg);
           } else {
             store.setToken(res.data.msg);
-            router.push("/choiceShop");
+            const user = useUserStore(pinia);
+            api.post("/user/getUser").then((res) => {
+              let data = res.data.data;
+              user.setId(data.id);
+              user.setImage(data.image);
+              user.setName(data.userName);
+              user.setNickName(data.userNickname);
+              user.setPhone(data.phone);
+              user.setEmail(data.email);
+            });
+            router.push("/userCenter");
             utils.showMessage(res.data.code, "登录成功，欢迎回来！");
           }
         });
