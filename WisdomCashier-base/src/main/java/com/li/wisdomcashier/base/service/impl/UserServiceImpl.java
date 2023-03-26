@@ -326,7 +326,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public R<List<SysMenu>> getUserCenterMenu() {
         Subject subject = SecurityUtils.getSubject();
         List<SysMenu> userCenterMenu = new ArrayList<>();
-        Integer role = RoleEnum.SHOPMASTER.getCode();
+        Integer role = RoleEnum.SHOP.getCode();
         userCenterMenu = sysMenuMapper.getUserCenterMenu(role, MenuEnum.USERCENTER.getCode());
         for (SysMenu centerMenu : userCenterMenu) {
             centerMenu.setChildren(sysMenuMapper.getChildrens(role, centerMenu.getMenuId(), MenuEnum.USERCENTER.getCode()));

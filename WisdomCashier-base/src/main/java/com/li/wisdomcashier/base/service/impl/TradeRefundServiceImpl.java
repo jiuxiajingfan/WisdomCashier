@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -78,7 +79,10 @@ public class TradeRefundServiceImpl extends ServiceImpl<TradeRefundMapper, Trade
     @Scheduled(cron = "0 0 */1 * * ?")
     public void checkDate() {
         log.info("查询并更改订单可否退款开始");
-        List<Trade> trades = tradeMapper.selectList(Wrappers.lambdaQuery(Trade.class).eq(Trade::getRefundNo, 0));
+        List<Trade> trades = tradeMapper.selectList(Wrappers.lambdaQuery(Trade.class)
+                .eq(Trade::getRefundNo, 0)
+                .in(Trade::getStatus, Arrays.asList(3,4))
+        );
         LocalDateTime now = LocalDateTime.now();
         List<Long> collect = trades.stream().filter(e ->
                 e.getCreateTime().plusDays(7).isBefore(now)
@@ -86,6 +90,7 @@ public class TradeRefundServiceImpl extends ServiceImpl<TradeRefundMapper, Trade
         tradeMapper.update(null,Wrappers.lambdaUpdate(Trade.class)
                 .in(Trade::getId,collect)
                 .set(Trade::getStatus,TradeEnum.FINAL.getCode())
+                .set(Trade::getRefundNo,1)
         );
     }
 

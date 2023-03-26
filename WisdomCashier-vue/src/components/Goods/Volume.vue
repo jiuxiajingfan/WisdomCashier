@@ -4,7 +4,7 @@
     <el-table
       :data="good"
       height="calc(100vh - 230px)"
-      empty-text="暂无即将过期产品"
+      empty-text="暂无销售订单"
     >
       <el-table-column prop="gid" label="商品条码" width="auto" />
       <el-table-column prop="name" label="商品名" width="auto" />

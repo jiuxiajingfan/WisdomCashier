@@ -21,11 +21,11 @@ public class SignUpDTO {
     @ApiModelProperty(value = "用户账户")
     @NotBlank(message = "账号不能为空")
     @Length(min = 5, max = 20, message = "账号长度必须在5-20位之间！")
+    @Pattern(regexp = "^[A-Za-z0-9]+$", message = "账号只能由英文字母和数字组成")
     String userName;
 
     @ApiModelProperty(value = "密码")
     @NotBlank(message = "密码不能为空")
-    @Pattern(regexp = "^(?![a-zA-Z]+$)(?!\\d+$)(?![^\\da-zA-Z\\s]+$).{8,30}$", message = "密码必须包含数字、字母、特殊符号中的两种，长度为8-30位！")
     String userPwd;
 
     @ApiModelProperty(value = "邮箱")

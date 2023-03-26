@@ -21,7 +21,7 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
             "from t_sys_menu\n" +
             "where menu_id in (select menu_id\n" +
             "                  from t_sys_role_menu\n" +
-            "                  where role_id = #{role}\n" +
+            "                  where role_id >= #{role}\n" +
             "                   and type = #{type} order by menu_id asc) and parent_id is null order by menu_id asc ;")
     List<SysMenu> getUserCenterMenu(@Param("role") Integer role,@Param("type") Integer type);
 
@@ -30,7 +30,7 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
             "from t_sys_menu\n" +
             "where menu_id in (select menu_id\n" +
             "                  from t_sys_role_menu\n" +
-            "                  where role_id = #{role}\n" +
+            "                  where role_id >= #{role}\n" +
             "                  and type =  #{type} order by menu_id asc) and parent_id = #{menuId} order by sort asc;")
     List<SysMenu> getChildrens(@Param("role") Integer role,@Param("menuId") Integer menuId,@Param("type") Integer type);
 }

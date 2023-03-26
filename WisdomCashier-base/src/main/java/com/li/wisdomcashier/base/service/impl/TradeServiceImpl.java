@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.common.StatusFailException;
 import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryMoneyDTO;
 import com.li.wisdomcashier.base.entity.dto.QueryTradeDTO;
@@ -23,6 +24,7 @@ import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.li.wisdomcashier.base.service.TradeService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.UserUtils;
+import lombok.SneakyThrows;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -143,6 +145,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
         return R.ok("退款成功！");
     }
 
+    @SneakyThrows
     @Override
     public R<List<List<EChartVO>>> currentTradeMoney(QueryMoneyDTO queryMoneyDTO) {
         //店铺管理员权限接口
@@ -158,14 +161,14 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
                 .eq(Trade::getSid, Long.parseLong(queryMoneyDTO.getSid()))
                 .le(Trade::getCreateTime, queryMoneyDTO.getTimeEnd())
                 .ge(Trade::getCreateTime, queryMoneyDTO.getTimeStart())
-                .in(Trade::getStatus, Arrays.asList(3, 4, 5, 6))
+                .in(Trade::getStatus, Arrays.asList(3, 4, 6))
         );
         //月份处理
         if (queryMoneyDTO.getTimeType() == 1) {
             queryMoneyDTO.setTimeEnd(queryMoneyDTO.getTimeEnd().minusDays(1));
         }
         if (trades.isEmpty()) {
-            return R.error("区间内暂无数据！");
+            throw new StatusFailException("区间内暂无数据！");
         }
         List<String> date = this.getDate(queryMoneyDTO.getTimeStart(), queryMoneyDTO.getTimeEnd(), queryMoneyDTO.getTimeType());
         ArrayList<List<EChartVO>> ans = new ArrayList<>();
@@ -258,8 +261,10 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
                 .eq(Trade::getSid, Long.parseLong(goodQueryDTO.getSid()))
                 .le(Trade::getCreateTime, LocalDateTime.now())
                 .ge(Trade::getCreateTime, LocalDateTime.now().minusMonths(1))
-                .in(Trade::getStatus, Arrays.asList(3, 4, 5, 6))
+                .in(Trade::getStatus, Arrays.asList(3, 4, 6))
         );
+        if(trades.isEmpty())
+            return R.ok(new ArrayList<>());
         List<Long> collect1 = trades.stream().map(e -> e.getId()).collect(Collectors.toList());
         List<TradeGoods> tradeGoods = tradeGoodsMapper.selectList(Wrappers.lambdaQuery(TradeGoods.class).in(TradeGoods::getTradeId, collect1));
         Map<String, Integer> collect = tradeGoods.stream().collect(Collectors.groupingBy(TradeGoods::getGid, Collectors.summingInt(TradeGoods::getNum)));

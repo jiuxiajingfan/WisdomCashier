@@ -100,9 +100,13 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
         Subject subject = SecurityUtils.getSubject();
         List<SysMenu> userCenterMenu = new ArrayList<>();
         Integer role;
-        if (subject.isPermitted(shopId.toString()+"2")) {
+        if (subject.isPermitted(shopId.toString()+"1")) {
+            role = RoleEnum.SHOPMASTER.getCode();
+        }
+        else if (subject.isPermitted(shopId.toString()+"2")) {
             role = RoleEnum.SHOPADMIN.getCode();
-        } else {
+        }
+        else {
             role = RoleEnum.SHOP.getCode();
         }
         userCenterMenu = sysMenuMapper.getUserCenterMenu(role, MenuEnum.SHOPMENU.getCode());

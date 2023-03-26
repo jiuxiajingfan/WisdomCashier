@@ -8,6 +8,7 @@
         <version>2.7.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+    <packaging>jar</packaging>
     <groupId>com.li.WisdomCashier</groupId>
     <artifactId>admin</artifactId>
     <version>0.0.1-SNAPSHOT</version>
