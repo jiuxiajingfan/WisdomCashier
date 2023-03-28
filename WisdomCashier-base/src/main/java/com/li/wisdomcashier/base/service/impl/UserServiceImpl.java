@@ -214,7 +214,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         if (userBean.getUserPwd().equals(loginDto.getUserPwd())) {
             //封装用户的登录数据
-            JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()));
+            JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()),"UserRealm");
             //限制多处登录
             redisUtils.lSet(loginDto.getUserName() + "token", jwtToken.getPrincipal(), 14400);
             if (redisUtils.lGetListSize(loginDto.getUserName() + "token") > 1) {
@@ -232,7 +232,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         if (userBean.getUserPwd().equals(loginDto.getUserPwd())) {
             //封装用户的登录数据
-            JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()));
+            JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()),"UserRealm");
             //限制多处登录
             redisUtils.lSet(loginDto.getUserName() + "token", jwtToken.getPrincipal(), 14400);
             if (redisUtils.lGetListSize(loginDto.getUserName() + "token") > 1) {

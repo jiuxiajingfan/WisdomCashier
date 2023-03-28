@@ -1,19 +1,21 @@
 package com.li.wisdomcashier.base.config;
 
+import com.li.wisdomcashier.base.bean.AdminRealm;
+import com.li.wisdomcashier.base.bean.ModularRealm;
 import com.li.wisdomcashier.base.bean.UserRealm;
 import com.li.wisdomcashier.base.common.ShiroFilterProperties;
 import com.li.wisdomcashier.base.entity.po.JWTFilter;
+import org.apache.shiro.authc.Authenticator;
+import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
-import org.apache.shiro.spring.LifecycleBeanPostProcessor;
+import org.apache.shiro.realm.Realm;
 import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.DependsOn;
 
 import javax.servlet.Filter;
 import java.util.*;
@@ -63,9 +65,23 @@ public class ShiroConfig {
     }
 
     @Bean
-    public DefaultWebSecurityManager DefaultWebSecurityManager(UserRealm userRealm){
+    public Authenticator authenticator() {
+        ModularRealm modularRealm = new ModularRealm();
+        modularRealm.setRealms(Arrays.asList(userRealm(), adminRealm()));
+        modularRealm.setAuthenticationStrategy(new AtLeastOneSuccessfulStrategy());
+        return modularRealm;
+    }
+
+
+    @Bean
+    public DefaultWebSecurityManager DefaultWebSecurityManager(UserRealm userRealm,AdminRealm adminRealm){
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
-        securityManager.setRealm(userRealm);
+        //多realm
+        Set<Realm> realms = new HashSet<Realm>();
+        realms.add(userRealm);
+        realms.add(adminRealm);
+        securityManager.setRealms(realms);
+        securityManager.setAuthenticator(authenticator());
 
         /*
          * 关闭shiro自带的session，详情见文档
@@ -82,7 +98,16 @@ public class ShiroConfig {
 
     @Bean
     public UserRealm userRealm(){
-        return new UserRealm();
+        UserRealm userRealm = new UserRealm();
+        userRealm.setName("");
+        return userRealm;
+    }
+
+    @Bean
+    public AdminRealm adminRealm(){
+        AdminRealm adminRealm = new AdminRealm();
+        adminRealm.setName("");
+        return adminRealm;
     }
 
 

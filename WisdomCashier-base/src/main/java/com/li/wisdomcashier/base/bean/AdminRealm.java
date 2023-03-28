@@ -1,15 +1,13 @@
 package com.li.wisdomcashier.base.bean;
 
-import com.li.wisdomcashier.base.common.StatusFailException;
 import com.li.wisdomcashier.base.entity.po.JWTToken;
-import com.li.wisdomcashier.base.service.UserService;
+import com.li.wisdomcashier.base.service.AdminUserService;
 import com.li.wisdomcashier.base.util.JwtUtils;
 import io.jsonwebtoken.Claims;
-import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
-import org.apache.log4j.LogManager;
-import org.apache.log4j.Logger;
-import org.apache.shiro.authc.*;
+import org.apache.shiro.authc.AuthenticationException;
+import org.apache.shiro.authc.AuthenticationInfo;
+import org.apache.shiro.authc.AuthenticationToken;
+import org.apache.shiro.authc.SimpleAuthenticationInfo;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
@@ -18,20 +16,18 @@ import org.apache.shiro.subject.PrincipalCollection;
 import javax.annotation.Resource;
 
 /**
- * @ClassName MyRealm
+ * @ClassName AdminRealm
  * @Description TODO
  * @Author Nine
- * @Date 2022/10/17 21:37
+ * @Date 2023/3/28 19:17
  * @Version 1.0
  */
-@Slf4j
-public class UserRealm extends AuthorizingRealm {
-
-    @Resource
-    private UserService userService;
-
+public class AdminRealm extends AuthorizingRealm {
     @Resource
     private JwtUtils jwtUtils;
+
+    @Resource
+    private AdminUserService adminUserService;
 
     /**
      * 大坑！，必须重写此方法，不然Shiro会报错
@@ -43,10 +39,8 @@ public class UserRealm extends AuthorizingRealm {
 
     @Override
     public void setName(String name){
-        super.setName("UserRealm");
+        super.setName("AdminRealm");
     }
-
-
     /**
      * 只有当需要检测用户权限的时候才会调用此方法，例如checkRole,checkPermission之类的
      */
@@ -54,7 +48,7 @@ public class UserRealm extends AuthorizingRealm {
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         Claims claim = jwtUtils.getClaimByToken(principals.toString());
         String username = claim.getSubject();
-        UserBean user = userService.getUser(username);
+        UserBean user = adminUserService.getUser(username);
         SimpleAuthorizationInfo simpleAuthorizationInfo = new SimpleAuthorizationInfo();
         simpleAuthorizationInfo.addRoles(user.getRole());
         simpleAuthorizationInfo.addStringPermissions(user.getPermission());
@@ -73,7 +67,7 @@ public class UserRealm extends AuthorizingRealm {
         if (username == null) {
             throw new AuthenticationException("不存在该用户！");
         }
-        UserBean userBean = userService.getUser(username);
+        UserBean userBean = adminUserService.getUser(username);
         if (userBean == null) {
             throw new AuthenticationException("不存在该用户！");
         }

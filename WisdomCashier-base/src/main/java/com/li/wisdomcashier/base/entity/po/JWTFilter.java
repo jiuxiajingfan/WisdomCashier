@@ -73,7 +73,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
         if (jwtUtils.isTokenExpired(claim.getExpiration())) {
             throw new AuthenticationException("登录有效期已过,请重新登录！");
         }
-        JWTToken token = new JWTToken(authorization);
+        JWTToken token = new JWTToken(authorization,"UserRealm");
         // 提交给realm进行登入，如果错误他会抛出异常并被捕获
         Subject subject = SecurityUtils.getSubject();
         try {

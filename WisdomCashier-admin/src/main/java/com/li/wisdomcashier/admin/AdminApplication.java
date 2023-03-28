@@ -3,6 +3,7 @@ package com.li.wisdomcashier.admin;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
 
 /**
@@ -13,8 +14,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
  * @Version 1.0
  */
 @SpringBootApplication(scanBasePackages = { "com.li" })
-@EnableSwagger2WebMvc
 @EnableAsync
+@EnableSwagger2WebMvc
+@EnableScheduling
 public class AdminApplication {
 
     public static void main(String[] args) {

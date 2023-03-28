@@ -3,6 +3,7 @@ package com.li.wisdomcashier.admin.controller;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.common.UnCheck;
 import com.li.wisdomcashier.base.entity.dto.LoginDTO;
+import com.li.wisdomcashier.base.service.AdminUserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -28,12 +29,12 @@ import javax.annotation.Resource;
 @Slf4j
 public class AccountController {
     @Resource
-
+    AdminUserService adminUserService;
 
     @ApiOperation(value = "登录")
     @PostMapping("/login")
     @UnCheck
     public R<String> login(@Validated @RequestBody LoginDTO loginDto){
-        return userService.login(loginDto);
+        return adminUserService.login(loginDto);
     }
 }
