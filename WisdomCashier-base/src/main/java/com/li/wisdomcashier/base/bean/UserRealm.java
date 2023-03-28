@@ -1,9 +1,11 @@
 package com.li.wisdomcashier.base.bean;
 
+import com.li.wisdomcashier.base.common.StatusFailException;
 import com.li.wisdomcashier.base.entity.po.JWTToken;
 import com.li.wisdomcashier.base.service.UserService;
 import com.li.wisdomcashier.base.util.JwtUtils;
 import io.jsonwebtoken.Claims;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
@@ -57,7 +59,7 @@ public class UserRealm extends AuthorizingRealm {
      * 默认使用此方法进行用户名正确与否验证，错误抛出异常即可。
      */
     @Override
-    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException {
+    protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken auth) throws AuthenticationException{
         String token = (String) auth.getCredentials();
         // 解密获得username，用于和数据库进行对比
         Claims claim = jwtUtils.getClaimByToken(auth.getPrincipal().toString());
@@ -69,6 +71,14 @@ public class UserRealm extends AuthorizingRealm {
         if (userBean == null) {
             throw new AuthenticationException("不存在该用户！");
         }
+        if(userBean.getStatus()== 1){
+            throw new AuthenticationException("该用户已被封禁，请联系管理员解封！");
+        }
+        if(userBean.getStatus() == 2)
+        {
+            throw new AuthenticationException("该用户已注销！");
+        }
+
         return new SimpleAuthenticationInfo(token, token, getName());
     }
 

@@ -194,6 +194,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         userBean.setPermission(permissionList);
         userBean.setRole(roleList);
+        userBean.setStatus(user.getStatus());
         return userBean;
     }
 

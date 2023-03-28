@@ -23,4 +23,6 @@ public class UserBean {
     private List<String> role;
 
     private List<String> permission;
+
+    private Integer status;
 }
