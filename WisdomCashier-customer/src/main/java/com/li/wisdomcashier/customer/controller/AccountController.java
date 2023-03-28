@@ -61,12 +61,6 @@ public class AccountController {
         return userService.getCodeAuth(type);
     }
 
-    @ApiOperation(value = "Ping")
-    @RequiresAuthentication
-    @PostMapping("/test")
-    public R<User> test(){
-        return userService.test();
-    }
 
     @ApiOperation(value = "登录")
     @PostMapping("/login")

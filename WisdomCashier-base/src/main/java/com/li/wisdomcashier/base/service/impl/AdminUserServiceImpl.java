@@ -68,7 +68,7 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
         }
         if (userBean.getUserPwd().equals(loginDto.getUserPwd())) {
             //封装用户的登录数据
-            JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()),"UserRealm");
+            JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()),"AdminRealm");
             //限制多处登录
             redisUtils.lSet(loginDto.getUserName() + "token", jwtToken.getPrincipal(), 14400);
             if (redisUtils.lGetListSize(loginDto.getUserName() + "token") > 1) {
@@ -77,5 +77,13 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
             return R.ok(jwtToken.getPrincipal().toString());
         }
         return R.error("密码错误！请重试！");
+    }
+
+    @Override
+    public R<AdminUser> test() {
+        AdminUser user = adminUserMapper.selectOne(Wrappers.lambdaQuery(AdminUser.class)
+                .eq(AdminUser::getEmail, "1475549985@qq.com"));
+        return R.ok(user);
+
     }
 }

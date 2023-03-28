@@ -152,13 +152,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return R.ok("已向您的原邮箱发送验证码，请耐心等待~");
     }
 
-    @Override
-    public R<User> test() {
-        User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class)
-                .eq(User::getEmail, "1475549985@qq.com"));
-        return R.ok(user);
-
-    }
 
     @Override
     public UserBean getUser(String username) {

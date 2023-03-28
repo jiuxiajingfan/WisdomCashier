@@ -49,7 +49,6 @@ public interface UserService extends IService<User> {
      */
     R<String> getCodeAuth(int type);
 
-    R<User> test();
 
     /**
      * 设置用户角色及权限

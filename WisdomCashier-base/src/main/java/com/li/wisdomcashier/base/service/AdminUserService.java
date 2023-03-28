@@ -5,6 +5,7 @@ import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.LoginDTO;
 import com.li.wisdomcashier.base.entity.po.AdminUser;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.li.wisdomcashier.base.entity.po.User;
 
 /**
  * <p>
@@ -19,4 +20,6 @@ public interface AdminUserService extends IService<AdminUser> {
     UserBean getUser(String username);
 
     R<String> login(LoginDTO loginDto);
+
+    R<AdminUser> test();
 }
