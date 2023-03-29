@@ -1,8 +1,9 @@
 import { defineStore } from "pinia";
-export const useAuthStore = defineStore("auth", {
+export const useAuthStore = defineStore("Auth", {
   state: () => {
+    const tokens = localStorage.getItem("token");
     return {
-      token: "",
+      token: tokens,
     };
   },
   getters: {
@@ -10,8 +11,8 @@ export const useAuthStore = defineStore("auth", {
   },
   actions: {
     setToken(token: string) {
+      localStorage.setItem("token", token);
       this.token = token;
     },
   },
-  persist: true,
 });

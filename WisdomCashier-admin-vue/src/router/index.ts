@@ -1,10 +1,11 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import LoginPage from "../views/login/LoginPage.vue";
+import userCenter from "../components/userCenter/userCenter.vue";
 import { useAuthStore } from "@/store/auth";
 import pinia from "@/store/store";
 import { ElMessage } from "element-plus";
 
-const store = useAuthStore(pinia);
+const Auth = useAuthStore(pinia);
 const routes: Array<RouteRecordRaw> = [
   {
     path: "/",
@@ -14,6 +15,11 @@ const routes: Array<RouteRecordRaw> = [
     path: "/login",
     name: "login",
     component: LoginPage,
+  },
+  {
+    path: "/userCenter",
+    name: "userCenter",
+    component: userCenter,
   },
 ];
 
@@ -27,15 +33,18 @@ router.beforeEach((to, from, next) => {
     next();
     return;
   } else {
-    const token = store.getToken;
+    const token = Auth.getToken;
+    console.log(token);
     if (to.path === "/login") {
-      if (token && token != "null") {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      if (token && "null" !== token) {
         next("/userCenter");
       } else {
         next();
       }
     } else {
-      if (token === null || token === "" || token === "null") {
+      if (token === null || "" === token || token === "null") {
         next("/login");
         ElMessage({
           showClose: true,

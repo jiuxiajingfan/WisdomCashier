@@ -207,7 +207,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         if (userBean.getUserPwd().equals(loginDto.getUserPwd())) {
             //封装用户的登录数据
-            JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()),"UserRealm");
+            JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName(),"UserRealm"));
             //限制多处登录
             redisUtils.lSet(loginDto.getUserName() + "token", jwtToken.getPrincipal(), 14400);
             if (redisUtils.lGetListSize(loginDto.getUserName() + "token") > 1) {
@@ -225,7 +225,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         }
         if (userBean.getUserPwd().equals(loginDto.getUserPwd())) {
             //封装用户的登录数据
-            JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName()),"UserRealm");
+            JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName(),"UserRealm"));
             //限制多处登录
             redisUtils.lSet(loginDto.getUserName() + "token", jwtToken.getPrincipal(), 14400);
             if (redisUtils.lGetListSize(loginDto.getUserName() + "token") > 1) {
@@ -323,6 +323,18 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         userCenterMenu = sysMenuMapper.getUserCenterMenu(role, MenuEnum.USERCENTER.getCode());
         for (SysMenu centerMenu : userCenterMenu) {
             centerMenu.setChildren(sysMenuMapper.getChildrens(role, centerMenu.getMenuId(), MenuEnum.USERCENTER.getCode()));
+        }
+        return R.ok(userCenterMenu);
+    }
+
+    @Override
+    public R<List<SysMenu>> getAdminCenterMenu() {
+        Subject subject = SecurityUtils.getSubject();
+        List<SysMenu> userCenterMenu = new ArrayList<>();
+        Integer role = RoleEnum.SHOP.getCode();
+        userCenterMenu = sysMenuMapper.getAdminCenterMenu(role, MenuEnum.System.getCode());
+        for (SysMenu centerMenu : userCenterMenu) {
+            centerMenu.setChildren(sysMenuMapper.getChildrens(role, centerMenu.getMenuId(), MenuEnum.System.getCode()));
         }
         return R.ok(userCenterMenu);
     }

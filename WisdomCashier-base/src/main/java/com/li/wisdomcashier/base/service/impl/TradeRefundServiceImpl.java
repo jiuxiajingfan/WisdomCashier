@@ -87,11 +87,13 @@ public class TradeRefundServiceImpl extends ServiceImpl<TradeRefundMapper, Trade
         List<Long> collect = trades.stream().filter(e ->
                 e.getCreateTime().plusDays(7).isBefore(now)
         ).map(Trade::getId).collect(Collectors.toList());
-        tradeMapper.update(null,Wrappers.lambdaUpdate(Trade.class)
-                .in(Trade::getId,collect)
-                .set(Trade::getStatus,TradeEnum.FINAL.getCode())
-                .set(Trade::getRefundNo,1)
-        );
+        if(!collect.isEmpty()) {
+            tradeMapper.update(null, Wrappers.lambdaUpdate(Trade.class)
+                    .in(Trade::getId, collect)
+                    .set(Trade::getStatus, TradeEnum.FINAL.getCode())
+                    .set(Trade::getRefundNo, 1)
+            );
+        }
     }
 
 }

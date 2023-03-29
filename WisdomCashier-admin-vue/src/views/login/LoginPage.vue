@@ -36,7 +36,12 @@
 
 <script setup>
 import { reactive, ref } from "vue";
-
+import api from "@/api/api";
+import md5 from "js-md5";
+import { useAuthStore } from "@/store/auth";
+import pinia from "@/store/store";
+import utils from "@/utils/utils";
+import router from "@/router";
 let registerFormData = reactive({
   name: "",
   password: "",
@@ -45,19 +50,26 @@ const ruleFormRef = ref();
 const REGEXP_PWD =
   /^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)]|[()])+$)(?!^.*[\u4E00-\u9FA5].*$)([^(0-9a-zA-Z)]|[()]|[a-z]|[A-Z]|[0-9]){8,18}$/;
 const loginRules = reactive({
+  // password: [
+  //   {
+  //     validator: (rule, value, callback) => {
+  //       if (value === "") {
+  //         callback(new Error("请输入密码"));
+  //       } else if (!REGEXP_PWD.test(value)) {
+  //         callback(
+  //           new Error("密码格式应为8-18位数字、字母、符号的任意两种组合")
+  //         );
+  //       } else {
+  //         callback();
+  //       }
+  //     },
+  //     trigger: "blur",
+  //   },
+  // ],
   password: [
     {
-      validator: (rule, value, callback) => {
-        if (value === "") {
-          callback(new Error("请输入密码"));
-        } else if (!REGEXP_PWD.test(value)) {
-          callback(
-            new Error("密码格式应为8-18位数字、字母、符号的任意两种组合")
-          );
-        } else {
-          callback();
-        }
-      },
+      required: true,
+      message: "请输入密码",
       trigger: "blur",
     },
   ],
@@ -71,9 +83,27 @@ const loginRules = reactive({
     },
   ],
 });
+const Auth = useAuthStore(pinia);
 const login = () => {
   ruleFormRef.value.validate((valid) => {
-    console.log(1);
+    if (valid) {
+      console.log(1);
+      api
+        .post("account/login", {
+          userName: registerFormData.name,
+          userPwd: md5(registerFormData.password + registerFormData.name),
+          verification: "params.captchaVerification",
+        })
+        .then((res) => {
+          if (res.data.code === 200) {
+            Auth.setToken(res.data.msg);
+            utils.showMessage(200, "登录成功，欢迎回来！");
+            router.push("/userCenter");
+          } else {
+            utils.showErrMessage(res.data.msg);
+          }
+        });
+    }
   });
 };
 </script>

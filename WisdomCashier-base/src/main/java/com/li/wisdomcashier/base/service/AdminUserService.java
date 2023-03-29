@@ -6,6 +6,11 @@ import com.li.wisdomcashier.base.entity.dto.LoginDTO;
 import com.li.wisdomcashier.base.entity.po.AdminUser;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.base.entity.po.User;
+import com.li.wisdomcashier.base.entity.vo.EChartVO;
+import com.li.wisdomcashier.base.entity.vo.UserVo;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * <p>
@@ -22,4 +27,11 @@ public interface AdminUserService extends IService<AdminUser> {
     R<String> login(LoginDTO loginDto);
 
     R<AdminUser> test();
+
+    public R<UserVo> getUser();
+
+    R<String> loginOut(HttpServletRequest httpServletRequest);
+
+    R<List<List<EChartVO>>>  getSystem();
+
 }

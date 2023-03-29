@@ -31,13 +31,14 @@ public class JwtUtils {
     /**
      * 生成jwt token
      */
-    public String generateToken(String userId) {
+    public String generateToken(String userId,String type) {
         Date nowDate = new Date();
         //过期时间
         Date expireDate = new Date(nowDate.getTime() + expire * 1000);
         log.info("{}过期时间为{}",userId,expireDate);
         String token = Jwts.builder()
                 .setHeaderParam("type", "JWT")
+                .claim("type",type)
                 .setSubject(userId)
                 .setIssuedAt(nowDate)
                 .setExpiration(expireDate)

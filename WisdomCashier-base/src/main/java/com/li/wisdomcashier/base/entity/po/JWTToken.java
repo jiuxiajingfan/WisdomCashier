@@ -6,11 +6,9 @@ public class JWTToken implements AuthenticationToken {
 
     // 密钥
     private String token;
-    private String type;
 
-    public JWTToken(String token, String type) {
+    public JWTToken(String token) {
         this.token = token;
-        this.type = type;
     }
 
     @Override
@@ -23,14 +21,4 @@ public class JWTToken implements AuthenticationToken {
         return token;
     }
 
-    public String getLoginType() {
-
-        return type;
-    }
-
-    public void setLoginType(String loginType) {
-
-        this.type = loginType;
-
-    }
 }

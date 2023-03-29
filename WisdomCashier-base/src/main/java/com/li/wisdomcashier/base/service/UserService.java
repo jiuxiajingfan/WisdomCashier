@@ -113,6 +113,14 @@ public interface UserService extends IService<User> {
      */
     R<List<SysMenu>> getUserCenterMenu();
 
+
+    /**
+     * 获取管理中心菜单
+     *
+     * @return
+     */
+    R<List<SysMenu>> getAdminCenterMenu();
+
     /**
      * 更改用户头像
      *

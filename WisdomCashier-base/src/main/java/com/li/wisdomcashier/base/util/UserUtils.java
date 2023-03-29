@@ -3,9 +3,11 @@ package com.li.wisdomcashier.base.util;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.common.StatusFailException;
+import com.li.wisdomcashier.base.entity.po.AdminUser;
 import com.li.wisdomcashier.base.entity.po.Shop;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.enums.RoleEnum;
+import com.li.wisdomcashier.base.mapper.AdminUserMapper;
 import com.li.wisdomcashier.base.mapper.ShopMapper;
 import com.li.wisdomcashier.base.mapper.UserMapper;
 import io.jsonwebtoken.Claims;
@@ -35,6 +37,9 @@ public class UserUtils {
     private UserMapper userMapper;
 
     @Resource
+    private AdminUserMapper adminUserMapper;
+
+    @Resource
     private ShopMapper shopMapper;
 
     private static UserUtils userUtils;
@@ -47,6 +52,7 @@ public class UserUtils {
     public void init(){
         userUtils = this;
         userUtils.userMapper = this.userMapper;
+        userUtils.adminUserMapper = this.adminUserMapper;
         userUtils.shopMapper = this.shopMapper;
         userUtils.redisUtils = this.redisUtils;
     }
@@ -56,6 +62,14 @@ public class UserUtils {
         Subject subject = SecurityUtils.getSubject();
         Claims claimByToken = jwtUtils.getClaimByToken(subject.getPrincipal().toString());
         User user = userUtils.userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getUserName, claimByToken.getSubject()));
+        return  user;
+    }
+
+    public static AdminUser getAdminUser(){
+        JwtUtils jwtUtils = new JwtUtils();
+        Subject subject = SecurityUtils.getSubject();
+        Claims claimByToken = jwtUtils.getClaimByToken(subject.getPrincipal().toString());
+        AdminUser user = userUtils.adminUserMapper.selectOne(Wrappers.lambdaQuery(AdminUser.class).eq(AdminUser::getUserName, claimByToken.getSubject()));
         return  user;
     }
 

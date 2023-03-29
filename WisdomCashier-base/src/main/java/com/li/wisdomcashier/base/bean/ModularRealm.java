@@ -1,12 +1,15 @@
 package com.li.wisdomcashier.base.bean;
 
 import com.li.wisdomcashier.base.entity.po.JWTToken;
+import com.li.wisdomcashier.base.util.JwtUtils;
+import io.jsonwebtoken.Claims;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
 import org.apache.shiro.authc.pam.ModularRealmAuthenticator;
 import org.apache.shiro.realm.Realm;
 
+import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -18,6 +21,9 @@ import java.util.HashMap;
  * @Version 1.0
  */
 public class ModularRealm extends ModularRealmAuthenticator {
+
+    @Resource
+    private JwtUtils jwtUtils;
 
     @Override
     protected AuthenticationInfo doAuthenticate(AuthenticationToken authenticationToken) throws AuthenticationException {
@@ -32,8 +38,9 @@ public class ModularRealm extends ModularRealmAuthenticator {
             realmHashMap.put(realm.getName(), realm);
         }
         JWTToken token = (JWTToken) authenticationToken;
+        Claims claimByToken = jwtUtils.getClaimByToken(token.getPrincipal().toString());
+        String type = claimByToken.get("type").toString();
         // 登录类型
-        String type = token.getLoginType();
         if (realmHashMap.get(type) != null) {
             return doSingleRealmAuthentication(realmHashMap.get(type), token);
         } else {

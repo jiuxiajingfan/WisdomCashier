@@ -14,7 +14,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum MenuEnum {
     USERCENTER(1,"个人中心"),
-    SHOPMENU(2,"店铺菜单");
+    SHOPMENU(2,"店铺菜单"),
+
+    System(3,"后台");
     private int code;
 
     private String description;
