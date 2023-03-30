@@ -23,6 +23,7 @@
                 prefix-icon="Lock"
                 type="password"
                 placeholder="请输入密码"
+                @keydown.enter="login"
                 v-model="registerFormData.password"
               ></el-input>
             </el-form-item>

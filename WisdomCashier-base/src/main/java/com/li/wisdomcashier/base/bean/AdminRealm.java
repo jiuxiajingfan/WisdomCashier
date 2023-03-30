@@ -4,6 +4,7 @@ import com.li.wisdomcashier.base.entity.po.JWTToken;
 import com.li.wisdomcashier.base.service.AdminUserService;
 import com.li.wisdomcashier.base.util.JwtUtils;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
@@ -22,6 +23,7 @@ import javax.annotation.Resource;
  * @Date 2023/3/28 19:17
  * @Version 1.0
  */
+@Slf4j
 public class AdminRealm extends AuthorizingRealm {
     @Resource
     private JwtUtils jwtUtils;
