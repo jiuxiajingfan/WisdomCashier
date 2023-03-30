@@ -1,12 +1,14 @@
 package com.li.wisdomcashier.base.config;
 
 import com.li.wisdomcashier.base.bean.AdminRealm;
+import com.li.wisdomcashier.base.bean.CustomerAuthrizer;
 import com.li.wisdomcashier.base.bean.ModularRealm;
 import com.li.wisdomcashier.base.bean.UserRealm;
 import com.li.wisdomcashier.base.common.ShiroFilterProperties;
 import com.li.wisdomcashier.base.entity.po.JWTFilter;
 import org.apache.shiro.authc.Authenticator;
 import org.apache.shiro.authc.pam.AtLeastOneSuccessfulStrategy;
+import org.apache.shiro.authz.Authorizer;
 import org.apache.shiro.mgt.DefaultSessionStorageEvaluator;
 import org.apache.shiro.mgt.DefaultSubjectDAO;
 import org.apache.shiro.realm.Realm;
@@ -72,6 +74,14 @@ public class ShiroConfig {
         return modularRealm;
     }
 
+    @Bean
+    public Authorizer authorizer(){
+        CustomerAuthrizer customerAuthrizer=new CustomerAuthrizer();
+        customerAuthrizer.setRealms(Arrays.asList(userRealm(),adminRealm()));
+        return customerAuthrizer;
+    }
+
+
 
     @Bean
     public DefaultWebSecurityManager DefaultWebSecurityManager(UserRealm userRealm,AdminRealm adminRealm){
@@ -82,6 +92,8 @@ public class ShiroConfig {
         realms.add(adminRealm);
         securityManager.setRealms(realms);
         securityManager.setAuthenticator(authenticator());
+        //多realm授权配置
+        securityManager.setAuthorizer(authorizer());
 
         /*
          * 关闭shiro自带的session，详情见文档
