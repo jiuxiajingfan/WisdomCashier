@@ -1,15 +1,22 @@
 package com.li.wisdomcashier.base.service.impl;
 
 import cn.hutool.extra.cglib.CglibUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.PageDTO;
 import com.li.wisdomcashier.base.entity.dto.ShopApplyDTO;
+import com.li.wisdomcashier.base.entity.dto.ShopApprovalDTO;
 import com.li.wisdomcashier.base.entity.po.ShopApply;
 import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.entity.vo.ShopApplyVO;
+import com.li.wisdomcashier.base.entity.vo.ShopApplyVO2;
 import com.li.wisdomcashier.base.mapper.ShopApplyMapper;
 import com.li.wisdomcashier.base.service.ShopApplyService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.li.wisdomcashier.base.service.ShopService;
 import com.li.wisdomcashier.base.util.UserUtils;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +39,9 @@ public class ShopApplyServiceImpl extends ServiceImpl<ShopApplyMapper, ShopApply
 
     @Resource
     private ShopApplyMapper shopApplyMapper;
+
+    @Resource
+    private ShopService shopService;
 
     @Override
     public R<String> applyShop(ShopApplyDTO shopApplyDTO) {
@@ -86,6 +96,42 @@ public class ShopApplyServiceImpl extends ServiceImpl<ShopApplyMapper, ShopApply
         }
         apply.setStatus(ApplyEnum.CHANEL.getCode());
        return R.ok(shopApplyMapper.updateById(apply) ==1?"撤销成功":"撤销失败，请重试");
+    }
+
+    @Override
+    public R<IPage<ShopApplyVO2>> getApplyPage(PageDTO pageDTO) {
+        LambdaQueryWrapper<ShopApply> wrapper = Wrappers.lambdaQuery(ShopApply.class)
+                .in(ShopApply::getStatus,1,2,3)
+                .orderByAsc(ShopApply::getStatus)
+                .orderByDesc(ShopApply::getGmtCreate);
+        Page<ShopApply> page = new Page(pageDTO.getCurrent(), pageDTO.getPageSize());
+        IPage<ShopApplyVO2> convert = shopApplyMapper.selectPage(page, wrapper).convert(e -> {
+            ShopApplyVO2 copy = CglibUtil.copy(e, ShopApplyVO2.class);
+            ArrayList<String> strings = new ArrayList<>();
+            strings.add(e.getImgShop());
+            strings.add(e.getImgIdcard1());
+            strings.add(e.getImgIdcard2());
+            copy.setImg(strings);
+            return copy;
+        });
+        return R.ok(convert);
+    }
+
+    @Override
+    public R<String> changeApplyStatus(ShopApprovalDTO shopApprovalDTO) {
+        ShopApply apply = shopApplyMapper.selectOne(Wrappers.lambdaQuery(ShopApply.class)
+                .eq(ShopApply::getStatus, 1)
+                .eq(ShopApply::getId, Long.parseLong(shopApprovalDTO.getId())));
+        if(Objects.isNull(apply)){
+            return R.error("查无此条！");
+        }
+        apply.setStatus(shopApprovalDTO.getType());
+        apply.setOperator(UserUtils.getAdminUser().getId());
+        apply.setTips(shopApprovalDTO.getMsg());
+        if(shopApprovalDTO.getType().equals(2)){
+            shopService.createShop(apply);
+        }
+        return R.ok(shopApplyMapper.updateById(apply)==1?"更新成功！":"更新失败！");
     }
 
 }

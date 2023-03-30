@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.AddVipDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
@@ -17,7 +18,6 @@ import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.enums.VipEnum;
 import com.li.wisdomcashier.base.mapper.VipMapper;
 import com.li.wisdomcashier.base.service.VipService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.UserUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,6 @@ import org.springframework.util.CollectionUtils;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -115,7 +114,7 @@ public class VipServiceImpl extends ServiceImpl<VipMapper, Vip> implements VipSe
                 .eq(Vip::getStatus, VipEnum.ACTIVE.getCode())));
     }
 
-    @Async
+    @Async("taskExecutor")
     @Override
     public void addIntegration(String phone, String sum,String sid) {
         BigDecimal bigDecimal = new BigDecimal(sum);

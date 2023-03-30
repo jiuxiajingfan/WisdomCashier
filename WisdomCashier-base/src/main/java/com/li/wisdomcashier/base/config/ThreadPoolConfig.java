@@ -1,4 +1,4 @@
-package com.li.wisdomcashier.customer.config;
+package com.li.wisdomcashier.base.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,7 +19,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 @EnableAsync//开启异步
 public class ThreadPoolConfig {
 
-    @Bean("threadPool")
+    @Bean
     public TaskExecutor taskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
         // 设置核心线程数

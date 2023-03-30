@@ -3,13 +3,20 @@ package com.li.wisdomcashier.base.service.impl;
 import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.cglib.CglibUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.li.wisdomcashier.base.bean.UserBean;
 import com.li.wisdomcashier.base.common.R;
+import com.li.wisdomcashier.base.entity.dto.DeleteDTO;
 import com.li.wisdomcashier.base.entity.dto.LoginDTO;
+import com.li.wisdomcashier.base.entity.dto.ShopQueryDTO;
 import com.li.wisdomcashier.base.entity.po.AdminUser;
 import com.li.wisdomcashier.base.entity.po.JWTToken;
-import oshi.hardware.CentralProcessor.TickType;
+import com.li.wisdomcashier.base.entity.po.User;
+import com.li.wisdomcashier.base.mapper.UserMapper;
 
 import com.sun.management.OperatingSystemMXBean;
 import com.li.wisdomcashier.base.entity.vo.EChartVO;
@@ -25,18 +32,15 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
-import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
-import oshi.hardware.HardwareAbstractionLayer;
-import oshi.util.GlobalConfig;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.lang.management.ManagementFactory;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -59,6 +63,9 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
 
     @Resource
     private JwtUtils jwtUtils;
+
+    @Resource
+    private UserMapper userMapper;
 
     @Override
     public UserBean getUser(String username) {
@@ -166,5 +173,35 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
         ans.add(a0);
         ans.add(a1);
         return R.ok(ans);
+    }
+
+    @Override
+    public R<IPage<UserVo>> getUserPage(ShopQueryDTO queryDTO) {
+        Page<User> page = new Page(queryDTO.getCurrent(),queryDTO.getPageSize());
+        LambdaQueryWrapper<User> wrapper = Wrappers.lambdaQuery(User.class)
+                .eq(!StringUtils.isBlank(queryDTO.getName()), User::getId, queryDTO.getName())
+                .orderByDesc(User::getGmtCreate);
+        IPage<UserVo> convert = userMapper.selectPage(page, wrapper).convert(e -> {
+            UserVo copy = CglibUtil.copy(e, UserVo.class);
+            copy.setRoleEnum(e.getStatus());
+            copy.setPhone(DesensitizedUtil.mobilePhone(copy.getPhone()));
+            return copy;
+        });
+        return R.ok(convert);
+    }
+
+    @Override
+    public R<String> changeUserStatus(DeleteDTO deleteDTO) {
+        User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class).
+                eq(User::getId, deleteDTO.getId())
+        );
+        if(Objects.isNull(user)){
+            return R.error("无该用户！");
+        }
+        user.setStatus(Integer.parseInt(deleteDTO.getSid()));
+        if(user.getStatus()!=0) {
+            redisUtils.del(user.getUserName() + "token");
+        }
+       return R.ok(userMapper.updateById(user)==1?"修改成功！":"修改失败！");
     }
 }

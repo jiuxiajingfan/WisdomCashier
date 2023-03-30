@@ -77,7 +77,7 @@
             >
               <component :is="map.get(item.content)"></component>
             </el-tab-pane>
-            <component v-show="cnt == 0" :is="SystemStatus"></component>
+            <component v-if="cnt == 0" :is="SystemStatus"></component>
           </el-tabs>
         </el-scrollbar>
       </el-main>
@@ -109,7 +109,7 @@ const contraction = () => {
 };
 const editableTabs = ref([
   {
-    title: "系统状态",
+    title: "系统信息",
     name: "SystemStatus",
     content: "SystemStatus",
   },
@@ -117,7 +117,16 @@ const editableTabs = ref([
 let SystemStatus = defineAsyncComponent(() =>
   import("../../components/system/SystemStatus")
 );
-const focus = ref("myMessage");
+let UserList = defineAsyncComponent(() =>
+  import("../../components/user/UserList")
+);
+let ShopLost = defineAsyncComponent(() =>
+  import("../../components/shop/ShopList")
+);
+let ShopApply = defineAsyncComponent(() =>
+  import("../../components/shop/ShopApply")
+);
+const focus = ref("SystemStatus");
 const mapTab = new Map();
 mapTab.set("SystemStatus", "SystemStatus");
 const addTab = (targetName, component, title) => {

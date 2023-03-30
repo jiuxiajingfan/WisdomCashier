@@ -1,10 +1,8 @@
 package com.li.wisdomcashier.base.service.impl;
 
-import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.common.R;
-import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
-import com.li.wisdomcashier.base.entity.po.GoodsVO;
 import com.li.wisdomcashier.base.entity.po.Trade;
 import com.li.wisdomcashier.base.entity.po.TradeRefund;
 import com.li.wisdomcashier.base.enums.RoleEnum;
@@ -12,7 +10,6 @@ import com.li.wisdomcashier.base.enums.TradeEnum;
 import com.li.wisdomcashier.base.mapper.TradeMapper;
 import com.li.wisdomcashier.base.mapper.TradeRefundMapper;
 import com.li.wisdomcashier.base.service.TradeRefundService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.UserUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -46,7 +43,7 @@ public class TradeRefundServiceImpl extends ServiceImpl<TradeRefundMapper, Trade
     private TradeMapper tradeMapper;
 
     @Override
-    @Async
+    @Async("taskExecutor")
     public void TradeRefundRecord(TradeRefund tradeRefund) {
         tradeRefundMapper.insert(tradeRefund);
         Trade trade = tradeMapper.selectById(tradeRefund.getSid());

@@ -1,30 +1,21 @@
 package com.li.wisdomcashier.base.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.Version;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
-import java.time.LocalDateTime;
-
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
-import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
  * 
  * </p>
  *
- * @author Nine
- * @since 2022-10-11
+ * @author lsw
+ * @since 2023-03-30
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -42,16 +33,11 @@ public class Shop implements Serializable {
     @TableField("shop_name")
     private String shopName;
 
-    @TableField(value = "gmt_create", fill = FieldFill.INSERT)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+      @TableField(value = "gmt_create", fill = FieldFill.INSERT)
     private LocalDateTime gmtCreate;
 
-    @TableField(value = "gmt_update", fill = FieldFill.INSERT_UPDATE)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
+      @TableField(value = "gmt_update", fill = FieldFill.UPDATE)
     private LocalDateTime gmtUpdate;
-
 
     @ApiModelProperty(value = "介绍")
     @TableField("tip")
@@ -61,11 +47,11 @@ public class Shop implements Serializable {
     @TableField("status")
     private Integer status;
 
-    @ApiModelProperty(value = "支付宝商家授权码")
+    @ApiModelProperty(value = "支付宝付款商家授权码")
     @TableField("auth_zfb")
     private String authZfb;
 
-    @ApiModelProperty(value = "微信商家授权码")
+    @ApiModelProperty(value = "微信付款商家授权码")
     @TableField("auth_wx")
     private String authWx;
 
@@ -74,5 +60,15 @@ public class Shop implements Serializable {
 
     @TableField("wx_status")
     private Integer wxStatus;
+
+    @TableField("img_idCard")
+    private String imgIdcard;
+
+    @TableField("img_idCard2")
+    private String imgIdcard2;
+
+    @TableField("img_shop")
+    private String imgShop;
+
 
 }

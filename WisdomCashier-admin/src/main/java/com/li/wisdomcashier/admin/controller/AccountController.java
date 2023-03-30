@@ -5,14 +5,12 @@ import com.li.wisdomcashier.base.common.UnCheck;
 import com.li.wisdomcashier.base.entity.dto.LoginDTO;
 import com.li.wisdomcashier.base.entity.po.AdminUser;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
-import com.li.wisdomcashier.base.entity.po.User;
 import com.li.wisdomcashier.base.entity.vo.EChartVO;
 import com.li.wisdomcashier.base.service.AdminUserService;
 import com.li.wisdomcashier.base.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shiro.authz.annotation.RequiresAuthentication;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -70,6 +68,8 @@ public class AccountController {
     public R<List<List<EChartVO>>>  getSystem() {
         return adminUserService.getSystem();
     }
+
+
 }
 
 

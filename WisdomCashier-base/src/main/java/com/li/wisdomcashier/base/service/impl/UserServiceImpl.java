@@ -9,6 +9,7 @@ import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.bean.UserBean;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.ChangeEmailDTO;
@@ -23,12 +24,10 @@ import com.li.wisdomcashier.base.entity.vo.UserVo;
 import com.li.wisdomcashier.base.enums.MenuEnum;
 import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.RoleMapper;
-import com.li.wisdomcashier.base.mapper.UserMapper;
 import com.li.wisdomcashier.base.mapper.SysMenuMapper;
+import com.li.wisdomcashier.base.mapper.UserMapper;
 import com.li.wisdomcashier.base.service.EmailService;
-import com.li.wisdomcashier.base.service.TradeRefundService;
 import com.li.wisdomcashier.base.service.UserService;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.util.*;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +42,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -204,6 +201,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
                 .eq(User::getUserName, loginDto.getUserName()));
         if (null == userBean) {
             return R.error("不存在该用户！");
+        }
+        if(userBean.getStatus()!=0){
+            return R.error("该用户状态异常！请联系客服解封！");
         }
         if (userBean.getUserPwd().equals(loginDto.getUserPwd())) {
             //封装用户的登录数据

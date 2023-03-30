@@ -225,7 +225,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
     }
 
     @Override
-    @Async
+    @Async("taskExecutor")
     public void AsyncSaveGood(List<Goods> goodsList, Long id, boolean isVip,String sid) {
         try {
             List<TradeGoods> collect = goodsList.stream().map(e -> {

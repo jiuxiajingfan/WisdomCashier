@@ -1,10 +1,11 @@
 package com.li.wisdomcashier.base.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.*;
 import com.li.wisdomcashier.base.entity.po.Shop;
-import com.baomidou.mybatisplus.extension.service.IService;
+import com.li.wisdomcashier.base.entity.po.ShopApply;
 import com.li.wisdomcashier.base.entity.po.SysMenu;
 import com.li.wisdomcashier.base.entity.vo.ShopVO;
 import com.li.wisdomcashier.base.entity.vo.UserVo;
@@ -94,5 +95,10 @@ public interface ShopService extends IService<Shop> {
      */
     R<List<Integer>> getTradeStatus(String sid);
 
+    R<IPage<ShopVO>> getShopPage(ShopQueryDTO queryDTO);
 
+
+    R<String> changeUserStatus(DeleteDTO deleteDTO);
+
+    void createShop(ShopApply apply);
 }

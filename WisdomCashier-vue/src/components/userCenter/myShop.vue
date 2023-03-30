@@ -26,6 +26,7 @@
           height="calc(100vh - 230px)"
           style="width: 100%"
           :show-header="true"
+          empty-text="暂无店铺，快去申请或加入吧！"
         >
           <el-table-column prop="shopName" label="店铺名" width="auto" />
           <el-table-column label="操作" align="right">

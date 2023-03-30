@@ -1,19 +1,12 @@
 package com.li.wisdomcashier.base.entity.po;
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.baomidou.mybatisplus.annotation.IdType;
-
-import java.time.LocalDateTime;
-import java.util.Date;
-import com.baomidou.mybatisplus.annotation.Version;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.TableField;
-import java.io.Serializable;
+import com.baomidou.mybatisplus.annotation.*;
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * <p>
@@ -21,7 +14,7 @@ import lombok.EqualsAndHashCode;
  * </p>
  *
  * @author lsw
- * @since 2023-03-23
+ * @since 2023-03-30
  */
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -63,5 +56,9 @@ public class ShopApply implements Serializable {
 
     @TableField("tips")
     private String tips;
+
+    @TableField("operator")
+    private Long operator;
+
 
 }

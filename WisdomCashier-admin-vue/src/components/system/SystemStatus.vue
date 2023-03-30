@@ -151,7 +151,7 @@ timer = setInterval(() => {
     p1.changeData(parseFloat(res.data.data[1][1].value));
     p2.changeData(parseFloat(res.data.data[1][0].value));
   });
-}, 2000);
+}, 10000);
 </script>
 
 <style scoped></style>

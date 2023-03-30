@@ -77,7 +77,7 @@
             >
               <component :is="map.get(item.content)"></component>
             </el-tab-pane>
-            <component v-show="cnt == 0" :is="Charge"></component>
+            <component v-if="cnt == 0" :is="Charge"></component>
           </el-tabs>
         </el-scrollbar>
       </el-main>
