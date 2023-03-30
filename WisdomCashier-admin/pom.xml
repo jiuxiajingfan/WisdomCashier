@@ -35,7 +35,7 @@
                     <!--允许打包本地的jar包-->
                     <includeSystemScope>true</includeSystemScope>
                     <!--主类运行类-->
-                    <mainClass>com.li.wisdomcashier.customer.CustomerApplication</mainClass>
+                    <mainClass>com.li.wisdomcashier.admin.AdminApplication</mainClass>
                     <!--生成不带依赖的jar包就可以在这添加 <skip>true</skip> -->
                 </configuration>
                 <executions>

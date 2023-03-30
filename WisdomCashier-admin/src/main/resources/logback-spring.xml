@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <jmxConfigurator/>
+
+    <springProperty scope="context" name="springAppName" source="spring.application.name"/>
+
+    <!--保存日志的文件目录位置-->
+    <property name="LOG_PATH" value="log"/>
+
+    <!--打印到日志文件的日期格式-->
+    <property name="FILE_LOG_PATTERN"
+              value="%d{yyyy-MM-dd HH:mm:ss.SSS} %5p ${PID:-} --- [%15.15t] %-40.40logger{39} : %m%n"
+    />
+    <!--打印到控制台的日期格式-->
+    <property name="CONSOLE_LOG_PATTERN"
+              value="%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) {faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}"
+    />
+
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!--日志文件输出的文件名-->
+            <fileNamePattern>${LOG_PATH:-}/%d{yyyy-MM-dd}/%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+            <!-- 每个日志文件的大小 -->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- 保留多少天的日志 -->
+            <MaxHistory>30</MaxHistory>
+            <!--每天最大日志量 超过这个量日志文件就会诶被回滚覆盖-->
+            <maxFileSize>2GB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!--错误日志的位置-->
+    <appender name="ERROR-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <param name="append" value="true"/>
+        <param name="threshold" value="WARN"/>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_PATH:-}/%d{yyyy-MM-dd}/error/%d{yyyy-MM-dd}-error.%i.log
+            </fileNamePattern>
+            <!-- 每个日志文件的大小 -->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- 保留多少天的日志 -->
+            <MaxHistory>30</MaxHistory>
+            <!--每天最大日志量 超过这个量日志文件就会诶被回滚覆盖-->
+            <maxFileSize>2GB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+
+    <appender name="THIRD-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_PATH:-}/%d{yyyy-MM-dd}/third/%d{yyyy-MM-dd}-third.%i.log
+            </fileNamePattern>
+            <!-- 每个日志文件的大小 -->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- 保留多少天的日志 -->
+            <MaxHistory>30</MaxHistory>
+            <!--每天最大日志量 超过这个量日志文件就会诶被回滚覆盖-->
+            <maxFileSize>2GB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!--remote的日志-->
+    <appender name="REMOTE-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_PATH:-}/%d{yyyy-MM-dd}/remote/%d{yyyy-MM-dd}-remote.%i.log
+            </fileNamePattern>
+            <!-- 每个日志文件的大小 -->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- 保留多少天的日志 -->
+            <MaxHistory>30</MaxHistory>
+            <!--每天最大日志量 超过这个量日志文件就会诶被回滚覆盖-->
+            <maxFileSize>2GB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!--流程的日志-->
+    <appender name="PROCESS-APPENDER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>
+                ${LOG_PATH:-}/%d{yyyy-MM-dd}/process/%d{yyyy-MM-dd}-process.%i.log
+            </fileNamePattern>
+            <!-- 每个日志文件的大小 -->
+            <maxFileSize>100MB</maxFileSize>
+            <!-- 保留多少天的日志 -->
+            <MaxHistory>30</MaxHistory>
+            <!--每天最大日志量 超过这个量日志文件就会诶被回滚覆盖-->
+            <maxFileSize>2GB</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>utf8</charset>
+        </encoder>
+    </appender>
+
+    <!--控制台打印的日志配置-->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+            <pattern>${CONSOLE_LOG_PATTERN}</pattern>
+        </encoder>
+    </appender>
+
+    <!--  三方 -->
+    <logger name="THIRD" additivity="false">
+        <level value="${log_level}"/>
+        <appender-ref ref="THIRD-APPENDER"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- 远程 -->
+    <logger name="REMOTE" additivity="false">
+        <level value="${log_level}"/>
+        <appender-ref ref="REMOTE-APPENDER"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- 流程 -->
+    <logger name="PROCESS" additivity="false">
+        <level value="${log_level}"/>
+        <appender-ref ref="PROCESS-APPENDER"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+    <!-- 错误 -->
+    <logger name="ERROR" additivity="false">
+        <level value="WARN"/>
+        <appender-ref ref="ERROR-APPENDER"/>
+        <appender-ref ref="CONSOLE"/>
+    </logger>
+
+
+    <logger name="druid.sql.Statement" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+    <logger name="java.sql.PreparedStatement" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+    <logger name="com.zjrc" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+    <logger name="org.springframework" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+    <logger name="org.springframework.cloud.sleuth.instrument.web.client.feign" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+    <root level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </root>
+
+
+</configuration>
