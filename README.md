@@ -5,6 +5,8 @@
 
 后端由Java编写，使用Springboot框架级 Mybatis-plus、redis、mysql、minIO、shiro等
 
+可供学习参考
+
 开发进度：\
     客户端进度80%\
     服务端进度10%
