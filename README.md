@@ -20,3 +20,10 @@ A Software for Retail trade.
 The web is provided by Vue3.0 and use pinia、elementPlus
 
 The api is provided by Springboot and use Mybatis-plus、redis、mysql、minIO、shiro.
+
+
+## 部分功能截图
+![img.png](img.png)
+![img_1.png](img_1.png)
+![img_2.png](img_2.png)
+![img_3.png](img_3.png)
