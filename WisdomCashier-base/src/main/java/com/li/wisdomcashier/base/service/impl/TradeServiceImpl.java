@@ -180,6 +180,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
             Map<String, BigDecimal> collect = trades.stream().collect(Collectors.groupingBy(e ->
                             e.getCreateTime().format(queryMoneyDTO.getTimeType() == 0 ? DateTimeFormatter.ISO_DATE : DateTimeFormatter.ofPattern("yyyy-MM")),
                     Collectors.reducing(BigDecimal.ZERO, Trade::getIncome, BigDecimal::add)));
+            //日期便利填写数据，没有则填写0
             date.forEach(e -> {
                 EChartVO eChartVO = new EChartVO();
                 eChartVO.setName(e);
@@ -191,6 +192,7 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
             //计算订单数
             Map<String, List<Trade>> collect = trades.stream().collect(Collectors.groupingBy(e ->
                     e.getCreateTime().format(queryMoneyDTO.getTimeType() == 0 ? DateTimeFormatter.ISO_DATE : DateTimeFormatter.ofPattern("yyyy-MM"))));
+            //日期便利填写数据，没有则填写0
             date.forEach(e -> {
                 EChartVO eChartVO = new EChartVO();
                 eChartVO.setName(e);
@@ -199,7 +201,6 @@ public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade> implements
                 area.add(eChartVO);
             });
             ans.add(area);
-
         }
         //饼图1
         List<Long> collect1 = trades.stream().map(e -> e.getId()).collect(Collectors.toList());

@@ -1,16 +1,14 @@
 package com.li.wisdomcashier.base.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.AddVipDTO;
 import com.li.wisdomcashier.base.entity.dto.GoodQueryDTO;
 import com.li.wisdomcashier.base.entity.dto.RenewalDTO;
 import com.li.wisdomcashier.base.entity.dto.VipQueryDTO;
 import com.li.wisdomcashier.base.entity.po.Vip;
-import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.base.entity.vo.VipVO;
-
-import java.util.List;
 
 /**
  * <p>
@@ -39,4 +37,6 @@ public interface VipService extends IService<Vip> {
     void addIntegration(String phone,String sum,String sid);
 
     R<IPage<VipVO>> getVipPushPage(VipQueryDTO goodQueryDTO);
+
+    R<String> sendVipMessage();
 }

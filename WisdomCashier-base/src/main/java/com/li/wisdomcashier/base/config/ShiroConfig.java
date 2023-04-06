@@ -91,6 +91,7 @@ public class ShiroConfig {
         realms.add(userRealm);
         realms.add(adminRealm);
         securityManager.setRealms(realms);
+        //多realm鉴权配置
         securityManager.setAuthenticator(authenticator());
         //多realm授权配置
         securityManager.setAuthorizer(authorizer());

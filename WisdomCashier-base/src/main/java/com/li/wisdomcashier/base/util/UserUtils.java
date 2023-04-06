@@ -1,12 +1,10 @@
 package com.li.wisdomcashier.base.util;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.common.StatusFailException;
 import com.li.wisdomcashier.base.entity.po.AdminUser;
 import com.li.wisdomcashier.base.entity.po.Shop;
 import com.li.wisdomcashier.base.entity.po.User;
-import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.mapper.AdminUserMapper;
 import com.li.wisdomcashier.base.mapper.ShopMapper;
 import com.li.wisdomcashier.base.mapper.UserMapper;
@@ -15,12 +13,10 @@ import lombok.SneakyThrows;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.AuthorizationException;
 import org.apache.shiro.subject.Subject;
-import org.springframework.boot.autoconfigure.cache.CacheProperties;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.validation.ValidationException;
 import java.util.Objects;
 
 /**
@@ -81,8 +77,11 @@ public class UserUtils {
      */
     @SneakyThrows
     public static Shop hasPermissions(String shopId, Integer level){
+        //获取当前用户
         Subject subject = SecurityUtils.getSubject();
+        //权限判断
         if(!subject.isPermitted(shopId+level)){
+            //无权限则抛出异常
             throw new AuthorizationException("无权操作！");
         }
         Integer status;

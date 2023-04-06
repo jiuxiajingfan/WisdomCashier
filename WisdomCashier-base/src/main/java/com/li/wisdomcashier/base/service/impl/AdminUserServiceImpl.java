@@ -90,9 +90,11 @@ public class AdminUserServiceImpl extends ServiceImpl<AdminUserMapper, AdminUser
     public R<String> login(LoginDTO loginDto) {
         AdminUser userBean = adminUserMapper.selectOne(Wrappers.lambdaQuery(AdminUser.class)
                 .eq(AdminUser::getUserName, loginDto.getUserName()));
+        //未找到
         if (null == userBean) {
             return R.error("不存在该用户！");
         }
+        //密码匹配
         if (userBean.getUserPwd().equals(loginDto.getUserPwd())) {
             //封装用户的登录数据
             JWTToken jwtToken = new JWTToken(jwtUtils.generateToken(loginDto.getUserName(),"AdminRealm"));

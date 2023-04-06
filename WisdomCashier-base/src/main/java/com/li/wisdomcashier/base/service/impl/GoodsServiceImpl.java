@@ -9,20 +9,22 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.base.common.R;
 import com.li.wisdomcashier.base.entity.dto.*;
 import com.li.wisdomcashier.base.entity.po.Goods;
 import com.li.wisdomcashier.base.entity.po.GoodsVO;
 import com.li.wisdomcashier.base.entity.po.Trade;
-import com.li.wisdomcashier.base.entity.po.TradeGoods;
 import com.li.wisdomcashier.base.entity.pojo.GoodsApi;
 import com.li.wisdomcashier.base.entity.pojo.QueryTrade;
 import com.li.wisdomcashier.base.enums.RoleEnum;
 import com.li.wisdomcashier.base.enums.TradeEnum;
 import com.li.wisdomcashier.base.mapper.GoodsMapper;
 import com.li.wisdomcashier.base.mapper.TradeMapper;
-import com.li.wisdomcashier.base.service.*;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.li.wisdomcashier.base.service.AlipayService;
+import com.li.wisdomcashier.base.service.GoodsService;
+import com.li.wisdomcashier.base.service.TradeService;
+import com.li.wisdomcashier.base.service.VipService;
 import com.li.wisdomcashier.base.util.UserUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -39,7 +41,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -101,7 +102,10 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     @Override
     public R<String> addGood(GoodDTO good) {
         UserUtils.hasPermissions(good.getSid(), RoleEnum.SHOP.getCode());
-        List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, good.getGid()).eq(Goods::getSid, Long.parseLong(good.getSid())));
+        List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class)
+                .eq(Goods::getGid, good.getGid())
+                .eq(Goods::getSid, Long.parseLong(good.getSid()))
+        );
         if(!CollectionUtils.isEmpty(goods)){
             return R.error("该条码已存在库中！添加失败");
         }
@@ -143,7 +147,9 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     @Override
     public R<String> updateGood(GoodDTO good) {
         UserUtils.hasPermissions(good.getSid(), RoleEnum.SHOP.getCode());
-        Goods goods = goodsMapper.selectOne(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, good.getGid()).eq(Goods::getSid, Long.parseLong(good.getSid())));
+        Goods goods = goodsMapper.selectOne(Wrappers.lambdaQuery(Goods.class)
+                .eq(Goods::getGid, good.getGid())
+                .eq(Goods::getSid, Long.parseLong(good.getSid())));
         if(Objects.isNull(goods)){
             return R.error("不存在该商品！");
         }
@@ -165,7 +171,8 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     @Override
     public R<GoodsVO> getGood(String gid, Long sid) {
         UserUtils.hasPermissions(sid.toString(), RoleEnum.SHOP.getCode());
-        List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, gid).eq(Goods::getSid, sid));
+        List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class)
+                .eq(Goods::getGid, gid).eq(Goods::getSid, sid));
         if(CollectionUtils.isEmpty(goods)){
             return R.error("不存在该商品！");
         }
@@ -256,7 +263,9 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
     @Override
     public R<String> updateGoodImg(PayDTO payDTO) {
         UserUtils.hasPermissions(payDTO.getShopID(), RoleEnum.SHOP.getCode());
-        Goods goods = goodsMapper.selectOne(Wrappers.lambdaQuery(Goods.class).eq(Goods::getGid, payDTO.getRemoteID()));
+        Goods goods = goodsMapper.selectOne(Wrappers.lambdaQuery(Goods.class)
+                .eq(Goods::getGid, payDTO.getRemoteID())
+                .eq(Goods::getSid,Long.parseLong(payDTO.getShopID())));
         goods.setPicUrl(payDTO.getMsg());
         return R.ok(goodsMapper.updateById(goods)==1?"更新成功":"更新失败！");
     }

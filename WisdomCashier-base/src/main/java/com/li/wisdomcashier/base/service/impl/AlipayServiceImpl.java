@@ -96,7 +96,7 @@ public class AlipayServiceImpl implements AlipayService {
 
     @Override
     public R<PayDTO> aliPay(AliPayDTO aliPayDTO) {
-       UserUtils.hasPermissions(aliPayDTO.getShopName(), RoleEnum.SHOP.getCode());
+        UserUtils.hasPermissions(aliPayDTO.getShopName(), RoleEnum.SHOP.getCode());
         Shop shop = shopMapper.selectById(Long.parseLong(aliPayDTO.getShopName()));
         User user = UserUtils.getUser();
         if (redisUtils.hasKey("aliPay" + user.getId()))
