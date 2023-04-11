@@ -99,6 +99,7 @@ public class AlipayServiceImpl implements AlipayService {
         UserUtils.hasPermissions(aliPayDTO.getShopName(), RoleEnum.SHOP.getCode());
         Shop shop = shopMapper.selectById(Long.parseLong(aliPayDTO.getShopName()));
         User user = UserUtils.getUser();
+        //同一用户同一时间只能产生一笔交易
         if (redisUtils.hasKey("aliPay" + user.getId()))
             return R.error("存在一笔订单未处理，请先处理！");
         AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
@@ -107,7 +108,7 @@ public class AlipayServiceImpl implements AlipayService {
         redisUtils.set("aliPay" + user.getId(), id, 60);
         AlipayTradePayModel model = new AlipayTradePayModel();
         /**
-         * 商户订单号，商户自定义，需保证在商户端不重复，如：20200612000001
+         * 商户订单号，商户自定义，需保证在商户端不重复
          **/
         model.setOutTradeNo(redisUtils.get("aliPay" + user.getId()).toString());
         /**
@@ -127,7 +128,8 @@ public class AlipayServiceImpl implements AlipayService {
         // 1分钟有效
         model.setTimeoutExpress("1m");
         request.setBizModel(model);
-
+        //代调用商户支付接口
+        request.putOtherTextParam("app_auth_token", shop.getAuthZfb());
         /** 异步通知地址，以http或者https开头的，商户外网可以post访问的异步地址，用于接收支付宝返回的支付结果，如果未收到该通知可参考该文档进行确认：			https://opensupport.alipay.com/support/helpcenter/193/201602475759 **/
         request.setNotifyUrl(NOTIFY_URL);
         AlipayTradePayResponse response = null;
@@ -254,6 +256,7 @@ public class AlipayServiceImpl implements AlipayService {
         if(reduce.add(new BigDecimal(refundDTO.getMoney())).compareTo(trade.getIncome())>0){
             tradeRefund.setStatus(0);
             tradeRefund.setErrMsg("总退款金额大于付款！");
+            //退款失败记录
             tradeRefundService.TradeRefundRecord(tradeRefund);
             return R.error("总退款金额大于付款！");
         }
