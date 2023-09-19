@@ -15,7 +15,6 @@ import "@kangc/v-md-editor/lib/style/base-editor.css";
 import githubTheme from "@kangc/v-md-editor/lib/theme/github.js";
 import "@kangc/v-md-editor/lib/theme/style/github.css";
 const app = createApp(App);
-VMdEditor.use(githubTheme);
 app.use(ElementPlus);
 app.use(VMdEditor);
 for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
