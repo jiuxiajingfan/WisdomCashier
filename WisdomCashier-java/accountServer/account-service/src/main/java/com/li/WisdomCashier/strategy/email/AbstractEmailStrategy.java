@@ -3,6 +3,7 @@ package com.li.WisdomCashier.strategy.email;
 import com.li.WisdomCashier.enums.EmailEnums;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 
 /**
  * @ClassName AbstractEmailStrategy
@@ -12,16 +13,23 @@ import javax.annotation.PostConstruct;
  * @Version 1.0
  */
 public abstract class AbstractEmailStrategy {
-
+    /**
+     * 获取自身枚举用于映射
+     * @return
+     */
     protected abstract EmailEnums getTypeEnum();
 
     /**
-     * 向工厂注册
+     * 发送邮件
+     * @return
+     */
+    protected abstract String Send();
+
+    /**
+     * 向工厂注册自身
      */
     @PostConstruct
     private void init(){
-        EmailStrategyFactory.register(getTypeEnum());
+        EmailStrategyFactory.register(getTypeEnum().getType(),this);
     };
-
-
 }
