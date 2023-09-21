@@ -2,6 +2,7 @@ package com.li.WisdomCashier.strategy.email;
 
 import com.li.WisdomCashier.enums.EmailEnums;
 import com.li.WisdomCashier.pojo.R;
+import org.springframework.stereotype.Component;
 
 import java.util.Objects;
 
@@ -11,6 +12,7 @@ import static com.li.WisdomCashier.constant.MQConstant.ROUTING_KEY_REGISTER;
 /**
  * 注册邮件策略
  */
+@Component
 public class RegisterEmailStrategy extends AbstractEmailStrategy{
     @Override
     protected EmailEnums getTypeEnum() {
