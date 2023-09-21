@@ -23,12 +23,9 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 //放行接口
                 .antMatchers("/account/createUser").permitAll()
                 .antMatchers("/account/login").permitAll()
-                .antMatchers("/account/checkToken").permitAll()
-                .antMatchers("/account/test").permitAll()
-                .antMatchers("/account/order").permitAll()
                 .antMatchers("/account/getCaptcha").permitAll()
                 .antMatchers("/account/checkCaptcha").permitAll()
-                .antMatchers("/account/getCode").permitAll()
+                .antMatchers("/email/getCode").permitAll()
                 .antMatchers("/v3/api-docs").permitAll()
                 .antMatchers("/webjars/**").permitAll()
                 .antMatchers("/swagger-resources/**").permitAll()

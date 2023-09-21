@@ -1,6 +1,9 @@
 package com.li.WisdomCashier.strategy.email;
 
 import com.li.WisdomCashier.enums.EmailEnums;
+import com.li.WisdomCashier.pojo.R;
+import com.li.WisdomCashier.utils.RedisUtils;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -13,6 +16,11 @@ import javax.annotation.Resource;
  * @Version 1.0
  */
 public abstract class AbstractEmailStrategy {
+    @Resource
+    protected RabbitTemplate rabbitTemplate;
+
+    @Resource
+    protected RedisUtils redisUtils;
     /**
      * 获取自身枚举用于映射
      * @return
@@ -23,7 +31,7 @@ public abstract class AbstractEmailStrategy {
      * 发送邮件
      * @return
      */
-    protected abstract String Send();
+    public abstract R<String> Send(String email);
 
     /**
      * 向工厂注册自身

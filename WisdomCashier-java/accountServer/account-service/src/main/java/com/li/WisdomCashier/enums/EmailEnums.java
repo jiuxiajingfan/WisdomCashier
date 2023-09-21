@@ -18,8 +18,9 @@ import java.util.stream.Collectors;
 @Getter
 @AllArgsConstructor
 public enum EmailEnums {
-    REGISTER(0,"注册验证码");
+    REGISTER(0,"register","注册验证码");
     private final Integer type;
+    private final String value;
     private final String desc;
     private static Map<Integer, EmailEnums> cache;
     static {

@@ -2,6 +2,7 @@ package com.li.WisdomCashier.strategy.email;
 
 import java.util.HashMap;
 
+
 public class EmailStrategyFactory {
     public static final HashMap<Integer,AbstractEmailStrategy> STRATEGY_MAP = new HashMap<>();
 
