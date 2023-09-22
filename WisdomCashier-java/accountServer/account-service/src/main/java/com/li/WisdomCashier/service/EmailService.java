@@ -1,6 +1,5 @@
 package com.li.WisdomCashier.service;
 
-import com.li.WisdomCashier.dto.EmailDTO;
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.strategy.email.AbstractEmailStrategy;
 import com.li.WisdomCashier.strategy.email.EmailStrategyFactory;
@@ -53,11 +52,7 @@ public class EmailService {
      */
     public R<String> getCode(String email,Integer type){
         AbstractEmailStrategy emailStrategy = EmailStrategyFactory.getEmailStrategy(type);
-        return emailStrategy.Send(EmailDTO.builder()
-                .email(email)
-                .type(type)
-                .build()
-        );
+        return emailStrategy.Send(email);
     }
 
 

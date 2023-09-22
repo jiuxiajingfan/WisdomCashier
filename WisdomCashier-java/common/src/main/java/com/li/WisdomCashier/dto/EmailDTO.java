@@ -16,5 +16,5 @@ import java.io.Serializable;
 @Builder
 public class EmailDTO implements Serializable {
     String email;
-    Integer type;
+    String type;
 }

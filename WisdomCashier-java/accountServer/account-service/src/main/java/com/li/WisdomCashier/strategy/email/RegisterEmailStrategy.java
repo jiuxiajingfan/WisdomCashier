@@ -21,12 +21,16 @@ public class RegisterEmailStrategy extends AbstractEmailStrategy{
     }
 
     @Override
-    public R<String> Send(EmailDTO email) {
-        if(Objects.isNull(email.getEmail()))
+    public R<String> Send(String email) {
+        if(Objects.isNull(email))
             return R.error("请输入邮箱！");
-        if (redisUtils.hasKey(this.getTypeEnum().getValue() + email.getEmail()))
+        if (redisUtils.hasKey(this.getTypeEnum().getValue() + email))
             return R.error("发送频繁，请耐心等待！");
-        rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_EMAIL,ROUTING_KEY_REGISTER,email);
+        rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_EMAIL,ROUTING_KEY_REGISTER,
+                EmailDTO.builder()
+                        .email(email)
+                        .type(getTypeEnum().getValue())
+        );
         return R.ok("发送成功，请耐心等待~");
     }
 }
