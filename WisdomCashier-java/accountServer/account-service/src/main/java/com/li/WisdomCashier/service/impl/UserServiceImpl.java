@@ -41,6 +41,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public R<String> createUser(CreateUserDTO createUserDTO) {
         List<User> users = userMapper.selectList(Wrappers.lambdaQuery(User.class)
                 .eq(User::getEmail, createUserDTO.getEmail())
+                .or()
+                .eq(User::getUserName,createUserDTO.getUserName())
         );
         if (!users.isEmpty()) {
             return R.error("该邮箱已被注册，请勿重复注册！");

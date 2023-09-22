@@ -1,6 +1,7 @@
 package com.li.WisdomCashier.rabbitmq.receive;
 
 import cn.hutool.core.util.RandomUtil;
+import com.li.WisdomCashier.dto.EmailDTO;
 import com.li.WisdomCashier.service.EmailService;
 import com.li.WisdomCashier.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -39,10 +40,9 @@ public class VerificationCodeReceive {
             key = ROUTING_KEY_REGISTER
     )
     )
-    public void sendCode(String type,String message) {
-        log.info("验证码服务{}",message);
+    public void sendCode(EmailDTO emailDTO) {
         String code = RandomUtil.randomString(6);
-        emailService.sendSimpleMail(message, code, "注册验证码");
-        redisUtils.set(type + message,code,300);
+        emailService.sendSimpleMail(emailDTO.getEmail(), code, "注册验证码");
+        redisUtils.set( emailDTO.getType() + emailDTO.getEmail(),code,300);
     }
 }

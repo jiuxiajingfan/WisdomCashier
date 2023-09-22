@@ -1,5 +1,6 @@
 package com.li.WisdomCashier.strategy.email;
 
+import com.li.WisdomCashier.dto.EmailDTO;
 import com.li.WisdomCashier.enums.EmailEnums;
 import com.li.WisdomCashier.pojo.R;
 import org.springframework.stereotype.Component;
@@ -20,10 +21,10 @@ public class RegisterEmailStrategy extends AbstractEmailStrategy{
     }
 
     @Override
-    public R<String> Send(String email) {
-        if(Objects.isNull(email))
+    public R<String> Send(EmailDTO email) {
+        if(Objects.isNull(email.getEmail()))
             return R.error("请输入邮箱！");
-        if (redisUtils.hasKey(this.getTypeEnum().getValue() + email))
+        if (redisUtils.hasKey(this.getTypeEnum().getValue() + email.getEmail()))
             return R.error("发送频繁，请耐心等待！");
         rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_EMAIL,ROUTING_KEY_REGISTER,email);
         return R.ok("发送成功，请耐心等待~");

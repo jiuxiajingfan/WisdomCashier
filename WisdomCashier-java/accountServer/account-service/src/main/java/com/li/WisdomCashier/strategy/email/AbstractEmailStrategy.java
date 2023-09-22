@@ -1,5 +1,6 @@
 package com.li.WisdomCashier.strategy.email;
 
+import com.li.WisdomCashier.dto.EmailDTO;
 import com.li.WisdomCashier.enums.EmailEnums;
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.utils.RedisUtils;
@@ -31,7 +32,7 @@ public abstract class AbstractEmailStrategy {
      * 发送邮件
      * @return
      */
-    public abstract R<String> Send(String email);
+    public abstract R<String> Send(EmailDTO email);
 
     /**
      * 向工厂注册自身

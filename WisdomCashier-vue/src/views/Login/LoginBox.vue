@@ -144,7 +144,7 @@ const getCode = () => {
   timer && clearInterval(timer);
   curTime.value = 90;
   api
-    .get("/account/getcode", {
+    .get("/email/getCode", {
       // get请求使用params传参,并且最后会拼接到url后面
       params: {
         email: registerFormData.email,
@@ -188,7 +188,7 @@ const checkPassword = (rule, value, callback) => {
 };
 const checkCode = (rule, value, callback) => {
   //验证验证码的正则表达式
-  const regEmail = /^\d{6}$/;
+  const regEmail = /^[a-zA-Z0-9]{6}$/;
   if (regEmail.test(value)) {
     return callback();
   }
@@ -240,11 +240,11 @@ const register = () => {
   registerForm.value.validate((valid) => {
     if (valid) {
       api
-        .post("/account/signup", {
+        .post("/account/createUser", {
           code: registerFormData.code,
           email: registerFormData.email,
           userName: registerFormData.name,
-          userPwd: md5(registerFormData.password + registerFormData.name),
+          password: md5(registerFormData.password + registerFormData.name),
         })
         .then((res) => {
           utils.showMessage(

@@ -20,4 +20,6 @@ public class CreateUserDTO implements Serializable {
     String password;
     @NotBlank(message = "验证码不能为空！")
     String code;
+    @NotBlank(message = "用户名不能为空！")
+    String userName;
 }

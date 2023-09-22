@@ -1,15 +1,19 @@
 package com.li.WisdomCashier.controller;
 
+import com.anji.captcha.model.common.ResponseModel;
+import com.anji.captcha.model.vo.CaptchaVO;
+import com.anji.captcha.service.CaptchaService;
 import com.li.WisdomCashier.dto.CreateUserDTO;
+import com.li.WisdomCashier.entry.dto.LoginDTO;
+import com.li.WisdomCashier.entry.dto.TokenDTO;
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.UserService;
+import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 /**
  * @ClassName UserController
@@ -24,8 +28,53 @@ public class AccountController {
     @Resource
     private UserService userService;
 
-    @PostMapping("createUser")
+    @Resource
+    private CaptchaService captchaService;
+
+    @Resource
+    OauthFeignClient oauthFeignClient;
+
+    @PostMapping("/createUser")
     R<String> createUser(@RequestBody @Validated CreateUserDTO createUserDTO){
         return userService.createUser(createUserDTO);
     };
+    @PostMapping("/login")
+    R<TokenDTO> postAccessToken(@RequestBody @Validated LoginDTO loginDTO) {
+        //图像验证码校验
+        CaptchaVO captchaVO = new CaptchaVO();
+        captchaVO.setCaptchaVerification(loginDTO.getVerify());
+        ResponseModel verification = captchaService.verification(captchaVO);
+        if (verification.getRepCode().compareTo(ResponseModel.success().getRepCode()) != 0) {
+            return R.error(verification.getRepMsg());
+        }
+        //登录逻辑
+        OAuth2AccessToken accessToken = oauthFeignClient.postAccessToken("password",
+                loginDTO.getUsername(),
+                loginDTO.getPassword());
+        if (accessToken.getValue() == null) {
+            return R.error((String) accessToken.getAdditionalInformation().get("msg"), 401);
+        } else {
+            TokenDTO token = TokenDTO.builder()
+                    .token(accessToken.getValue())
+                    .refresh(String.valueOf(accessToken.getRefreshToken()))
+                    .build();
+            return R.ok(token, "登录成功！");
+        }
+    }
+
+    @PostMapping("/checkToken")
+    R<Map<String, ?>> checkToken(@RequestParam("token") String value) {
+        Map<String, ?> stringMap = oauthFeignClient.checkToken(value);
+        return R.ok(stringMap);
+    }
+
+    @PostMapping("/getCaptcha")
+    public ResponseModel get(@RequestBody CaptchaVO captchaVO){
+        return captchaService.get(captchaVO);
+    }
+
+    @PostMapping("/checkCaptcha")
+    public ResponseModel check(@RequestBody CaptchaVO captchaVO){
+        return captchaService.check(captchaVO);
+    }
 }
