@@ -30,6 +30,7 @@ public class RegisterEmailStrategy extends AbstractEmailStrategy{
                 EmailDTO.builder()
                         .email(email)
                         .type(getTypeEnum().getValue())
+                        .build()
         );
         return R.ok("发送成功，请耐心等待~");
     }

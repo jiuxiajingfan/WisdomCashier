@@ -25,6 +25,7 @@ public final class RedisUtils {
     @Autowired
     private RedisTemplate<String, Object> redisTemplate;
 
+
     // =============================common============================
     /**
      * 指定缓存失效时间

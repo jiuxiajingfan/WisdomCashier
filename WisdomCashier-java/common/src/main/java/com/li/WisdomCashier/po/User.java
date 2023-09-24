@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
+import java.time.LocalDateTime;
 
 /**
  * @ClassName User
@@ -36,10 +37,10 @@ public class User implements Serializable {
     private String email;
 
     @TableField(value = "gmt_create", fill = FieldFill.INSERT)
-    private String gmtCreate;
+    private LocalDateTime gmtCreate;
 
     @TableField(value = "gmt_update", fill = FieldFill.UPDATE)
-    private String gmtUpdate;
+    private LocalDateTime gmtUpdate;
 
     @TableField("status")
     private Integer status;
