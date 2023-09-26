@@ -251,6 +251,22 @@ const register = () => {
             res.data.code,
             res.data.code == 0 ? res.data.data : res.data.msg
           );
+          if (res.data.code === 200) {
+            let store = useAuthStore();
+            store.setToken(res.data.data);
+            const user = useUserStore(pinia);
+            // api.post("/user/getUser").then((res) => {
+            //   let data = res.data.data;
+            //   user.setId(data.id);
+            //   user.setImage(data.image);
+            //   user.setName(data.userName);
+            //   user.setNickName(data.userNickname);
+            //   user.setPhone(data.phone);
+            //   user.setEmail(data.email);
+            // });
+            router.push("/userCenter");
+            utils.showMessage(res.data.code, "登录成功，欢迎回来！");
+          }
         });
     }
   });
@@ -298,15 +314,15 @@ export default {
       // params 返回的二次验证参数, 和登录参数一起回传给登录接口，方便后台进行二次验证
       api
         .post("account/login", {
-          userName: this.loginFormData.name,
-          userPwd: md5(this.loginFormData.password + this.loginFormData.name),
-          verification: params.captchaVerification,
+          username: this.loginFormData.name,
+          password: md5(this.loginFormData.password + this.loginFormData.name),
+          verify: params.captchaVerification,
         })
         .then((res) => {
-          let store = useAuthStore();
-          if (res.data.code != 200) {
+          if (res.data.code !== 200) {
             utils.showMessage(res.data.code, res.data.msg);
           } else {
+            let store = useAuthStore();
             store.setToken(res.data.msg);
             const user = useUserStore(pinia);
             api.post("/user/getUser").then((res) => {

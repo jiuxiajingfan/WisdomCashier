@@ -1,5 +1,8 @@
-package com.li.WisdomCashier.exception;
+package com.li.WisdomCashier.config;
 
+import com.li.WisdomCashier.exception.BusinessException;
+import com.li.WisdomCashier.exception.CommonErrorEnum;
+import com.li.WisdomCashier.exception.FrequencyControlException;
 import com.li.WisdomCashier.pojo.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindException;
@@ -23,7 +26,7 @@ public class GlobalExceptionHandler {
         e.getBindingResult().getFieldErrors().forEach(x -> errorMsg.append(x.getField()).append(x.getDefaultMessage()).append(","));
         String message = errorMsg.toString();
         log.info("validation parameters error！The reason is:{}", message);
-        return R.error(message.substring(0, message.length() - 1),CommonErrorEnum.PARAM_VALID.getErrorCode());
+        return R.error(message.substring(0, message.length() - 1), CommonErrorEnum.PARAM_VALID.getErrorCode());
     }
 
     /**

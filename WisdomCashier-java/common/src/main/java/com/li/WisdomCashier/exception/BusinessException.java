@@ -7,12 +7,12 @@ public class BusinessException extends RuntimeException {
     private static final long serialVersionUID = 1L;
 
     /**
-     *  错误码
+     * 错误码
      */
     protected Integer errorCode;
 
     /**
-     *  错误信息
+     * 错误信息
      */
     protected String errorMsg;
 

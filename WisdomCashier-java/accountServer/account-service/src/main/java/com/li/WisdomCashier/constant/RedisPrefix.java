@@ -11,5 +11,5 @@ public class RedisPrefix {
     /*
     注册邮箱验证码
      */
-    public static final String REGISTER_CODE = "REGISTER_CODE";
+    public static final String REGISTER_CODE = "register_code";
 }
