@@ -1,15 +1,21 @@
 package com.li.WisdomCashier.service;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.li.WisdomCashier.mapper.RoleMapper;
 import com.li.WisdomCashier.mapper.UserMapper;
+import com.li.WisdomCashier.po.Role;
 import com.li.WisdomCashier.po.User;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+
+import static com.baomidou.mybatisplus.core.toolkit.Wrappers.lambdaQuery;
 
 /**
  * @ClassName AuthorizeService
@@ -24,16 +30,28 @@ public class AuthorizeService implements UserDetailsService {
     @Resource
     private UserMapper userMapper;
 
+    @Resource
+    private RoleMapper roleMapper;
+
+
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getUserName, userName));
+        User user = userMapper.selectOne(lambdaQuery(User.class).eq(User::getUserName, userName));
         if(Objects.isNull(user)){
             throw new UsernameNotFoundException("用户名或密码错误！");
+        }
+        List<Role> roles = roleMapper.selectList(lambdaQuery(Role.class)
+                .eq(Role::getUserId, user.getId()));
+        ArrayList<SimpleGrantedAuthority> userRoles = new ArrayList<>();
+        for (Role role : roles) {
+            for (Integer i = 1; i < role.getRole(); i++) {
+                userRoles.add(new SimpleGrantedAuthority(role.getShopId().toString() + role.getRole()));
+            }
         }
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUserName())
                 .password(user.getUserPwd())
-                .roles("USER")
+                .authorities(userRoles)
                 .build();
     }
 }
