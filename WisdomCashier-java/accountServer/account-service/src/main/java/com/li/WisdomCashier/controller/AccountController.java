@@ -8,6 +8,8 @@ import com.li.WisdomCashier.entry.dto.LoginDTO;
 import com.li.WisdomCashier.entry.dto.TokenDTO;
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.UserService;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,6 +27,13 @@ import java.util.Map;
 @RestController
 @RequestMapping("/account")
 public class AccountController {
+
+    /**
+     * 验证码开关
+     */
+    @Value("${captcha:false}")
+    private Boolean chaptcha;
+
     @Resource
     private UserService userService;
 
@@ -40,12 +49,14 @@ public class AccountController {
     };
     @PostMapping("/login")
     R<TokenDTO> postAccessToken(@RequestBody @Validated LoginDTO loginDTO) {
-        //图像验证码校验
-        CaptchaVO captchaVO = new CaptchaVO();
-        captchaVO.setCaptchaVerification(loginDTO.getVerify());
-        ResponseModel verification = captchaService.verification(captchaVO);
-        if (verification.getRepCode().compareTo(ResponseModel.success().getRepCode()) != 0) {
-            return R.error(verification.getRepMsg());
+        if(chaptcha) {
+            //图像验证码校验
+            CaptchaVO captchaVO = new CaptchaVO();
+            captchaVO.setCaptchaVerification(loginDTO.getVerify());
+            ResponseModel verification = captchaService.verification(captchaVO);
+            if (verification.getRepCode().compareTo(ResponseModel.success().getRepCode()) != 0) {
+                return R.error(verification.getRepMsg());
+            }
         }
         //登录逻辑
         OAuth2AccessToken accessToken = oauthFeignClient.postAccessToken("password",
@@ -76,5 +87,11 @@ public class AccountController {
     @PostMapping("/checkCaptcha")
     public ResponseModel check(@RequestBody CaptchaVO captchaVO){
         return captchaService.check(captchaVO);
+    }
+
+    @GetMapping("/test")
+    @PreAuthorize("hasPermission(#id,#no)")
+    public String test(@RequestParam("id") int id,@RequestParam("no")int no){
+        return "ok!";
     }
 }

@@ -5,6 +5,7 @@ import com.li.WisdomCashier.exception.CommonErrorEnum;
 import com.li.WisdomCashier.exception.FrequencyControlException;
 import com.li.WisdomCashier.pojo.R;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -89,5 +90,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = MissingServletRequestParameterException.class)
     public R missingServletRequestParameterExceptionHandler(MissingServletRequestParameterException e){
         return R.error(e.getMessage(),400);
+    }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    public R accessDeniedException(AccessDeniedException e){
+        return R.error("权限不足！",401);
     }
 }

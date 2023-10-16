@@ -1,5 +1,6 @@
 package com.li.WisdomCashier.config;
 
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -34,5 +35,10 @@ public class ResourceServerConfig extends ResourceServerConfigurerAdapter {
                 .anyRequest().authenticated()
                 .and()
                 .csrf().disable();
+    }
+
+    @Bean("ss")
+    PermissionConfig permissionConfig(){
+        return new PermissionConfig();
     }
 }
