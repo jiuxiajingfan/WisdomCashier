@@ -1,5 +1,6 @@
 package com.li.WisdomCashier.controller;
 
+import cn.hutool.core.lang.tree.Tree;
 import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
@@ -15,6 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,7 +33,7 @@ public class AccountController {
     /**
      * 验证码开关
      */
-    @Value("${captcha:false}")
+    @Value("${captcha:true}")
     private Boolean chaptcha;
 
     @Resource
@@ -93,5 +95,10 @@ public class AccountController {
     @PreAuthorize("hasPermission(#id,#no)")
     public String test(@RequestParam("id") int id,@RequestParam("no")int no){
         return "ok!";
+    }
+
+    @GetMapping("/getUserCenterMenu")
+    public  R<List<Tree<String>>> getUserCenterMenu(){
+        return userService.getUserCenterMenu();
     }
 }

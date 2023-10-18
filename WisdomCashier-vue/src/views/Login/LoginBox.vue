@@ -323,17 +323,17 @@ export default {
             utils.showMessage(res.data.code, res.data.msg);
           } else {
             let store = useAuthStore();
-            store.setToken(res.data.msg);
+            store.setToken("bearer " + res.data.data.token);
             const user = useUserStore(pinia);
-            api.post("/user/getUser").then((res) => {
-              let data = res.data.data;
-              user.setId(data.id);
-              user.setImage(data.image);
-              user.setName(data.userName);
-              user.setNickName(data.userNickname);
-              user.setPhone(data.phone);
-              user.setEmail(data.email);
-            });
+            // api.post("/user/getUser").then((res) => {
+            //   let data = res.data.data;
+            //   user.setId(data.id);
+            //   user.setImage(data.image);
+            //   user.setName(data.userName);
+            //   user.setNickName(data.userNickname);
+            //   user.setPhone(data.phone);
+            //   user.setEmail(data.email);
+            // });
             router.push("/userCenter");
             utils.showMessage(res.data.code, "登录成功，欢迎回来！");
           }
