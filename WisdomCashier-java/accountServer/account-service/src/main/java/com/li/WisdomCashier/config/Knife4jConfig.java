@@ -1,7 +1,6 @@
 package com.li.WisdomCashier.config;
 
 import com.li.WisdomCashier.pojo.SwaggerProperties;
-import io.swagger.annotations.ApiOperation;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -16,8 +15,6 @@ import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.ApiSelectorBuilder;
 import springfox.documentation.spring.web.plugins.Docket;
-
-import javax.annotation.Resource;
 
 /**
  * @ClassName Knife4jConfig
@@ -47,7 +44,7 @@ public class Knife4jConfig {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage(swaggerProperties.getBasePackage()))
                 .paths(PathSelectors.any());
-        return builder.build().pathMapping("/");
+        return builder.build();
     }
 
     private ApiInfo apiInfo() {

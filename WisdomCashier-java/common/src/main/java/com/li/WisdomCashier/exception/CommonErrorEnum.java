@@ -15,6 +15,8 @@ public enum CommonErrorEnum implements ErrorEnum {
     PARAM_VALID(400, "参数校验失败{0}"),
     FREQUENCY_LIMIT(-3, "请求太频繁了，请稍后再试哦~~"),
     LOCK_LIMIT(-4, "请求太频繁了，请稍后再试哦~~"),
+    LACK_PARAM(400,"缺少参数{0}"),
+    ACCESS_LACK(403,"缺少访问权限")
     ;
     private final Integer code;
     private final String msg;

@@ -26,7 +26,7 @@ public class GlobalExceptionHandler {
         StringBuilder errorMsg = new StringBuilder();
         e.getBindingResult().getFieldErrors().forEach(x -> errorMsg.append(x.getField()).append(x.getDefaultMessage()).append(","));
         String message = errorMsg.toString();
-        log.info("validation parameters error！The reason is:{}", message);
+        log.warn("validation parameters error！The reason is:{}", message);
         return R.error(message.substring(0, message.length() - 1), CommonErrorEnum.PARAM_VALID.getErrorCode());
     }
 
@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
         StringBuilder errorMsg = new StringBuilder();
         e.getBindingResult().getFieldErrors().forEach(x -> errorMsg.append(x.getField()).append(x.getDefaultMessage()).append(","));
         String message = errorMsg.toString();
-        log.info("validation parameters error！The reason is:{}", message);
+        log.warn("validation parameters error！The reason is:{}", message);
         return R.error(message.substring(0, message.length() - 1),CommonErrorEnum.PARAM_VALID.getErrorCode());
     }
 
@@ -47,7 +47,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = NullPointerException.class)
     public R exceptionHandler(NullPointerException e) {
-        log.error("null point exception！The reason is: ", e);
+        log.warn("null point exception！The reason is: ", e);
         return R.error("系统异常");
     }
 
@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = Exception.class)
     public R systemExceptionHandler(Exception e) {
-        log.error("system exception！The reason is：{}", e.getMessage(), e);
+        log.warn("system exception！The reason is：{}", e.getMessage(), e);
         return R.error("系统异常");
     }
 
@@ -65,7 +65,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = BusinessException.class)
     public R businessExceptionHandler(BusinessException e) {
-        log.info("business exception！The reason is：{}", e.getMessage(), e);
+        log.warn("business exception！The reason is：{}", e.getMessage(), e);
         return R.error(e.getMessage(),e.getErrorCode());
     }
 
@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     public R<Void> handleException(HttpRequestMethodNotSupportedException e) {
-        log.error(e.getMessage(), e);
+        log.info(e.getMessage(), e);
         return R.error(String.format("不支持'%s'请求", e.getMethod()));
     }
 
@@ -83,17 +83,17 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(value = FrequencyControlException.class)
     public R frequencyControlExceptionHandler(FrequencyControlException e) {
-        log.info("frequencyControl exception！The reason is：{}", e.getMessage(), e);
+        log.warn("frequencyControl exception！The reason is：{}", e.getMessage(), e);
         return R.error(e.getMessage(),e.getErrorCode());
     }
 
     @ExceptionHandler(value = MissingServletRequestParameterException.class)
     public R missingServletRequestParameterExceptionHandler(MissingServletRequestParameterException e){
-        return R.error(e.getMessage(),400);
+        return R.error(CommonErrorEnum.LACK_PARAM.getMsg(),CommonErrorEnum.LACK_PARAM.getErrorCode());
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
     public R accessDeniedException(AccessDeniedException e){
-        return R.error("权限不足！",401);
+        return R.error(CommonErrorEnum.ACCESS_LACK.getMsg(),CommonErrorEnum.ACCESS_LACK.getErrorCode());
     }
 }

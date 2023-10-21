@@ -9,6 +9,8 @@ import com.li.WisdomCashier.entry.dto.LoginDTO;
 import com.li.WisdomCashier.entry.dto.TokenDTO;
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.UserService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
@@ -16,6 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +31,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/account")
+@Api(tags = "账户相关")
 public class AccountController {
 
     /**
@@ -46,10 +50,14 @@ public class AccountController {
     OauthFeignClient oauthFeignClient;
 
     @PostMapping("/createUser")
+    @ApiOperation("创建用户")
+    @PermitAll
     R<String> createUser(@RequestBody @Validated CreateUserDTO createUserDTO){
         return userService.createUser(createUserDTO);
     };
     @PostMapping("/login")
+    @ApiOperation("登录")
+    @PermitAll
     R<TokenDTO> postAccessToken(@RequestBody @Validated LoginDTO loginDTO) {
         if(chaptcha) {
             //图像验证码校验
@@ -76,17 +84,23 @@ public class AccountController {
     }
 
     @PostMapping("/checkToken")
+    @ApiOperation("检查token有效性")
+    @PermitAll
     R<Map<String, ?>> checkToken(@RequestParam("token") String value) {
         Map<String, ?> stringMap = oauthFeignClient.checkToken(value);
         return R.ok(stringMap);
     }
 
     @PostMapping("/getCaptcha")
+    @ApiOperation("获取图形验证码")
+    @PermitAll
     public ResponseModel get(@RequestBody CaptchaVO captchaVO){
         return captchaService.get(captchaVO);
     }
 
     @PostMapping("/checkCaptcha")
+    @ApiOperation("图形验证码检查")
+    @PermitAll
     public ResponseModel check(@RequestBody CaptchaVO captchaVO){
         return captchaService.check(captchaVO);
     }
@@ -98,6 +112,7 @@ public class AccountController {
     }
 
     @GetMapping("/getUserCenterMenu")
+    @ApiOperation("用户中心菜单")
     public  R<List<Tree<String>>> getUserCenterMenu(){
         return userService.getUserCenterMenu();
     }
