@@ -1,4 +1,4 @@
-package com.li.WisdomCashier.entry.dto;
+package com.li.WisdomCashier.controller.account.dto;
 
 import lombok.Data;
 

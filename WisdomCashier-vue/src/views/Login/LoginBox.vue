@@ -254,21 +254,24 @@ const register = () => {
           if (res.data.code === 200) {
             let store = useAuthStore();
             store.setToken(res.data.data);
-            const user = useUserStore(pinia);
-            // api.post("/user/getUser").then((res) => {
-            //   let data = res.data.data;
-            //   user.setId(data.id);
-            //   user.setImage(data.image);
-            //   user.setName(data.userName);
-            //   user.setNickName(data.userNickname);
-            //   user.setPhone(data.phone);
-            //   user.setEmail(data.email);
-            // });
+            setUser();
             router.push("/userCenter");
             utils.showMessage(res.data.code, "登录成功，欢迎回来！");
           }
         });
     }
+  });
+};
+const setUser = () => {
+  api.get("/account/getUserDetail").then((res) => {
+    const user = useUserStore(pinia);
+    let data = res.data.data;
+    user.setId(data.id);
+    user.setImage(data.image);
+    user.setName(data.userName);
+    user.setNickName(data.userNickname);
+    user.setPhone(data.phone);
+    user.setEmail(data.email);
   });
 };
 </script>
@@ -324,16 +327,16 @@ export default {
           } else {
             let store = useAuthStore();
             store.setToken("bearer " + res.data.data.token);
-            const user = useUserStore(pinia);
-            // api.post("/user/getUser").then((res) => {
-            //   let data = res.data.data;
-            //   user.setId(data.id);
-            //   user.setImage(data.image);
-            //   user.setName(data.userName);
-            //   user.setNickName(data.userNickname);
-            //   user.setPhone(data.phone);
-            //   user.setEmail(data.email);
-            // });
+            api.get("/account/getUserDetail").then((res) => {
+              const user = useUserStore(pinia);
+              let data = res.data.data;
+              user.setId(data.id);
+              user.setImage(data.image);
+              user.setName(data.userName);
+              user.setNickName(data.userNickname);
+              user.setPhone(data.phone);
+              user.setEmail(data.email);
+            });
             router.push("/userCenter");
             utils.showMessage(res.data.code, "登录成功，欢迎回来！");
           }

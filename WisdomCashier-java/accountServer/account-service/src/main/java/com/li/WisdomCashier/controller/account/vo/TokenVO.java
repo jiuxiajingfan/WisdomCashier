@@ -1,11 +1,11 @@
-package com.li.WisdomCashier.entry.dto;
+package com.li.WisdomCashier.controller.account.vo;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
-public class TokenDTO {
+public class TokenVO {
     String token;
     String refresh;
 }

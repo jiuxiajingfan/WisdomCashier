@@ -2,7 +2,7 @@
   <el-row>
     <el-col :span="8" />
     <el-col :span="8">
-      <h2>申请开店</h2>
+      <p class="ff">申请开店</p>
     </el-col>
     <el-col :span="8">
       <el-button type="primary" style="margin-top: 60px" @click="dia1"
@@ -676,5 +676,18 @@ const getStyle = (data) => {
 <style lang="scss">
 .hide .el-upload--picture-card {
   display: none;
+}
+.ff {
+  font-family: "Google Sans", Roboto, Arial, sans-serif;
+  line-height: 2.25rem;
+  font-size: 1.75rem;
+  letter-spacing: 0;
+  font-weight: 400;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  word-break: break-word;
+  word-wrap: break-word;
+  color: var(--gm3-sys-color-on-background, #1f1f1f);
+  text-align: center;
 }
 </style>

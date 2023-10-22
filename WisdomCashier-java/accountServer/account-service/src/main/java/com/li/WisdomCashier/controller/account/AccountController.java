@@ -1,12 +1,14 @@
-package com.li.WisdomCashier.controller;
+package com.li.WisdomCashier.controller.account;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
+import com.li.WisdomCashier.controller.OauthFeignClient;
+import com.li.WisdomCashier.controller.account.vo.TokenVO;
+import com.li.WisdomCashier.controller.account.vo.UserDetailVO;
 import com.li.WisdomCashier.dto.CreateUserDTO;
-import com.li.WisdomCashier.entry.dto.LoginDTO;
-import com.li.WisdomCashier.entry.dto.TokenDTO;
+import com.li.WisdomCashier.controller.account.dto.LoginDTO;
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.UserService;
 import io.swagger.annotations.Api;
@@ -58,7 +60,7 @@ public class AccountController {
     @PostMapping("/login")
     @ApiOperation("登录")
     @PermitAll
-    R<TokenDTO> postAccessToken(@RequestBody @Validated LoginDTO loginDTO) {
+    R<TokenVO> postAccessToken(@RequestBody @Validated LoginDTO loginDTO) {
         if(chaptcha) {
             //图像验证码校验
             CaptchaVO captchaVO = new CaptchaVO();
@@ -75,20 +77,14 @@ public class AccountController {
         if (accessToken.getValue() == null) {
             return R.error((String) accessToken.getAdditionalInformation().get("msg"), 401);
         } else {
-            TokenDTO token = TokenDTO.builder()
+            return R.ok(
+                    TokenVO.builder()
                     .token(accessToken.getValue())
                     .refresh(String.valueOf(accessToken.getRefreshToken()))
-                    .build();
-            return R.ok(token, "登录成功！");
+                    .build(),
+                    "登录成功！"
+            );
         }
-    }
-
-    @PostMapping("/checkToken")
-    @ApiOperation("检查token有效性")
-    @PermitAll
-    R<Map<String, ?>> checkToken(@RequestParam("token") String value) {
-        Map<String, ?> stringMap = oauthFeignClient.checkToken(value);
-        return R.ok(stringMap);
     }
 
     @PostMapping("/getCaptcha")
@@ -115,5 +111,11 @@ public class AccountController {
     @ApiOperation("用户中心菜单")
     public  R<List<Tree<String>>> getUserCenterMenu(){
         return userService.getUserCenterMenu();
+    }
+
+    @GetMapping("/getUserDetail")
+    @ApiOperation("获取用户信息")
+    public R<UserDetailVO> getUserDetail(){
+        return userService.getUserDetail();
     }
 }

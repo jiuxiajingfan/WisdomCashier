@@ -1,5 +1,6 @@
 <template>
-  <dev class="searchBox">
+  <p class="ff">我的店铺</p>
+  <div class="searchBox">
     <el-input
       style="width: 80%"
       placeholder="请输入要搜索的店铺名"
@@ -17,7 +18,7 @@
       @click="dialogTableVisible = true"
       >申请加入</el-button
     >
-  </dev>
+  </div>
   <div class="mm">
     <div class="tables">
       <el-scrollbar>
@@ -202,5 +203,18 @@ const getStyle = (data) => {
 }
 .page {
   float: contour;
+}
+.ff {
+  font-family: "Google Sans", Roboto, Arial, sans-serif;
+  line-height: 2.25rem;
+  font-size: 1.75rem;
+  letter-spacing: 0;
+  font-weight: 400;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+  word-break: break-word;
+  word-wrap: break-word;
+  color: var(--gm3-sys-color-on-background, #1f1f1f);
+  text-align: center;
 }
 </style>

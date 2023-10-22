@@ -13,6 +13,7 @@
             class="el-menu-vertical-demo"
             :collapse="isCollapse"
             :default-openeds="openeds"
+            router
           >
             <div class="receive">
               <el-button @click="contraction" type="text" style="width: 100%">
@@ -26,7 +27,7 @@
             </div>
             <template v-for="(item, index) in menuData" :key="index">
               <el-sub-menu
-                v-if="item.hidden == 0"
+                v-if="item.hasOwnProperty('children') && item.hidden == 0"
                 :index="index"
                 :disabled="item.status == 0"
               >
@@ -36,7 +37,7 @@
                   </el-icon>
                   <span>{{ item.name }}</span>
                 </template>
-                <template v-if="item.children.length > 0">
+                <template v-if="item.parentId === null">
                   <template
                     v-for="(item2, index2) in item.children"
                     :key="index2"
@@ -56,29 +57,43 @@
                   </template>
                 </template>
               </el-sub-menu>
+              <el-menu-item
+                v-if="!item.hasOwnProperty('children') && item.hidden == 0"
+                :index="index"
+                :disabled="item.status == 0"
+              >
+                <template v-slot:title>
+                  <el-icon>
+                    <component :is="item.icon"></component>
+                  </el-icon>
+                  <span>{{ item.name }}</span>
+                </template>
+              </el-menu-item>
             </template>
           </el-menu>
         </el-scrollbar>
       </el-aside>
       <el-main>
         <el-scrollbar>
-          <el-tabs
-            v-model="focus"
-            type="card"
-            class="demo-tabs"
-            closable
-            @tab-remove="removeTab"
-          >
-            <el-tab-pane
-              v-for="item in editableTabs"
-              :key="item.name"
-              :label="item.title"
-              :name="item.name"
-            >
-              <component :is="map.get(item.content)"></component>
-            </el-tab-pane>
-            <component v-if="cnt == 0" :is="myMessage"></component>
-          </el-tabs>
+          <router-view></router-view>
+          <!--          <el-tabs-->
+          <!--            v-model="focus"-->
+          <!--            type="card"-->
+          <!--            class="demo-tabs"-->
+          <!--            closable-->
+          <!--            @tab-remove="removeTab"-->
+          <!--            @tab-click="change"-->
+          <!--          >-->
+          <!--            <el-tab-pane-->
+          <!--              v-for="item in editableTabs"-->
+          <!--              :key="item.name"-->
+          <!--              :label="item.title"-->
+          <!--              :name="item.name"-->
+          <!--              style="height: calc(100vh - 110px)"-->
+          <!--            >-->
+          <!--            </el-tab-pane>-->
+          <!--            &lt;!&ndash;            <component v-if="cnt == 0" :is="myMessage"></component>&ndash;&gt;-->
+          <!--          </el-tabs>-->
         </el-scrollbar>
       </el-main>
     </el-container>
@@ -100,9 +115,11 @@ const cnt = ref(0);
 const menuData = ref([]);
 const map = new Map();
 const menuData2 = [];
-let myMessage = defineAsyncComponent(() =>
-  import("../../components/userCenter/myMessage")
-);
+// let myMessage = defineAsyncComponent(() =>
+//   import("../../components/userCenter/myMessage")
+// );
+import myMessage from "../../components/userCenter/myMessage.vue";
+import router from "@/router";
 const openeds = [0];
 let myShop = defineAsyncComponent(() =>
   import("../../components/userCenter/myShop")
@@ -146,6 +163,10 @@ const editableTabs = ref([
 const focus = ref("myMessage");
 const mapTab = new Map();
 mapTab.set("myMessage", "myMessage");
+console.log(mapTab);
+const change = (tab) => {
+  console.log(tab);
+};
 const addTab = (targetName, component, title) => {
   if (mapTab.get(component) !== component) {
     cnt.value = cnt.value + 1;

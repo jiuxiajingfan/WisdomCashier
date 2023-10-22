@@ -2,6 +2,9 @@ import { createRouter, createWebHistory, RouteRecordRaw } from "vue-router";
 import loginPage from "../views/Login/LoginPage.vue";
 import choiceShop from "../views/Home/ChoiceShop.vue";
 import userCenter from "../views/Home/UserCenter.vue";
+import myMessage from "../components/userCenter/myMessage.vue";
+import CreateShop from "../components/Shop/CreateShop.vue";
+import myShop from "../components/userCenter/myShop.vue";
 import err404 from "../views/Error/404.vue";
 import shop from "../views/Shop/Shop.vue";
 import pinia from "@/store/store";
@@ -26,6 +29,32 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       auth: true,
     },
+    children: [
+      {
+        path: "/myMessage",
+        name: "myMessage",
+        component: myMessage,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/myShop",
+        name: "myShop",
+        component: myShop,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/CreateShop",
+        name: "CreateShop",
+        component: CreateShop,
+        meta: {
+          auth: true,
+        },
+      },
+    ],
   },
   {
     path: "/shop",

@@ -1,4 +1,4 @@
-package com.li.WisdomCashier.controller;
+package com.li.WisdomCashier.controller.email;
 
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.EmailService;

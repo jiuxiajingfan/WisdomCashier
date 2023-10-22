@@ -3,11 +3,15 @@ package com.li.WisdomCashier.service.impl;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
+import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.extra.cglib.CglibUtil;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.WisdomCashier.controller.OauthFeignClient;
+import com.li.WisdomCashier.controller.account.vo.UserDetailVO;
 import com.li.WisdomCashier.dto.CreateUserDTO;
 import com.li.WisdomCashier.mapper.SysMenuMapper;
 import com.li.WisdomCashier.mapper.UserMapper;
@@ -17,12 +21,17 @@ import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.UserService;
 import com.li.WisdomCashier.utils.RedisUtils;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.jwt.JwtHelper;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
+import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationDetails;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Map;
 
 import static com.li.WisdomCashier.constant.RedisPrefix.REGISTER_CODE;
 
@@ -88,7 +97,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         treeNodeConfig.setWeightKey("sort");
         treeNodeConfig.setIdKey("menuId");
         treeNodeConfig.setNameKey("name");
-        treeNodeConfig.setParentIdKey("parent_id");
+        treeNodeConfig.setChildrenKey("children");
         List<Tree<String>> build = TreeUtil.build(userCenterMenu, null, treeNodeConfig, ((sysMenu, tree) -> {
             tree.setId(sysMenu.getMenuId().toString());
             tree.setName(sysMenu.getName());
@@ -101,5 +110,23 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             tree.putExtra("status", sysMenu.getStatus());
         }));
         return R.ok(build);
+    }
+
+    @Override
+    public R<UserDetailVO> getUserDetail() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        OAuth2AuthenticationDetails details =(OAuth2AuthenticationDetails) authentication.getDetails();
+        String claims = JwtHelper.decode(details.getTokenValue()).getClaims();
+        Map parse = JSON.parseObject(claims);
+        String userName = (String)parse.getOrDefault("user_name", null);
+        User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class)
+                .eq(User::getUserName, userName));
+        UserDetailVO copy = CglibUtil.copy(user, UserDetailVO.class);
+        if (!StringUtils.isBlank(copy.getPhone())) {
+            copy.setPhone(DesensitizedUtil.mobilePhone(copy.getPhone()));
+        } else
+            copy.setPhone("");
+        copy.setEmail(DesensitizedUtil.email(copy.getEmail()));
+        return R.ok(copy);
     }
 }

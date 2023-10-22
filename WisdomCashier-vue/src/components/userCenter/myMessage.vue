@@ -1,135 +1,137 @@
 <template>
   <div class="mm">
-    <avatarUpload style="margin-top: 5%"></avatarUpload>
-    <div class="userMessage" style="margin-top: 3%">
-      <el-space wrap>
-        <el-card style="width: 600px; height: 350px">
-          <template #header>
-            <div class="card-header">
-              <span>用户信息</span>
-              <el-switch v-show="false" v-model="userModel.change" />
-            </div>
-          </template>
-          <el-form
-            style="margin-top: 4%"
-            :model="userModel"
-            label-width="120px"
-            label-position="right"
-          >
-            <el-form-item label="用户标识 :">
-              {{ user.getId }}
-              <el-tooltip
-                class="box-item"
-                effect="dark"
-                content="点击复制"
-                placement="top-start"
-              >
-                <el-button
-                  type="text"
-                  :icon="CopyDocument"
-                  style="margin-left: 5px"
-                  class="copyBtn"
-                  @click="copy"
-                  circle
-                />
-              </el-tooltip>
-            </el-form-item>
-            <el-form-item label="用户名 :">
-              {{ user.getNickName }}
-            </el-form-item>
-            <el-form-item label="手机号 :">
-              {{ user.getPhone }}
-            </el-form-item>
-            <el-form-item label="邮箱 :">
-              {{ user.getEmail }}
-            </el-form-item>
-          </el-form>
-        </el-card>
-      </el-space>
-      <el-space direction="vertical">
-        <el-card style="width: 600px; height: auto">
-          <template #header>
-            <div class="card-header">
-              <span>信息修改</span>
-              <el-switch v-model="userModel.change" />
-            </div>
-          </template>
-          <el-form
-            :model="userModel"
-            label-width="120px"
-            v-show="userModel.change"
-          >
-            <el-form-item label="用户名 :">
-              <el-input
-                type="text"
-                :disabled="!userModel.change"
-                v-model="userModel.name"
-              ></el-input>
-            </el-form-item>
-            <el-button @click="changeName">确定</el-button>
-          </el-form>
-        </el-card>
-        <el-card style="width: 600px; height: auto">
-          <template #header>
-            <div class="card-header">
-              <span>邮箱修改</span>
-              <el-switch v-model="emailButton" />
-            </div>
-          </template>
-          <el-form :model="userModel" label-width="120px" v-show="emailButton">
-            <el-form-item label="新邮箱 :">
-              <el-input type="text" v-model="userModel.email"></el-input>
-            </el-form-item>
-            <el-form-item label="验证码 :">
-              <el-input type="text" v-model="userModel.code">
-                <template #append>
-                  <el-button @click="getEmailCode">发送</el-button>
-                </template>
-              </el-input>
-            </el-form-item>
-            <el-button @click="changeEmail">确定</el-button>
-          </el-form>
-        </el-card>
-        <el-card style="width: 600px; height: auto">
-          <template #header>
-            <div class="card-header">
-              <span>密码修改</span>
-              <el-switch v-model="passwordButton" />
-            </div>
-          </template>
-          <el-form
-            :model="userModel"
-            label-width="120px"
-            v-show="passwordButton"
-            :rules="rules"
-            ref="changePasswordModel"
-          >
-            <el-form-item label="原密码 :" prop="pwdOriginal">
-              <el-input
-                type="password"
-                v-model="userModel.pwdOriginal"
-                show-password
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="新密码 :" prop="pwdNew">
-              <el-input
-                type="password"
-                v-model="userModel.pwdNew"
-                show-password
-              ></el-input>
-            </el-form-item>
-            <el-form-item label="确认密码 :" prop="pwdNew2">
-              <el-input
-                type="password"
-                v-model="userModel.pwdNew2"
-                show-password
-              ></el-input>
-            </el-form-item>
-            <el-button @click="changePassword">确定</el-button>
-          </el-form>
-        </el-card>
-      </el-space>
+    <div>
+      <avatarUpload></avatarUpload>
     </div>
+    <!--    <div class="userMessage" style="margin-bottom: 3%">-->
+    <!--      <el-space wrap>-->
+    <!--        <el-card style="width: 600px; height: 350px">-->
+    <!--          <template #header>-->
+    <!--            <div class="card-header">-->
+    <!--              <span>用户信息</span>-->
+    <!--              <el-switch v-show="false" v-model="userModel.change" />-->
+    <!--            </div>-->
+    <!--          </template>-->
+    <!--          <el-form-->
+    <!--            style="margin-top: 4%"-->
+    <!--            :model="userModel"-->
+    <!--            label-width="120px"-->
+    <!--            label-position="right"-->
+    <!--          >-->
+    <!--            <el-form-item label="用户标识 :">-->
+    <!--              {{ user.getId }}-->
+    <!--              <el-tooltip-->
+    <!--                class="box-item"-->
+    <!--                effect="dark"-->
+    <!--                content="点击复制"-->
+    <!--                placement="top-start"-->
+    <!--              >-->
+    <!--                <el-button-->
+    <!--                  type="text"-->
+    <!--                  :icon="CopyDocument"-->
+    <!--                  style="margin-left: 5px"-->
+    <!--                  class="copyBtn"-->
+    <!--                  @click="copy"-->
+    <!--                  circle-->
+    <!--                />-->
+    <!--              </el-tooltip>-->
+    <!--            </el-form-item>-->
+    <!--            <el-form-item label="用户名 :">-->
+    <!--              {{ user.getNickName }}-->
+    <!--            </el-form-item>-->
+    <!--            <el-form-item label="手机号 :">-->
+    <!--              {{ user.getPhone }}-->
+    <!--            </el-form-item>-->
+    <!--            <el-form-item label="邮箱 :">-->
+    <!--              {{ user.getEmail }}-->
+    <!--            </el-form-item>-->
+    <!--          </el-form>-->
+    <!--        </el-card>-->
+    <!--      </el-space>-->
+    <!--      <el-space direction="vertical">-->
+    <!--        <el-card style="width: 600px; height: auto">-->
+    <!--          <template #header>-->
+    <!--            <div class="card-header">-->
+    <!--              <span>信息修改</span>-->
+    <!--              <el-switch v-model="userModel.change" />-->
+    <!--            </div>-->
+    <!--          </template>-->
+    <!--          <el-form-->
+    <!--            :model="userModel"-->
+    <!--            label-width="120px"-->
+    <!--            v-show="userModel.change"-->
+    <!--          >-->
+    <!--            <el-form-item label="用户名 :">-->
+    <!--              <el-input-->
+    <!--                type="text"-->
+    <!--                :disabled="!userModel.change"-->
+    <!--                v-model="userModel.name"-->
+    <!--              ></el-input>-->
+    <!--            </el-form-item>-->
+    <!--            <el-button @click="changeName">确定</el-button>-->
+    <!--          </el-form>-->
+    <!--        </el-card>-->
+    <!--        <el-card style="width: 600px; height: auto">-->
+    <!--          <template #header>-->
+    <!--            <div class="card-header">-->
+    <!--              <span>邮箱修改</span>-->
+    <!--              <el-switch v-model="emailButton" />-->
+    <!--            </div>-->
+    <!--          </template>-->
+    <!--          <el-form :model="userModel" label-width="120px" v-show="emailButton">-->
+    <!--            <el-form-item label="新邮箱 :">-->
+    <!--              <el-input type="text" v-model="userModel.email"></el-input>-->
+    <!--            </el-form-item>-->
+    <!--            <el-form-item label="验证码 :">-->
+    <!--              <el-input type="text" v-model="userModel.code">-->
+    <!--                <template #append>-->
+    <!--                  <el-button @click="getEmailCode">发送</el-button>-->
+    <!--                </template>-->
+    <!--              </el-input>-->
+    <!--            </el-form-item>-->
+    <!--            <el-button @click="changeEmail">确定</el-button>-->
+    <!--          </el-form>-->
+    <!--        </el-card>-->
+    <!--        <el-card style="width: 600px; height: auto">-->
+    <!--          <template #header>-->
+    <!--            <div class="card-header">-->
+    <!--              <span>密码修改</span>-->
+    <!--              <el-switch v-model="passwordButton" />-->
+    <!--            </div>-->
+    <!--          </template>-->
+    <!--          <el-form-->
+    <!--            :model="userModel"-->
+    <!--            label-width="120px"-->
+    <!--            v-show="passwordButton"-->
+    <!--            :rules="rules"-->
+    <!--            ref="changePasswordModel"-->
+    <!--          >-->
+    <!--            <el-form-item label="原密码 :" prop="pwdOriginal">-->
+    <!--              <el-input-->
+    <!--                type="password"-->
+    <!--                v-model="userModel.pwdOriginal"-->
+    <!--                show-password-->
+    <!--              ></el-input>-->
+    <!--            </el-form-item>-->
+    <!--            <el-form-item label="新密码 :" prop="pwdNew">-->
+    <!--              <el-input-->
+    <!--                type="password"-->
+    <!--                v-model="userModel.pwdNew"-->
+    <!--                show-password-->
+    <!--              ></el-input>-->
+    <!--            </el-form-item>-->
+    <!--            <el-form-item label="确认密码 :" prop="pwdNew2">-->
+    <!--              <el-input-->
+    <!--                type="password"-->
+    <!--                v-model="userModel.pwdNew2"-->
+    <!--                show-password-->
+    <!--              ></el-input>-->
+    <!--            </el-form-item>-->
+    <!--            <el-button @click="changePassword">确定</el-button>-->
+    <!--          </el-form>-->
+    <!--        </el-card>-->
+    <!--      </el-space>-->
+    <!--    </div>-->
   </div>
 </template>
 
@@ -285,7 +287,7 @@ const changePassword = () => {
 <style scoped lang="scss">
 .mm {
   background-color: #ffffff;
-  min-height: v-bind(screenHeight);
+  height: calc(100% - 10px);
 }
 .copyBtn {
   --el-color-white: #000000;
