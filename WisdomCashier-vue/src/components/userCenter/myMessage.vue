@@ -1,8 +1,12 @@
 <template>
   <div class="mm">
-    <div>
-      <avatarUpload></avatarUpload>
-    </div>
+    <el-row>
+      <el-col>
+        <div>
+          <avatarUpload></avatarUpload>
+        </div>
+      </el-col>
+    </el-row>
     <!--    <div class="userMessage" style="margin-bottom: 3%">-->
     <!--      <el-space wrap>-->
     <!--        <el-card style="width: 600px; height: 350px">-->
@@ -139,55 +143,27 @@
 import { useUserStore } from "@/store/user";
 import pinia from "@/store/store";
 import avatarUpload from "@/components/userCenter/avatar-upload";
-import { CopyDocument } from "@element-plus/icons-vue";
 import { onMounted, reactive, ref } from "vue";
 import api from "@/api/api";
 import utils from "@/utils/utils";
 import md5 from "js-md5";
 import ClipboardJS from "clipboard";
 const user = useUserStore(pinia);
-const userModel = reactive({
-  id: user.getId,
-  name: "",
-  phone: user.getPhone,
-  email: "",
-  change: false,
-  code: "",
-  pwdOriginal: "",
-  pwdNew: "",
-  pwdNew2: "",
-});
-const copy = () => {
-  let text = new ClipboardJS(".copyBtn", {
-    text: function (trigger) {
-      //alert("ok");
-      return user.getId;
-    },
-  });
-  text.on("success", () => {
-    utils.showMessage(200, "复制成功！");
-    text.destroy();
-  });
-  text.on("error", () => {
-    utils.showMessage(400, "复制失败！");
-    text.destroy();
-  });
-};
 const passwordButton = ref(false);
 const emailButton = ref(false);
 const changeName = () => {
-  api
-    .get("/user/changeUserNickName", {
-      params: {
-        name: userModel.name,
-      },
-    })
-    .then((res) => {
-      utils.showMessage(res.data.code, res.data.msg);
-      user.setNickName(userModel.name);
-      userModel.change = false;
-      userModel.name = "";
-    });
+  // api
+  //   .get("/user/changeUserNickName", {
+  //     params: {
+  //       name: userModel.name,
+  //     },
+  //   })
+  //   .then((res) => {
+  //     utils.showMessage(res.data.code, res.data.msg);
+  //     user.setNickName(userModel.name);
+  //     userModel.change = false;
+  //     userModel.name = "";
+  //   });
 };
 const getEmailCode = () => {
   api
@@ -205,14 +181,14 @@ const getEmailCode = () => {
     });
 };
 const changeEmail = () => {
-  api
-    .post("/changeUserEmail", {
-      email: userModel.email,
-      code: userModel.code,
-    })
-    .then((res) => {
-      utils.showMessage(res.data.code, res.data.msg);
-    });
+  // api
+  //   .post("/changeUserEmail", {
+  //     email: userModel.email,
+  //     code: userModel.code,
+  //   })
+  //   .then((res) => {
+  //     utils.showMessage(res.data.code, res.data.msg);
+  //   });
 };
 const checkPassword = (rule, value, callback) => {
   //验证密码的正则表达式
@@ -268,19 +244,19 @@ const rules = reactive({
 const changePasswordModel = ref();
 const changePassword = () => {
   // 数据校验
-  changePasswordModel.value.validate((valid) => {
-    if (valid) {
-      api
-        .post("/account/changePwd", {
-          pwdOriginal: md5(userModel.pwdOriginal + user.getName),
-          pwdNew: md5(userModel.pwdNew + user.getName),
-          pwdConfirm: md5(userModel.pwdNew2 + user.getName),
-        })
-        .then((res) => {
-          utils.showMessage(res.data.code, res.data.msg);
-        });
-    }
-  });
+  // changePasswordModel.value.validate((valid) => {
+  //   if (valid) {
+  //     api
+  //       .post("/account/changePwd", {
+  //         pwdOriginal: md5(userModel.pwdOriginal + user.getName),
+  //         pwdNew: md5(userModel.pwdNew + user.getName),
+  //         pwdConfirm: md5(userModel.pwdNew2 + user.getName),
+  //       })
+  //       .then((res) => {
+  //         utils.showMessage(res.data.code, res.data.msg);
+  //       });
+  //   }
+  // });
 };
 </script>
 
@@ -288,8 +264,5 @@ const changePassword = () => {
 .mm {
   background-color: #ffffff;
   height: calc(100% - 10px);
-}
-.copyBtn {
-  --el-color-white: #000000;
 }
 </style>

@@ -7,7 +7,6 @@ import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.extra.cglib.CglibUtil;
 import com.alibaba.fastjson2.JSON;
-import com.alibaba.fastjson2.JSONArray;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.WisdomCashier.controller.OauthFeignClient;
@@ -117,7 +116,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         OAuth2AuthenticationDetails details =(OAuth2AuthenticationDetails) authentication.getDetails();
         String claims = JwtHelper.decode(details.getTokenValue()).getClaims();
-        Map parse = JSON.parseObject(claims);
+        Map<String, Object> parse = JSON.parseObject(claims);
         String userName = (String)parse.getOrDefault("user_name", null);
         User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class)
                 .eq(User::getUserName, userName));

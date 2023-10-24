@@ -5,10 +5,10 @@ import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.li.WisdomCashier.controller.OauthFeignClient;
+import com.li.WisdomCashier.controller.account.dto.LoginDTO;
 import com.li.WisdomCashier.controller.account.vo.TokenVO;
 import com.li.WisdomCashier.controller.account.vo.UserDetailVO;
 import com.li.WisdomCashier.dto.CreateUserDTO;
-import com.li.WisdomCashier.controller.account.dto.LoginDTO;
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.UserService;
 import io.swagger.annotations.Api;
@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @ClassName UserController
@@ -56,12 +55,12 @@ public class AccountController {
     @PermitAll
     R<String> createUser(@RequestBody @Validated CreateUserDTO createUserDTO){
         return userService.createUser(createUserDTO);
-    };
+    }
     @PostMapping("/login")
     @ApiOperation("登录")
     @PermitAll
     R<TokenVO> postAccessToken(@RequestBody @Validated LoginDTO loginDTO) {
-        if(chaptcha) {
+        if(Boolean.TRUE.equals(chaptcha)) {
             //图像验证码校验
             CaptchaVO captchaVO = new CaptchaVO();
             captchaVO.setCaptchaVerification(loginDTO.getVerify());

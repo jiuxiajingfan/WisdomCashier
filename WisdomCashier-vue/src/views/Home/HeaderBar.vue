@@ -45,7 +45,7 @@ const store = useAuthStore(pinia);
 const { image, userNickName } = storeToRefs(user);
 const handleCommand = (command) => {
   if (command === "a") {
-    router.push("/userCenter");
+    router.push("/home");
   } else if (command === "b") {
     ElMessageBox.confirm("您确定要退出登录吗？", "", {
       confirmButtonText: "确定",

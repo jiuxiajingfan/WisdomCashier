@@ -255,7 +255,7 @@ const register = () => {
             let store = useAuthStore();
             store.setToken(res.data.data);
             setUser();
-            router.push("/userCenter");
+            router.push("/home");
             utils.showMessage(res.data.code, "登录成功，欢迎回来！");
           }
         });
@@ -337,7 +337,7 @@ export default {
               user.setPhone(data.phone);
               user.setEmail(data.email);
             });
-            router.push("/userCenter");
+            router.push("/home");
             utils.showMessage(res.data.code, "登录成功，欢迎回来！");
           }
         });

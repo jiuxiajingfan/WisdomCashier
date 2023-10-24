@@ -12,7 +12,7 @@
           <el-menu
             class="el-menu-vertical-demo"
             :collapse="isCollapse"
-            :default-openeds="openeds"
+            :default-active="openeds"
             router
           >
             <div class="receive">
@@ -44,9 +44,6 @@
                   >
                     <el-menu-item
                       :index="item2.component"
-                      @click="
-                        addTab(editableTabsValue, item2.component, item2.name)
-                      "
                       :disabled="item2.status == 0"
                     >
                       <el-icon>
@@ -59,7 +56,7 @@
               </el-sub-menu>
               <el-menu-item
                 v-if="!item.hasOwnProperty('children') && item.hidden == 0"
-                :index="index"
+                :index="item.component"
                 :disabled="item.status == 0"
               >
                 <template v-slot:title>
@@ -76,24 +73,6 @@
       <el-main>
         <el-scrollbar>
           <router-view></router-view>
-          <!--          <el-tabs-->
-          <!--            v-model="focus"-->
-          <!--            type="card"-->
-          <!--            class="demo-tabs"-->
-          <!--            closable-->
-          <!--            @tab-remove="removeTab"-->
-          <!--            @tab-click="change"-->
-          <!--          >-->
-          <!--            <el-tab-pane-->
-          <!--              v-for="item in editableTabs"-->
-          <!--              :key="item.name"-->
-          <!--              :label="item.title"-->
-          <!--              :name="item.name"-->
-          <!--              style="height: calc(100vh - 110px)"-->
-          <!--            >-->
-          <!--            </el-tab-pane>-->
-          <!--            &lt;!&ndash;            <component v-if="cnt == 0" :is="myMessage"></component>&ndash;&gt;-->
-          <!--          </el-tabs>-->
         </el-scrollbar>
       </el-main>
     </el-container>
@@ -101,46 +80,17 @@
 </template>
 
 <script setup>
-import {
-  defineAsyncComponent,
-  onBeforeMount,
-  onMounted,
-  reactive,
-  ref,
-} from "vue";
+import { onBeforeMount, ref } from "vue";
 import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
 import HeaderBar from "@/views/Home/HeaderBar.vue";
 import api from "@/api/api";
-const cnt = ref(0);
 const menuData = ref([]);
-const map = new Map();
 const menuData2 = [];
-// let myMessage = defineAsyncComponent(() =>
-//   import("../../components/userCenter/myMessage")
-// );
-import myMessage from "../../components/userCenter/myMessage.vue";
-import router from "@/router";
-const openeds = [0];
-let myShop = defineAsyncComponent(() =>
-  import("../../components/userCenter/myShop")
-);
-let CreateShop = defineAsyncComponent(() =>
-  import("../../components/Shop/CreateShop")
-);
+const openeds = "home";
 onBeforeMount(() => {
   api.get("account/getUserCenterMenu").then((res) => {
     menuData.value = res.data.data;
     menuData2.push(res.data.data);
-    for (let i = 0; i < menuData2[0].length; i++) {
-      if (menuData2[0][i].children.length > 0) {
-        for (let j = 0; j < menuData2[0][i].children.length; j++) {
-          map.set(
-            menuData2[0][i].children[j].component,
-            eval(menuData2[0][i].children[j].component)
-          );
-        }
-      }
-    }
   });
 });
 const isCollapse = ref(false);
@@ -152,51 +102,6 @@ const contraction = () => {
   } else {
     buttonWidth.value = "200px";
   }
-};
-const editableTabs = ref([
-  {
-    title: "我的信息",
-    name: "myMessage",
-    content: "myMessage",
-  },
-]);
-const focus = ref("myMessage");
-const mapTab = new Map();
-mapTab.set("myMessage", "myMessage");
-console.log(mapTab);
-const change = (tab) => {
-  console.log(tab);
-};
-const addTab = (targetName, component, title) => {
-  if (mapTab.get(component) !== component) {
-    cnt.value = cnt.value + 1;
-    editableTabs.value.push({
-      title: title,
-      name: component,
-      content: component,
-    });
-    mapTab.set(component, component);
-    focus.value = component;
-  } else {
-    focus.value = component;
-  }
-};
-const removeTab = (targetName) => {
-  const tabs = editableTabs.value;
-  let activeName = focus.value;
-  if (activeName === targetName) {
-    tabs.forEach((tab, index) => {
-      if (tab.name === targetName) {
-        const nextTab = tabs[index + 1] || tabs[index - 1];
-        if (nextTab) {
-          activeName = nextTab.name;
-        }
-      }
-    });
-  }
-  mapTab.delete(targetName);
-  focus.value = activeName;
-  editableTabs.value = tabs.filter((tab) => tab.name !== targetName);
 };
 </script>
 
