@@ -84,9 +84,10 @@ import { onBeforeMount, ref } from "vue";
 import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
 import HeaderBar from "@/views/Home/HeaderBar.vue";
 import api from "@/api/api";
+import router from "@/router";
 const menuData = ref([]);
 const menuData2 = [];
-const openeds = "home";
+const openeds = ref(router.currentRoute.value.name);
 onBeforeMount(() => {
   api.get("account/getUserCenterMenu").then((res) => {
     menuData.value = res.data.data;

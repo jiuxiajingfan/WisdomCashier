@@ -21,6 +21,7 @@ import java.util.Map;
  */
 @Slf4j
 public class PermissionConfig implements PermissionEvaluator {
+
     ObjectMapper mapper = new ObjectMapper();
 
     ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
@@ -34,11 +35,10 @@ public class PermissionConfig implements PermissionEvaluator {
             return true;
         OAuth2AuthenticationDetails details =(OAuth2AuthenticationDetails) authentication.getDetails();
         String claims = JwtHelper.decode(details.getTokenValue()).getClaims();
-
         Map<String, Object> parse = mapper.readValue(claims,Map.class);
         String authorities = writer.writeValueAsString(parse.getOrDefault("authorities", null));
         if(null != authorities && (authorities.contains(o +o1.toString()))){
-                return true;
+            return true;
 
         }
         log.warn("用户{}正试图访问无权限接口",parse.get("user_name"));

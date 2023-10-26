@@ -14,8 +14,8 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 
 @SpringBootApplication
 @EnableDiscoveryClient
-public class oauth2Application {
+public class Oauth2Application {
     public static void main(String[] args) {
-        SpringApplication.run(oauth2Application.class,args);
+        SpringApplication.run(Oauth2Application.class,args);
     }
 }

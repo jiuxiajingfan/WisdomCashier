@@ -649,7 +649,6 @@ const vipcheckFun = () => {
     })
     .finally((res) => {
       lod.value = false;
-      console.log("ISVIP:" + isVip.value);
     });
 };
 const queryTaskList = () => {

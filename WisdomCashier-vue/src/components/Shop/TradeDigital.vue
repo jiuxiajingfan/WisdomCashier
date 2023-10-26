@@ -92,7 +92,6 @@ onMounted(() => {
 const c1 = (res) => {
   const data = [];
   for (let i = 0; i < res.length; i++) {
-    console.log(res[i]);
     data.push({
       name: res[i].name,
       value: parseFloat(res[i].value),
