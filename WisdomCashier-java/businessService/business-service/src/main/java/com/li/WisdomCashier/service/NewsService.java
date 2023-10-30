@@ -5,6 +5,8 @@ import com.li.WisdomCashier.controller.news.vo.NewsVO;
 import com.li.WisdomCashier.entry.News;
 import com.li.WisdomCashier.pojo.R;
 
+import java.util.List;
+
 /**
 * @author Li
 * @description 针对表【t_news(新闻表)】的数据库操作Service
@@ -13,4 +15,6 @@ import com.li.WisdomCashier.pojo.R;
 public interface NewsService extends IService<News> {
 
     R<NewsVO> getNews();
+
+    R<List<String>> getAdvertising();
 }

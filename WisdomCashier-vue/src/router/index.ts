@@ -3,6 +3,7 @@ import loginPage from "../views/Login/LoginPage.vue";
 import choiceShop from "../views/Home/ChoiceShop.vue";
 import userCenter from "../views/Home/UserCenter.vue";
 import myMessage from "../components/userCenter/myMessage.vue";
+import changeMessage from "../components/userCenter/changeMessage.vue";
 import CreateShop from "../components/Shop/CreateShop.vue";
 import home from "../components/userCenter/home.vue";
 import myShop from "../components/userCenter/myShop.vue";
@@ -56,9 +57,17 @@ const routes: Array<RouteRecordRaw> = [
         },
       },
       {
-        path: "/CreateShop",
-        name: "CreateShop",
+        path: "/createShop",
+        name: "createShop",
         component: CreateShop,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/changeMessage",
+        name: "changeMessage",
+        component: changeMessage,
         meta: {
           auth: true,
         },

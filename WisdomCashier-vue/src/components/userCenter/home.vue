@@ -2,8 +2,8 @@
   <p class="ff">欢迎使用,{{ userNickName }}</p>
   <div>
     <el-carousel indicator-position="outside" height="40vh">
-      <el-carousel-item v-for="item in img" :key="item.id">
-        <img :src="item.url" />
+      <el-carousel-item v-for="(item, index) in img" :key="index">
+        <img :src="item" />
       </el-carousel-item>
     </el-carousel>
   </div>
@@ -58,24 +58,17 @@ import api from "@/api/api";
 import { onBeforeMount, ref } from "vue";
 const user = useUserStore(pinia);
 const { userNickName } = storeToRefs(user);
-const img = [
-  {
-    id: 0,
-    url: "https://raw.githubusercontent.com/miccall/MyTextures/master/248913-106.jpg",
-  },
-  {
-    id: 1,
-    url: "https://raw.githubusercontent.com/miccall/MyTextures/master/248906-106.jpg",
-  },
-];
+const img = ref([]);
 const newSData = ref([]);
 const activityData = ref([]);
 onBeforeMount(() => {
   api.get("news/getNews").then((res) => {
-    console.log(res.data.data);
     newSData.value = res.data.data.newsList;
     activityData.value = res.data.data.activeList;
-    console.log(newSData.value);
+  });
+  api.get("news/getAdvertising").then((res) => {
+    img.value = res.data.data;
+    console.log(img.value);
   });
 });
 </script>

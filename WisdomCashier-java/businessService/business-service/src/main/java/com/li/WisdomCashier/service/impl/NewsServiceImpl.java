@@ -1,5 +1,6 @@
 package com.li.WisdomCashier.service.impl;
 
+import com.alibaba.nacos.api.config.annotation.NacosValue;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.WisdomCashier.controller.news.vo.NewsVO;
@@ -9,7 +10,8 @@ import com.li.WisdomCashier.enums.news.NewsTypeEnum;
 import com.li.WisdomCashier.mapper.NewsMapper;
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.NewsService;
-import com.sun.org.apache.bcel.internal.generic.NEW;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -22,10 +24,14 @@ import java.util.stream.Collectors;
  * @createDate 2023-10-27 20:04:49
  */
 @Service
+@RefreshScope
 public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements NewsService {
 
     @Resource
     private NewsMapper newsMapper;
+
+    @Value(value = "${business.advertising-url}")
+    private List<String> advertisingList;
 
     @Override
     public R<NewsVO> getNews() {
@@ -47,6 +53,11 @@ public class NewsServiceImpl extends ServiceImpl<NewsMapper, News> implements Ne
                         .build()
         );
 
+    }
+
+    @Override
+    public R<List<String>> getAdvertising() {
+        return R.ok(advertisingList);
     }
 }
 
