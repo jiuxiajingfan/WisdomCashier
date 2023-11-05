@@ -10,7 +10,9 @@
   </div>
 </template>
 
-<script setup></script>
+<script setup>
+import avatarUpload from "@/components/userCenter/avatar-upload";
+</script>
 
 <style scoped lang="scss">
 .mm {

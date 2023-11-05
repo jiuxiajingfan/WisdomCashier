@@ -7,9 +7,11 @@ import cn.hutool.core.util.DesensitizedUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.extra.cglib.CglibUtil;
 import com.alibaba.fastjson2.JSON;
+import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.WisdomCashier.controller.OauthFeignClient;
+import com.li.WisdomCashier.controller.account.dto.ChangeEmailDTO;
 import com.li.WisdomCashier.controller.account.vo.UserDetailVO;
 import com.li.WisdomCashier.dto.CreateUserDTO;
 import com.li.WisdomCashier.mapper.SysMenuMapper;
@@ -19,6 +21,7 @@ import com.li.WisdomCashier.po.User;
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.UserService;
 import com.li.WisdomCashier.utils.RedisUtils;
+import com.li.WisdomCashier.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -113,13 +116,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public R<UserDetailVO> getUserDetail() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        OAuth2AuthenticationDetails details =(OAuth2AuthenticationDetails) authentication.getDetails();
-        String claims = JwtHelper.decode(details.getTokenValue()).getClaims();
-        Map<String, Object> parse = JSON.parseObject(claims);
-        String userName = (String)parse.getOrDefault("user_name", null);
-        User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class)
-                .eq(User::getUserName, userName));
+        User user = UserUtils.getUser();
         UserDetailVO copy = CglibUtil.copy(user, UserDetailVO.class);
         if (!StringUtils.isBlank(copy.getPhone())) {
             copy.setPhone(DesensitizedUtil.mobilePhone(copy.getPhone()));
@@ -128,4 +125,39 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         copy.setEmail(DesensitizedUtil.email(copy.getEmail()));
         return R.ok(copy);
     }
+
+    @Override
+    public R<String> changeUserNickName(String name) {
+        if (StringUtils.isBlank(name)) {
+            return R.error("请输入新用户名");
+        }
+        if (name.length() > 30) {
+            return R.error("用户名过长！");
+        }
+        User user = UserUtils.getUser();
+        return userMapper.update(null, new LambdaUpdateWrapper<User>()
+                .eq(User::getId, user.getId())
+                .set(User::getUserNickname, name)
+        )==1?R.ok("修改成功！"):R.error("修改失败，请联系管理员！");
+
+    }
+
+    @Override
+    public R<String> changeUserEmail(ChangeEmailDTO changeEmailDto) {
+        User user = UserUtils.getUser();
+        if (!changeEmailDto.getCode().equals(redisUtils.get(user.getEmail()))) {
+            return R.error("验证码错误！");
+        }
+        Integer count = userMapper.selectCount(Wrappers.lambdaQuery(User.class)
+                .eq(User::getEmail, changeEmailDto.getEmail()));
+        if (count > 0) {
+            return R.error("该邮箱已被绑定！");
+        }
+        int update = userMapper.update(null, Wrappers.lambdaUpdate(User.class)
+                .eq(User::getId, user.getId())
+                .set(User::getEmail, changeEmailDto.getEmail()));
+        if(update==1)redisUtils.del(user.getEmail());
+        return update==1?R.ok("修改绑定邮箱成功！"):R.error("修改失败，请联系管理员！");
+    }
+
 }

@@ -5,6 +5,7 @@ import com.anji.captcha.model.common.ResponseModel;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.li.WisdomCashier.controller.OauthFeignClient;
+import com.li.WisdomCashier.controller.account.dto.ChangeEmailDTO;
 import com.li.WisdomCashier.controller.account.dto.LoginDTO;
 import com.li.WisdomCashier.controller.account.vo.TokenVO;
 import com.li.WisdomCashier.controller.account.vo.UserDetailVO;
@@ -117,4 +118,17 @@ public class AccountController {
     public R<UserDetailVO> getUserDetail(){
         return userService.getUserDetail();
     }
+
+    @GetMapping("/changeUserNickName")
+    @ApiOperation(value = "修改用户名")
+    public R<String> changeUserNickName(String name) {
+        return userService.changeUserNickName(name);
+    }
+
+    @ApiOperation(value = "修改绑定邮箱")
+    @PostMapping("/changeUserEmail")
+    public R<String> changeUserEmail(@RequestBody @Validated ChangeEmailDTO changeEmailDto){
+        return userService.changeUserEmail(changeEmailDto);
+    }
+
 }

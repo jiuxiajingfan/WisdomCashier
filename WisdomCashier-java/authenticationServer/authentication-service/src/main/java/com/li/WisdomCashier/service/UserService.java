@@ -12,5 +12,4 @@ import com.li.WisdomCashier.po.User;
  * @since 2023-07-10
  */
 public interface UserService extends IService<User> {
-
 }
