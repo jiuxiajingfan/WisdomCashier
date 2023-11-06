@@ -12,14 +12,17 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.WisdomCashier.controller.OauthFeignClient;
 import com.li.WisdomCashier.controller.account.dto.ChangeEmailDTO;
+import com.li.WisdomCashier.controller.account.dto.ChangePwdDTO;
 import com.li.WisdomCashier.controller.account.vo.UserDetailVO;
 import com.li.WisdomCashier.dto.CreateUserDTO;
+import com.li.WisdomCashier.enums.EmailEnums;
 import com.li.WisdomCashier.mapper.SysMenuMapper;
 import com.li.WisdomCashier.mapper.UserMapper;
 import com.li.WisdomCashier.po.SysMenu;
 import com.li.WisdomCashier.po.User;
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.UserService;
+import com.li.WisdomCashier.utils.CommonUtils;
 import com.li.WisdomCashier.utils.RedisUtils;
 import com.li.WisdomCashier.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;
@@ -35,6 +38,8 @@ import javax.annotation.Resource;
 import java.util.List;
 import java.util.Map;
 
+import static com.li.WisdomCashier.constant.ExceptionConstant.*;
+import static com.li.WisdomCashier.constant.RedisPrefix.CHANGE_EMAIL_CODE;
 import static com.li.WisdomCashier.constant.RedisPrefix.REGISTER_CODE;
 
 
@@ -65,7 +70,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         String redisCode = (String) redisUtils.get(REGISTER_CODE + createUserDTO.getEmail());
         if (redisCode == null ||
                 redisCode.compareTo(createUserDTO.getCode()) != 0) {
-            return R.error("验证码错误！");
+            return R.error(CODE_ERROR);
         }
         //账号重复性校验
         List<User> users = userMapper.selectList(Wrappers.lambdaQuery(User.class)
@@ -76,10 +81,10 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!users.isEmpty()) {
             for (User user : users) {
                 if(StringUtils.equals(createUserDTO.getUserName(), user.getUserName())){
-                    return R.error("该用户名已被注册，请勿重复注册！");
+                    return R.error(NAME_BIND_ERROR);
                 }
                 if(StringUtils.equals(createUserDTO.getEmail(),user.getEmail())){
-                    return R.error("该邮箱已被注册，请勿重复注册！");
+                    return R.error(EMAIL_BIND_ERROR);
                 }
             }
         }
@@ -138,26 +143,44 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.update(null, new LambdaUpdateWrapper<User>()
                 .eq(User::getId, user.getId())
                 .set(User::getUserNickname, name)
-        )==1?R.ok("修改成功！"):R.error("修改失败，请联系管理员！");
+        )==1?R.ok("修改成功！"):R.error(CHANGE_ERROR);
 
     }
 
     @Override
     public R<String> changeUserEmail(ChangeEmailDTO changeEmailDto) {
         User user = UserUtils.getUser();
-        if (!changeEmailDto.getCode().equals(redisUtils.get(user.getEmail()))) {
-            return R.error("验证码错误！");
+        if (!changeEmailDto.getCode().equals(redisUtils.get(CHANGE_EMAIL_CODE + user.getEmail()))) {
+            return R.error(CODE_ERROR);
         }
         Integer count = userMapper.selectCount(Wrappers.lambdaQuery(User.class)
                 .eq(User::getEmail, changeEmailDto.getEmail()));
         if (count > 0) {
-            return R.error("该邮箱已被绑定！");
+            return R.error(EMAIL_BIND_ERROR);
         }
         int update = userMapper.update(null, Wrappers.lambdaUpdate(User.class)
                 .eq(User::getId, user.getId())
                 .set(User::getEmail, changeEmailDto.getEmail()));
         if(update==1)redisUtils.del(user.getEmail());
-        return update==1?R.ok("修改绑定邮箱成功！"):R.error("修改失败，请联系管理员！");
+        return update==1?R.ok("修改绑定邮箱成功！"):R.error(CHANGE_ERROR);
+    }
+
+    @Override
+    public R<String> changePwd(ChangePwdDTO changePwdDto) {
+        User user = UserUtils.getUser();
+        BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
+        if (user.getUserPwd().equals( bCryptPasswordEncoder.encode(changePwdDto.getPwdOriginal()))) {
+            if (CommonUtils.compare(changePwdDto.getPwdNew() , changePwdDto.getPwdConfirm())) {
+                return userMapper.update(null, Wrappers.lambdaUpdate(User.class)
+                        .eq(User::getId, user.getId())
+                        .set(User::getUserPwd,bCryptPasswordEncoder.encode(changePwdDto.getPwdNew()))
+                )==1?R.ok("修改成功！"):R.error(CHANGE_ERROR);
+            } else {
+                return R.error(PWD_COMPARE_ERROR);
+            }
+        }
+        return R.error(PWD_ERROR);
+
     }
 
 }

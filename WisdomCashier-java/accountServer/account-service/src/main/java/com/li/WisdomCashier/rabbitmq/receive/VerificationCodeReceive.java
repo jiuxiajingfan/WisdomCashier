@@ -42,7 +42,8 @@ public class VerificationCodeReceive {
     )
     public void sendCode(EmailDTO emailDTO) {
         String code = RandomUtil.randomString(6);
-        emailService.sendSimpleMail(emailDTO.getEmail(), code, "注册验证码");
+        emailService.sendSimpleMail(emailDTO.getEmail(), code, emailDTO.getDesc());
         redisUtils.set( emailDTO.getType() + emailDTO.getEmail(),code,300);
     }
+
 }

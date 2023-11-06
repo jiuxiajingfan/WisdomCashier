@@ -3,29 +3,29 @@ package com.li.WisdomCashier.strategy.email;
 import com.li.WisdomCashier.dto.EmailDTO;
 import com.li.WisdomCashier.enums.EmailEnums;
 import com.li.WisdomCashier.pojo.R;
+import com.li.WisdomCashier.utils.UserUtils;
 import org.springframework.stereotype.Component;
-
-import java.util.Objects;
 
 import static com.li.WisdomCashier.constant.MQConstant.ROUTING_EXCHANGE_EMAIL;
 import static com.li.WisdomCashier.constant.MQConstant.ROUTING_KEY_REGISTER;
 
 /**
- * 注册邮件策略
+ * @ClassName ChangeEmailStrategy
+ * @Description TODO
+ * @Author Nine
+ * @Date 2023/11/6 11:56
+ * @Version 1.0
  */
 @Component
-public class RegisterEmailStrategy extends AbstractEmailStrategy{
+public class ChangeEmailStrategy extends AbstractEmailStrategy{
     @Override
     protected EmailEnums getTypeEnum() {
-        return EmailEnums.REGISTER;
+        return EmailEnums.CHANGE_EMAIL;
     }
 
     @Override
     public R<String> Send(String email) {
-        if(Objects.isNull(email))
-            return R.error("请输入邮箱！");
-        if (redisUtils.hasKey(this.getTypeEnum().getValue() + email))
-            return R.error("发送频繁，请耐心等待！");
+        email = UserUtils.getUser().getEmail();
         rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_EMAIL,ROUTING_KEY_REGISTER,
                 EmailDTO.builder()
                         .email(email)

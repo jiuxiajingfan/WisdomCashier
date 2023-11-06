@@ -17,4 +17,5 @@ import java.io.Serializable;
 public class EmailDTO implements Serializable {
     String email;
     String type;
+    String desc;
 }

@@ -116,10 +116,11 @@ const changeName = () => {
 };
 const getEmailCode = () => {
   api
-    .get("/account/getcodeAuth", {
+    .get("/email/getCode", {
       // get请求使用params传参,并且最后会拼接到url后面
       params: {
         type: 1,
+        email: "1",
       },
     })
     .then((res) => {
@@ -131,7 +132,7 @@ const getEmailCode = () => {
 };
 const changeEmail = () => {
   api
-    .post("/changeUserEmail", {
+    .post("/account/changeUserEmail", {
       email: userModel.email,
       code: userModel.code,
     })

@@ -6,6 +6,7 @@ import com.anji.captcha.model.vo.CaptchaVO;
 import com.anji.captcha.service.CaptchaService;
 import com.li.WisdomCashier.controller.OauthFeignClient;
 import com.li.WisdomCashier.controller.account.dto.ChangeEmailDTO;
+import com.li.WisdomCashier.controller.account.dto.ChangePwdDTO;
 import com.li.WisdomCashier.controller.account.dto.LoginDTO;
 import com.li.WisdomCashier.controller.account.vo.TokenVO;
 import com.li.WisdomCashier.controller.account.vo.UserDetailVO;
@@ -129,6 +130,12 @@ public class AccountController {
     @PostMapping("/changeUserEmail")
     public R<String> changeUserEmail(@RequestBody @Validated ChangeEmailDTO changeEmailDto){
         return userService.changeUserEmail(changeEmailDto);
+    }
+
+    @ApiOperation(value = "修改用户密码")
+    @PostMapping("/changePwd")
+    public R<String> changePwd(@RequestBody @Validated ChangePwdDTO changePwdDto){
+        return userService.changePwd(changePwdDto);
     }
 
 }
