@@ -123,7 +123,7 @@ onBeforeMount(() => {
 const lod = ref(false);
 const applyData = ref([]);
 const queryTaskList3 = () => {
-  api.post("Shop/getApplyListPer").then((res) => {
+  api.post("shop/getApplyListPer").then((res) => {
     applyData.value = res.data.data;
   });
 };

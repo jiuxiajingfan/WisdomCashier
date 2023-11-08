@@ -126,7 +126,7 @@ const getEmailCode = () => {
     .then((res) => {
       utils.showMessage(
         res.data.code,
-        res.data.code == 0 ? res.data.data : res.data.msg
+        res.data.code == 0 ? res.data.data : res.data.msgsh
       );
     });
 };

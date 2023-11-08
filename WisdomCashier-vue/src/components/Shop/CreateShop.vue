@@ -627,14 +627,14 @@ const rules = reactive({
 const disable = ref(false);
 const dia1 = () => {
   dialogTableVisible.value = true;
-  api.post("Shop/getApply").then((res) => {
+  api.post("shop/getApply").then((res) => {
     applyData.value = res.data.data.list;
     disable.value = res.data.data.flag;
   });
 };
 let applyData = ref([]);
 onBeforeMount(() => {
-  api.post("Shop/getApply").then((res) => {
+  api.post("shop/getApply").then((res) => {
     applyData.value = res.data.data.list;
     disable.value = res.data.data.flag;
   });
@@ -654,7 +654,7 @@ const deleteGood = (data) => {
     })
     .then((res) => {
       utils.showMessage(res.data.code, res.data.msg);
-      api.post("Shop/getApply").then((res) => {
+      api.post("shop/getApply").then((res) => {
         applyData.value = res.data.data.list;
         disable.value = res.data.data.flag;
       });

@@ -206,7 +206,7 @@ const options = [
 ];
 const queryTaskList2 = () => {
   api
-    .get("Shop/getApplyList", {
+    .get("shop/getApplyList", {
       params: {
         sid: router.currentRoute.value.query.id,
       },
