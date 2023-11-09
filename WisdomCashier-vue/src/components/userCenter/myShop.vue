@@ -108,7 +108,7 @@ import utils from "@/utils/utils";
 const router = useRouter();
 onBeforeMount(() => {
   api
-    .post("Shop/getUserShopPage", {
+    .post("shop/getUserShopPage", {
       current: 1,
       pageSize: 20,
       name: searchText.value,
@@ -130,7 +130,7 @@ const queryTaskList3 = () => {
 const queryTaskList2 = () => {
   lod.value = true;
   api
-    .get("Shop/applyShop", {
+    .get("shop/applyShop", {
       params: {
         sid: searchText2.value.trim(),
       },
@@ -152,7 +152,7 @@ const queryTaskList = () => {
     currentText = searchText.value;
   }
   api
-    .post("Shop/getUserShopPage", {
+    .post("shop/getUserShopPage", {
       current: current.value,
       pageSize: pageSize.value,
       name: searchText.value,
@@ -173,7 +173,7 @@ const taskSizeChange = (ps) => {
 };
 const go = (id) => {
   router.push({
-    path: "/shop",
+    path: "/charge",
     query: {
       id: id,
     },

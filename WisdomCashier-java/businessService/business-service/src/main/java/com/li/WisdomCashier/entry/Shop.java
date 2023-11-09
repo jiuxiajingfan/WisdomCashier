@@ -1,86 +1,82 @@
 package com.li.WisdomCashier.entry;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
- * 
- * @TableName t_shop
+ * <p>
+ *
+ * </p>
+ *
+ * @author lsw
+ * @since 2023-03-30
  */
-@TableName(value ="t_shop")
 @Data
+@EqualsAndHashCode(callSuper = false)
+@TableName("t_shop")
+@ApiModel(value="Shop对象", description="")
 public class Shop implements Serializable {
-    /**
-     * id主键
-     */
-    @TableId
+
+    private static final long serialVersionUID = 1L;
+
+    @ApiModelProperty(value = "id主键")
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
-    /**
-     * 店铺名
-     */
-    private String shop_name;
+    @ApiModelProperty(value = "店铺名")
+    @TableField("shop_name")
+    private String shopName;
 
-    /**
-     * 
-     */
-    private Date gmt_create;
+    @TableField(value = "gmt_create", fill = FieldFill.INSERT)
+    //redis序列化需要
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime gmtCreate;
 
-    /**
-     * 
-     */
-    private Date gmt_update;
+    @TableField(value = "gmt_update", fill = FieldFill.UPDATE)
+    //redis序列化需要
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
+    private LocalDateTime gmtUpdate;
 
-    /**
-     * 介绍
-     */
+    @ApiModelProperty(value = "介绍")
+    @TableField("tip")
     private String tip;
 
-    /**
-     * 店铺状态 0正常 1封禁 2注销
-     */
+    @ApiModelProperty(value = "店铺状态 0正常 1封禁 2注销")
+    @TableField("status")
     private Integer status;
 
-    /**
-     * 支付宝付款商家授权码
-     */
-    private String auth_zfb;
+    @ApiModelProperty(value = "支付宝付款商家授权码")
+    @TableField("auth_zfb")
+    private String authZfb;
 
-    /**
-     * 微信付款商家授权码
-     */
-    private String auth_wx;
+    @ApiModelProperty(value = "微信付款商家授权码")
+    @TableField("auth_wx")
+    private String authWx;
 
-    /**
-     * 
-     */
-    private Integer zfb_status;
+    @TableField("zfb_status")
+    private Integer zfbStatus;
 
-    /**
-     * 
-     */
-    private Integer wx_status;
+    @TableField("wx_status")
+    private Integer wxStatus;
 
-    /**
-     * 
-     */
-    private String img_idCard;
+    @TableField("img_idCard")
+    private String imgIdcard;
 
-    /**
-     * 
-     */
-    private String img_idCard2;
+    @TableField("img_idCard2")
+    private String imgIdcard2;
 
-    /**
-     * 
-     */
-    private String img_shop;
-
-    @TableField(exist = false)
-    private static final long serialVersionUID = 1L;
+    @TableField("img_shop")
+    private String imgShop;
 }

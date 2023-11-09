@@ -44,9 +44,7 @@ public class AuthorizeService implements UserDetailsService {
                 .eq(Role::getUserId, user.getId()));
         ArrayList<SimpleGrantedAuthority> userRoles = new ArrayList<>();
         for (Role role : roles) {
-            for (Integer i = 1; i < role.getRole(); i++) {
                 userRoles.add(new SimpleGrantedAuthority(role.getShopId().toString() + role.getRole()));
-            }
         }
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUserName())

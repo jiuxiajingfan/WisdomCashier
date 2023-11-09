@@ -12,7 +12,8 @@
           <el-menu
             class="el-menu-vertical-demo"
             :collapse="isCollapse"
-            :default-openeds="openeds"
+            :default-active="openeds"
+            router
           >
             <div class="receive">
               <el-button @click="contraction" type="text" style="width: 100%">
@@ -26,7 +27,7 @@
             </div>
             <template v-for="(item, index) in menuData" :key="index">
               <el-sub-menu
-                v-if="item.hidden == 0"
+                v-if="item.hasOwnProperty('children') && item.hidden == 0"
                 :index="index"
                 :disabled="item.status == 0"
               >
@@ -36,16 +37,13 @@
                   </el-icon>
                   <span>{{ item.name }}</span>
                 </template>
-                <template v-if="item.children.length > 0">
+                <template v-if="item.parentId === null">
                   <template
                     v-for="(item2, index2) in item.children"
                     :key="index2"
                   >
                     <el-menu-item
                       :index="item2.component"
-                      @click="
-                        addTab(editableTabsValue, item2.component, item2.name)
-                      "
                       :disabled="item2.status == 0"
                     >
                       <el-icon>
@@ -56,29 +54,25 @@
                   </template>
                 </template>
               </el-sub-menu>
+              <el-menu-item
+                v-if="!item.hasOwnProperty('children') && item.hidden == 0"
+                :index="item.component"
+                :disabled="item.status == 0"
+              >
+                <template v-slot:title>
+                  <el-icon>
+                    <component :is="item.icon"></component>
+                  </el-icon>
+                  <span>{{ item.name }}</span>
+                </template>
+              </el-menu-item>
             </template>
           </el-menu>
         </el-scrollbar>
       </el-aside>
       <el-main>
         <el-scrollbar>
-          <el-tabs
-            v-model="focus"
-            type="card"
-            class="demo-tabs"
-            closable
-            @tab-remove="removeTab"
-          >
-            <el-tab-pane
-              v-for="item in editableTabs"
-              :key="item.name"
-              :label="item.title"
-              :name="item.name"
-            >
-              <component :is="map.get(item.content)"></component>
-            </el-tab-pane>
-            <component v-if="cnt == 0" :is="Charge"></component>
-          </el-tabs>
+          <router-view></router-view>
         </el-scrollbar>
       </el-main>
     </el-container>
@@ -86,77 +80,34 @@
 </template>
 
 <script setup>
-import { defineAsyncComponent, onBeforeMount, ref } from "vue";
+import { onBeforeMount, ref } from "vue";
+import { Menu as IconMenu, Message, Setting } from "@element-plus/icons-vue";
 import HeaderBar from "@/views/Home/HeaderBar.vue";
 import api from "@/api/api";
-const cnt = ref(0);
+import router from "@/router";
+import utils from "@/utils/utils";
 const menuData = ref([]);
-const map = new Map();
 const menuData2 = [];
-import { useRouter } from "vue-router";
-let GoodsList = defineAsyncComponent(() =>
-  import("../../components/Goods/GoodsList")
-);
-let TradeRecode = defineAsyncComponent(() =>
-  import("../../components/Goods/TradeRecode")
-);
-let Charge = defineAsyncComponent(() =>
-  import("." + "./../components/Goods/Charge")
-);
-let Refund = defineAsyncComponent(() =>
-  import("." + "./../components/Goods/Refund")
-);
-let Volume = defineAsyncComponent(() =>
-  import("../../components/Goods/Volume")
-);
-let ClassificationManage = defineAsyncComponent(() =>
-  import("../../components/Goods/ClassificationManage.vue")
-);
-let TradeDigital = defineAsyncComponent(() =>
-  import("../../components/Shop/TradeDigital")
-);
-let ShopMessage = defineAsyncComponent(() =>
-  import("../../components/Shop/ShopMessage")
-);
-let PersonManage = defineAsyncComponent(() =>
-  import("../../components/Shop/PersonManage")
-);
-let Temporary = defineAsyncComponent(() =>
-  import("../../components/Goods/Temporary")
-);
-let VipManage = defineAsyncComponent(() =>
-  import("../../components/VipManage/VipManage")
-);
-let MessagePush = defineAsyncComponent(() =>
-  import("../../components/VipManage/MessagePush")
-);
-const router = useRouter();
+const openeds = ref(router.currentRoute.value.name);
 onBeforeMount(() => {
   api
-    .get("Shop/getShopMenu", {
+    .get("shop/getShopMenu", {
       params: {
         shopId: router.currentRoute.value.query.id,
       },
     })
     .then((res) => {
+      if (res.data.code !== 200) {
+        utils.showErrMessage(res.data.msg);
+        router.go("/myShop");
+      }
       menuData.value = res.data.data;
       menuData2.push(res.data.data);
-      for (let i = 0; i < menuData2[0].length; i++) {
-        if (menuData2[0][i].children.length > 0) {
-          for (let j = 0; j < menuData2[0][i].children.length; j++) {
-            map.set(
-              menuData2[0][i].children[j].component,
-              eval(menuData2[0][i].children[j].component)
-            );
-          }
-        }
-      }
     })
     .catch(() => {
       router.go(-1);
     });
 });
-const openeds = [0];
 const isCollapse = ref(false);
 const buttonWidth = ref("200px");
 const contraction = () => {
@@ -166,47 +117,6 @@ const contraction = () => {
   } else {
     buttonWidth.value = "200px";
   }
-};
-const editableTabs = ref([
-  {
-    title: "收银",
-    name: "Charge",
-    content: "Charge",
-  },
-]);
-const focus = ref("Charge");
-const mapTab = new Map();
-mapTab.set("Charge", "Charge");
-const addTab = (targetName, component, title) => {
-  if (mapTab.get(component) !== component) {
-    cnt.value = cnt.value + 1;
-    editableTabs.value.push({
-      title: title,
-      name: component,
-      content: component,
-    });
-    mapTab.set(component, component);
-    focus.value = component;
-  } else {
-    focus.value = component;
-  }
-};
-const removeTab = (targetName) => {
-  const tabs = editableTabs.value;
-  let activeName = focus.value;
-  if (activeName === targetName) {
-    tabs.forEach((tab, index) => {
-      if (tab.name === targetName) {
-        const nextTab = tabs[index + 1] || tabs[index - 1];
-        if (nextTab) {
-          activeName = nextTab.name;
-        }
-      }
-    });
-  }
-  mapTab.delete(targetName);
-  focus.value = activeName;
-  editableTabs.value = tabs.filter((tab) => tab.name !== targetName);
 };
 </script>
 

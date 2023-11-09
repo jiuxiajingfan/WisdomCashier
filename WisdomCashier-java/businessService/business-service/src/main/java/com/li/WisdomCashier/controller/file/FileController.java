@@ -6,6 +6,7 @@ import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
@@ -34,7 +35,7 @@ public class FileController {
 
     @PostMapping("/upload")
     public R<String> upload(MultipartFile file) {
-        String upload = new String();
+        String upload;
         try {
             upload = minIoUtils.upload(file);
         } catch (MaxUploadSizeExceededException e) {
