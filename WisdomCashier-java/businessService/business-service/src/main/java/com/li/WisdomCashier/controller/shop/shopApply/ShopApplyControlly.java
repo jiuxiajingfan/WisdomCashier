@@ -1,9 +1,13 @@
 package com.li.WisdomCashier.controller.shop.shopApply;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.WisdomCashier.controller.shop.shopApply.dto.ShopApplyDTO;
+import com.li.WisdomCashier.controller.shop.shopApply.dto.ShopQueryDTO;
 import com.li.WisdomCashier.controller.shop.shopApply.vo.ShopApplyVO;
+import com.li.WisdomCashier.controller.shop.shopApply.vo.ShopVO;
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.ShopApplyService;
+import com.li.WisdomCashier.service.ShopService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
@@ -26,6 +30,9 @@ public class ShopApplyControlly {
     @Resource
     private ShopApplyService shopApplyService;
 
+    @Resource
+    private ShopService shopService;
+
     @ApiOperation(value = "申请进度")
     @GetMapping("/getApply")
     public R<ShopApplyVO> getApply(){
@@ -37,5 +44,12 @@ public class ShopApplyControlly {
     public R<String> applyShop(@RequestBody @Validated ShopApplyDTO shopApplyDTO){
         return shopApplyService.applyShop(shopApplyDTO);
     }
+
+    @ApiOperation(value = "分页获取用户相关店铺")
+    @PostMapping("/getUserShopPage")
+    private R<IPage<ShopVO>> getUserShopPage(@RequestBody ShopQueryDTO shopQueryDTO){
+        return shopService.getUserShopPage(shopQueryDTO);
+    }
+
 
 }

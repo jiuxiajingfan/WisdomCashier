@@ -1,7 +1,11 @@
 package com.li.WisdomCashier.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.li.WisdomCashier.controller.shop.shopApply.dto.ShopQueryDTO;
+import com.li.WisdomCashier.controller.shop.shopApply.vo.ShopVO;
 import com.li.WisdomCashier.entry.Shop;
+import com.li.WisdomCashier.pojo.R;
 
 /**
 * @author Li
@@ -9,5 +13,11 @@ import com.li.WisdomCashier.entry.Shop;
 * @createDate 2023-11-08 20:06:06
 */
 public interface ShopService extends IService<Shop> {
-
+    /**
+     * 获取用户相关店铺
+     *
+     * @param shopQueryDTO
+     * @return
+     */
+    R<IPage<ShopVO>> getUserShopPage(ShopQueryDTO shopQueryDTO);
 }

@@ -1,10 +1,29 @@
 package com.li.WisdomCashier.service.impl;
 
+import cn.hutool.core.util.StrUtil;
+import cn.hutool.extra.cglib.CglibUtil;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.li.WisdomCashier.controller.shop.shopApply.dto.ShopQueryDTO;
+import com.li.WisdomCashier.controller.shop.shopApply.vo.ShopVO;
 import com.li.WisdomCashier.entry.Shop;
+import com.li.WisdomCashier.enums.shop.RoleEnum;
+import com.li.WisdomCashier.mapper.RoleMapper;
 import com.li.WisdomCashier.mapper.ShopMapper;
+import com.li.WisdomCashier.po.Role;
+import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.ShopService;
+import com.li.WisdomCashier.utils.UserUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
 * @author Li
@@ -12,9 +31,33 @@ import org.springframework.stereotype.Service;
 * @createDate 2023-11-08 20:06:06
 */
 @Service
-public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop>
-    implements ShopService {
+public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements ShopService {
 
+    @Resource
+    private RoleMapper roleMapper;
+
+    @Resource
+    private ShopMapper shopMapper;
+
+    @Override
+    public R<IPage<ShopVO>> getUserShopPage(ShopQueryDTO shopQueryDTO) {
+        List<Role> roles = roleMapper.selectList(Wrappers.lambdaQuery(Role.class).eq(Role::getUserId, UserUtils.getUser().getId()));
+        if (roles.isEmpty()) {
+            return R.ok(new Page<>());
+        }
+        //存储用户在某一店铺最高权限
+        HashMap<Long, Integer> roleMap = new HashMap<>();
+        LambdaQueryWrapper<Shop> wapper = Wrappers.lambdaQuery(Shop.class)
+                .in(Shop::getId, roles.stream().map(Role::getShopId).collect(Collectors.toList()))
+                .like(!StringUtils.isBlank(shopQueryDTO.getName()), Shop::getShopName, shopQueryDTO.getName());
+        Page<Shop> page = new Page<>(shopQueryDTO.getCurrent(), shopQueryDTO.getPageSize());
+        IPage<ShopVO> result = shopMapper.selectPage(page, wapper).convert(e -> {
+            ShopVO copy = CglibUtil.copy(e, ShopVO.class);
+            copy.setRole(roleMap.get(e.getId()));
+            return copy;
+        });
+        return R.ok(result);
+    }
 }
 
 

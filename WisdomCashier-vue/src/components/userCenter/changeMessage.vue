@@ -100,6 +100,7 @@ const userModel = reactive({
   pwdNew: "",
   pwdNew2: "",
 });
+
 const changeName = () => {
   api
     .get("/account/changeUserNickName", {
