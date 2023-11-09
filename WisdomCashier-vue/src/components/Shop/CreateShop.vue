@@ -6,8 +6,8 @@
     </el-col>
     <el-col :span="8">
       <el-button type="primary" style="margin-top: 60px" @click="dia1"
-        >申请进度</el-button
-      >
+        >申请进度
+      </el-button>
     </el-col>
   </el-row>
   <el-card class="box-card" style="margin-top: 10px">
@@ -36,9 +36,9 @@
             </el-form-item>
             <el-form-item label="店铺分类">
               <el-select v-model="form.region">
-                <el-option label="零售" value="shanghai" />
-                <el-option label="五金" value="beijing" />
-                <el-option label="餐饮" value="beijing" />
+                <el-option label="零售" value="1" />
+                <el-option label="五金" value="2" />
+                <el-option label="餐饮" value="3" />
               </el-select>
             </el-form-item>
             <el-form-item label="店铺描述" prop="desc">
@@ -67,14 +67,16 @@
                 ref="uploadRef"
                 list-type="picture-card"
                 :before-upload="beforeUpload"
-                accept=".jpg,.jpeg,.JPG,.JPEG"
+                accept=".jpg,.jpeg,.JPG,.JPEG,.png"
                 :auto-upload="false"
                 :file-list="fileList"
                 :on-change="fileChange"
                 :limit="3"
                 :class="{ hide: hideUpload }"
               >
-                <el-icon><Plus /></el-icon>
+                <el-icon>
+                  <Plus />
+                </el-icon>
 
                 <template #file="{ file }">
                   <div>
@@ -114,7 +116,9 @@
                 :class="{ hide: hideUpload2 }"
                 :before-upload="beforeUpload2"
               >
-                <el-icon><Plus /></el-icon>
+                <el-icon>
+                  <Plus />
+                </el-icon>
 
                 <template #file="{ file }">
                   <div>
@@ -151,7 +155,9 @@
                 :limit="3"
                 :class="{ hide: hideUpload3 }"
               >
-                <el-icon><Plus /></el-icon>
+                <el-icon>
+                  <Plus />
+                </el-icon>
 
                 <template #file="{ file }">
                   <div>
@@ -262,8 +268,8 @@
         style="margin-top: 12px"
         @click="next(-1)"
         :loading="lod"
-        >上一步</el-button
-      >
+        >上一步
+      </el-button>
       <el-button
         v-if="active === 0 || active === 1"
         style="margin-top: 12px"
@@ -281,16 +287,16 @@
         @click="submitUpload"
         type="primary"
         :loading="lod"
-        >确定</el-button
-      >
+        >确定
+      </el-button>
       <el-button
         v-if="active === 3"
         style="margin-top: 12px"
         @click="next(1)"
         type="primary"
         :loading="lod"
-        >完成</el-button
-      >
+        >完成
+      </el-button>
     </div>
   </el-card>
   <el-dialog
@@ -321,8 +327,8 @@
           >
             <template #reference>
               <el-button v-show="scope.row.status === 1" link type="primary"
-                >撤销</el-button
-              >
+                >撤销
+              </el-button>
             </template>
           </el-popconfirm>
         </template>
@@ -332,6 +338,7 @@
 </template>
 <script setup>
 import { onBeforeMount, reactive, ref } from "vue";
+
 const dialogTableVisible = ref(false);
 const form = reactive({
   name: "",
@@ -518,6 +525,9 @@ const beforeUpload = (file, id) => {
       },
     })
     .then((res) => {
+      if (res.data.code != 200) {
+        utils.showErrMessage(res.data.msg);
+      }
       img1P.value = res.data.msg;
       img1True = 1;
     });
@@ -533,6 +543,9 @@ const beforeUpload2 = (file, id) => {
       },
     })
     .then((res) => {
+      if (res.data.code != 200) {
+        utils.showErrMessage(res.data.msg);
+      }
       img2P.value = res.data.msg;
       img2True = 1;
     });
@@ -548,6 +561,9 @@ const beforeUpload3 = (file, id) => {
       },
     })
     .then((res) => {
+      if (res.data.code != 200) {
+        utils.showErrMessage(res.data.msg);
+      }
       img3P.value = res.data.msg;
       img3True = 1;
     });
@@ -677,6 +693,7 @@ const getStyle = (data) => {
 .hide .el-upload--picture-card {
   display: none;
 }
+
 .ff {
   font-family: "Google Sans", Roboto, Arial, sans-serif;
   line-height: 2.25rem;

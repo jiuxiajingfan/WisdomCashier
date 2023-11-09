@@ -1,8 +1,10 @@
 package com.li.WisdomCashier.service.impl;
 
 
+import cn.hutool.extra.cglib.CglibUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.li.WisdomCashier.controller.shop.shopApply.dto.ShopApplyDTO;
 import com.li.WisdomCashier.controller.shop.shopApply.vo.ShopApplyVO;
 import com.li.WisdomCashier.entry.ShopApply;
 import com.li.WisdomCashier.enums.shop.ApplyEnum;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -55,6 +58,21 @@ public class ShopApplyServiceImpl extends ServiceImpl<ShopApplyMapper, ShopApply
         return R.ok(shopApplyVO);
     }
 
+    @Override
+    public R<String> applyShop(ShopApplyDTO shopApplyDTO) {
+        Long id = UserUtils.getUser().getId();
+        ShopApply shopApply = shopApplyMapper.selectOne(Wrappers.lambdaQuery(ShopApply.class)
+                .eq(ShopApply::getApplyId, id)
+                .eq(ShopApply::getStatus,ApplyEnum.WAIT.getCode())
+        );
+        if(!Objects.isNull(shopApply)){
+            return R.error("存在一份待审批的申请，请耐心等待！");
+        }
+        ShopApply apply = CglibUtil.copy(shopApplyDTO, ShopApply.class);
+        apply.setStatus(ApplyEnum.WAIT.getCode());
+        apply.setApplyId(id);
+        return R.ok(shopApplyMapper.insert(apply)==1?"申请成功！":"申请失败！请重新提交");
+    }
 }
 
 

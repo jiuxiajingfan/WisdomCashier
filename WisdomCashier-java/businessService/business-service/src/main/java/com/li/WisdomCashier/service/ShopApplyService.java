@@ -2,6 +2,7 @@ package com.li.WisdomCashier.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.li.WisdomCashier.controller.shop.shopApply.dto.ShopApplyDTO;
 import com.li.WisdomCashier.controller.shop.shopApply.vo.ShopApplyVO;
 import com.li.WisdomCashier.entry.ShopApply;
 import com.li.WisdomCashier.pojo.R;
@@ -18,4 +19,5 @@ public interface ShopApplyService extends IService<ShopApply> {
      */
     R<ShopApplyVO> getApply();
 
+    R<String> applyShop(ShopApplyDTO shopApplyDTO);
 }
