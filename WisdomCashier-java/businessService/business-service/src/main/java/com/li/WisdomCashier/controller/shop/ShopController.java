@@ -1,4 +1,4 @@
-package com.li.WisdomCashier.controller.shop;
+package com.li.WisdomCashier.controller.shop.shopApply;
 
 import cn.hutool.core.lang.tree.Tree;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -11,7 +11,6 @@ import com.li.WisdomCashier.service.ShopApplyService;
 import com.li.WisdomCashier.service.ShopService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 

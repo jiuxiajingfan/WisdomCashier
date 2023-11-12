@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.WisdomCashier.controller.shop.shopApply.dto.ShopQueryDTO;
 import com.li.WisdomCashier.controller.shop.shopApply.vo.ShopVO;
 import com.li.WisdomCashier.entry.Shop;
-import com.li.WisdomCashier.po.SysMenu;
 import com.li.WisdomCashier.pojo.R;
-import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
 
