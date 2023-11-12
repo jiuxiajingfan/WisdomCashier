@@ -7,6 +7,19 @@ import changeMessage from "../components/userCenter/changeMessage.vue";
 import CreateShop from "../components/Shop/CreateShop.vue";
 import home from "../components/userCenter/home.vue";
 import myShop from "../components/userCenter/myShop.vue";
+import charge from "../components/Goods/Charge.vue";
+import tradeRecode from "../components/Goods/TradeRecode.vue";
+import goodsList from "../components/Goods/GoodsList.vue";
+import tadeDigital from "../components/Shop/TradeDigital.vue";
+import temporary from "../components/Goods/Temporary.vue";
+import shopMessage from "../components/Shop/ShopMessage.vue";
+import personManage from "../components/Shop/PersonManage.vue";
+import vipManage from "../components/VipManage/VipManage.vue";
+import messagePush from "../components/VipManage/MessagePush.vue";
+import volume from "../components/Goods/Volume.vue";
+import classificationManage from "../components/Goods/ClassificationManage.vue";
+
+import refund from "../components/Goods/Refund.vue";
 import err404 from "../views/Error/404.vue";
 import shop from "../views/Shop/Shop.vue";
 import pinia from "@/store/store";
@@ -81,6 +94,112 @@ const routes: Array<RouteRecordRaw> = [
     meta: {
       auth: true,
     },
+    children: [
+      {
+        path: "/goodsList",
+        name: "goodsList",
+        component: goodsList,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/charge",
+        name: "charge",
+        component: charge,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/refund",
+        name: "refund",
+        component: refund,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/tradeRecode",
+        name: "tradeRecode",
+        component: tradeRecode,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/goodsList",
+        name: "goodsList",
+        component: goodsList,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/temporary",
+        name: "temporary",
+        component: temporary,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/classificationManage",
+        name: "classificationManage",
+        component: classificationManage,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/tadeDigital",
+        name: "tadeDigital",
+        component: tadeDigital,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/shopMessage",
+        name: "shopMessage",
+        component: shopMessage,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/personManage",
+        name: "personManage",
+        component: personManage,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/vipManage",
+        name: "vipManage",
+        component: vipManage,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/messagePush",
+        name: "messagePush",
+        component: messagePush,
+        meta: {
+          auth: true,
+        },
+      },
+      {
+        path: "/volume",
+        name: "volume",
+        component: volume,
+        meta: {
+          auth: true,
+        },
+      },
+    ],
   },
   {
     path: "/:pathMatch(.*)*",
