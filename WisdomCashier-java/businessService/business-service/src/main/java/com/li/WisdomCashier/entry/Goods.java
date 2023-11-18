@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.Date;
 import lombok.Data;
 
@@ -36,12 +37,12 @@ public class Goods implements Serializable {
     /**
      * 
      */
-    private BigDecimal price_in;
+    private BigDecimal priceIn;
 
     /**
      * 
      */
-    private BigDecimal price_out;
+    private BigDecimal priceOut;
 
     /**
      * 
@@ -51,7 +52,7 @@ public class Goods implements Serializable {
     /**
      * 
      */
-    private Date deadline;
+    private LocalDate deadline;
 
     /**
      * 
@@ -61,7 +62,7 @@ public class Goods implements Serializable {
     /**
      * 
      */
-    private String pic_url;
+    private String picUrl;
 
     /**
      * 
@@ -81,7 +82,7 @@ public class Goods implements Serializable {
     /**
      * 
      */
-    private BigDecimal price_vip;
+    private BigDecimal priceVip;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

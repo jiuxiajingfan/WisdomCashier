@@ -12,6 +12,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.WisdomCashier.controller.shop.shopApply.dto.ShopQueryDTO;
 import com.li.WisdomCashier.controller.shop.shopApply.vo.ShopVO;
 import com.li.WisdomCashier.entry.Shop;
+import com.li.WisdomCashier.enums.shop.RoleEnum;
 import com.li.WisdomCashier.mapper.RoleMapper;
 import com.li.WisdomCashier.mapper.ShopMapper;
 import com.li.WisdomCashier.mapper.SysMenuMapper;
@@ -26,6 +27,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -94,6 +96,18 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
         }));
         return R.ok(build);
     }
+
+    @Override
+    @PreAuthorize("hasPermission(#sid,1)||hasPermission(#sid,2)||hasPermission(#sid,3)")
+    public R<List<Integer>> getTradeStatus(String sid) {
+        ArrayList<Integer> integers = new ArrayList<>();
+        Shop shop = shopMapper.selectOne(Wrappers.lambdaQuery(Shop.class)
+                .eq(Shop::getId, sid));
+        integers.add(shop.getWxStatus());
+        integers.add(shop.getZfbStatus());
+        return R.ok(integers);
+    }
+
 }
 
 

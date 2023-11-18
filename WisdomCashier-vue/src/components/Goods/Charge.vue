@@ -1139,7 +1139,7 @@ const getStyle = (data) => {
 const status = ref([]);
 onBeforeMount(() => {
   api
-    .get("Shop/getCategory", {
+    .get("shop/getCategory", {
       params: {
         sid: router.currentRoute.value.query.id,
       },
@@ -1148,7 +1148,7 @@ onBeforeMount(() => {
       options.value = res.data.data;
     });
   api
-    .get("Shop/getTradeStatus", {
+    .get("shop/getTradeStatus", {
       params: {
         sid: router.currentRoute.value.query.id,
       },

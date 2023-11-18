@@ -3,6 +3,9 @@ package com.li.WisdomCashier.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.WisdomCashier.entry.ShopCategory;
+import com.li.WisdomCashier.pojo.R;
+
+import java.util.List;
 
 /**
 * @author Li
@@ -11,4 +14,27 @@ import com.li.WisdomCashier.entry.ShopCategory;
 */
 public interface ShopCategoryService extends IService<ShopCategory> {
 
+
+    /**
+     * 获取店铺分类
+     * @param sid 店铺id
+     * @return
+     */
+    R<List<String>> getCategory(String sid);
+
+    /**
+     * 新增标签
+     * @param sid
+     * @param category
+     * @return
+     */
+    R<String> addCategory(String sid, String category);
+
+    /**
+     * 删除标签
+     * @param sid
+     * @param category
+     * @return
+     */
+    R<String> delCategory(String sid, String category);
 }

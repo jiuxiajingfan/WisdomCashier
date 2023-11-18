@@ -8,6 +8,7 @@ import com.li.WisdomCashier.controller.shop.shopApply.vo.ShopApplyVO;
 import com.li.WisdomCashier.controller.shop.shopApply.vo.ShopVO;
 import com.li.WisdomCashier.pojo.R;
 import com.li.WisdomCashier.service.ShopApplyService;
+import com.li.WisdomCashier.service.ShopCategoryService;
 import com.li.WisdomCashier.service.ShopService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -35,6 +36,10 @@ public class ShopController {
     @Resource
     private ShopService shopService;
 
+    @Resource
+    private ShopCategoryService shopCategoryService;
+
+
     @ApiOperation(value = "申请进度")
     @GetMapping("/getApply")
     public R<ShopApplyVO> getApply(){
@@ -57,6 +62,18 @@ public class ShopController {
     @GetMapping("/getShopMenu")
     public R<List<Tree<String>>> getMenu(String shopId){
         return shopService.getMenu(Long.parseLong(shopId));
+    }
+
+    @ApiOperation(value = "获取店铺分类")
+    @GetMapping("/getCategory")
+    R<List<String>> getCategory(String sid){
+        return shopCategoryService.getCategory(sid);
+    }
+
+    @ApiOperation(value = "支持支付状态")
+    @GetMapping("/getTradeStatus")
+    R<List<Integer>> getTradeStatus(String sid){
+        return shopService.getTradeStatus(sid);
     }
 
 }
