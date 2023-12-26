@@ -15,7 +15,7 @@ import com.li.wisdomcashier.enums.shop.RoleEnum;
 import com.li.wisdomcashier.mapper.ShopMapper;
 import com.li.wisdomcashier.mapper.TradeMapper;
 import com.li.wisdomcashier.mapper.TradeRefundMapper;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.AlipayService;
 import com.li.wisdomcashier.service.TradeRefundService;
 import com.li.wisdomcashier.utils.RedisUtils;

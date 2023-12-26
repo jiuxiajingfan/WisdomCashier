@@ -1,7 +1,7 @@
 package com.li.wisdomcashier.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.li.wisdomcashier.po.User;
+import com.li.wisdomcashier.entry.User;
 
 /**
  * <p>

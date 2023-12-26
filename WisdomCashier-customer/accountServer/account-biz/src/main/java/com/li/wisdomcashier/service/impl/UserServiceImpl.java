@@ -14,11 +14,11 @@ import com.li.wisdomcashier.controller.account.dto.ChangeEmailDTO;
 import com.li.wisdomcashier.controller.account.dto.ChangePwdDTO;
 import com.li.wisdomcashier.controller.account.vo.UserDetailVO;
 import com.li.wisdomcashier.dto.CreateUserDTO;
+import com.li.wisdomcashier.entry.SysMenu;
+import com.li.wisdomcashier.entry.User;
 import com.li.wisdomcashier.mapper.SysMenuMapper;
 import com.li.wisdomcashier.mapper.UserMapper;
-import com.li.wisdomcashier.po.SysMenu;
-import com.li.wisdomcashier.po.User;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.UserService;
 import com.li.wisdomcashier.utils.CommonUtils;
 import com.li.wisdomcashier.utils.RedisUtils;
@@ -146,7 +146,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (!changeEmailDto.getCode().equals(redisUtils.get(CHANGE_EMAIL_CODE + user.getEmail()))) {
             return R.error(CODE_ERROR);
         }
-        Integer count = userMapper.selectCount(Wrappers.lambdaQuery(User.class)
+        long count = userMapper.selectCount(Wrappers.lambdaQuery(User.class)
                 .eq(User::getEmail, changeEmailDto.getEmail()));
         if (count > 0) {
             return R.error(EMAIL_BIND_ERROR);

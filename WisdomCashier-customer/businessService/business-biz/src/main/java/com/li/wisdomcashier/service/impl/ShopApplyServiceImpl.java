@@ -9,7 +9,7 @@ import com.li.wisdomcashier.controller.shop.shopApply.vo.ShopApplyVO;
 import com.li.wisdomcashier.entry.ShopApply;
 import com.li.wisdomcashier.enums.shop.ApplyEnum;
 import com.li.wisdomcashier.mapper.ShopApplyMapper;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.ShopApplyService;
 import com.li.wisdomcashier.utils.UserUtils;
 import org.springframework.stereotype.Service;

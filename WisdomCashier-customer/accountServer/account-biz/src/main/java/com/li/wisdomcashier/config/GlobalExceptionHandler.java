@@ -3,7 +3,7 @@ package com.li.wisdomcashier.config;
 import com.li.wisdomcashier.exception.BusinessException;
 import com.li.wisdomcashier.exception.CommonErrorEnum;
 import com.li.wisdomcashier.exception.FrequencyControlException;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;

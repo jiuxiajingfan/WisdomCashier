@@ -1,0 +1,45 @@
+server:
+  port: 9702
+  servlet:
+    context-path: /gateway
+spring:
+  cloud:
+    sentinel:
+      eager: true
+      transport:
+        dashboard: localhost:18999
+    gateway:
+      x-forwarded:
+        prefix-enabled: false
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: oauth2-server
+          uri: lb://oauth2-server
+          predicates:
+            - Path=/oauth/**
+        - id: account-server-swagger
+          uri: lb://account-server
+          predicates:
+            - Path=/account/v2/**,/email/v2/**
+          filters:
+            - SwaggerHeaderFilter
+            - StripPrefix=1
+        - id: account-server
+          uri: lb://account-server
+          predicates:
+            - Path=/account/**,/email/**
+        - id: business-server-swagger
+          uri: lb://business-server
+          predicates:
+            - Path=/shop/v2/**,/news/v2/**
+          filters:
+            - SwaggerHeaderFilter
+            - StripPrefix=1
+        - id: business-server
+          uri: lb://business-server
+          predicates:
+            - Path=/shop/**,/news/**,/file/**
+
+

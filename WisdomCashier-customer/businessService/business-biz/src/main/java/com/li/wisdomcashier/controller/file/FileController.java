@@ -1,6 +1,6 @@
 package com.li.wisdomcashier.controller.file;
 
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.utils.MinioUtils;
 import io.swagger.annotations.Api;
 import lombok.extern.slf4j.Slf4j;

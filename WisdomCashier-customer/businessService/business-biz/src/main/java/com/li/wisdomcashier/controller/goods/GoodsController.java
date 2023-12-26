@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.li.wisdomcashier.controller.goods.dto.*;
 import com.li.wisdomcashier.controller.goods.vo.GoodsVO;
 import com.li.wisdomcashier.entry.Goods;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.GoodsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

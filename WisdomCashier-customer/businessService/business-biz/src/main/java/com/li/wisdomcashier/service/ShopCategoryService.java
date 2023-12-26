@@ -3,7 +3,7 @@ package com.li.wisdomcashier.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.entry.ShopCategory;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 
 import java.util.List;
 

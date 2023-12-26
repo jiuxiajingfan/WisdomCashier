@@ -1,7 +1,7 @@
 package com.li.wisdomcashier.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.li.wisdomcashier.po.SysMenu;
+import com.li.wisdomcashier.entry.SysMenu;
 import org.apache.ibatis.annotations.Select;
 
 import java.util.List;

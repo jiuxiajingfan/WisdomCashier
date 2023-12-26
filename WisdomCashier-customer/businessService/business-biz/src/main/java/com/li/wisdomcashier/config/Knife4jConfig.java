@@ -1,6 +1,6 @@
 package com.li.wisdomcashier.config;
 
-import com.li.wisdomcashier.pojo.SwaggerProperties;
+import com.li.wisdomcashier.entry.SwaggerProperties;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

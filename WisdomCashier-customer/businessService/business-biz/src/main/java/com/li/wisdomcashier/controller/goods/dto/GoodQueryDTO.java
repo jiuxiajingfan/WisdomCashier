@@ -1,6 +1,6 @@
 package com.li.wisdomcashier.controller.goods.dto;
 
-import com.li.wisdomcashier.pojo.PageDTO;
+import com.li.wisdomcashier.entry.PageDTO;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;

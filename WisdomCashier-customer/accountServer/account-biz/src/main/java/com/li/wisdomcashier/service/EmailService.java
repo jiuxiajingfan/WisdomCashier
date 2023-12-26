@@ -1,6 +1,6 @@
 package com.li.wisdomcashier.service;
 
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.strategy.email.AbstractEmailStrategy;
 import com.li.wisdomcashier.strategy.email.EmailStrategyFactory;
 import com.li.wisdomcashier.utils.EmailUtils;

@@ -18,7 +18,7 @@ import com.li.wisdomcashier.mapper.SysMenuMapper;
 import com.li.wisdomcashier.po.Role;
 import com.li.wisdomcashier.po.SysMenu;
 import com.li.wisdomcashier.po.User;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.ShopService;
 import com.li.wisdomcashier.utils.UserUtils;
 import org.apache.commons.lang.StringUtils;

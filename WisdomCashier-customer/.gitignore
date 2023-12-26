@@ -100,4 +100,4 @@ hs_err_pid*
 *.iml
 out
 gen
-/**/**/src/main/resources/bootstrap.yaml
+/**/**/src/main/resources/bootstrap-dev.yaml

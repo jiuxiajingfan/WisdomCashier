@@ -1,7 +1,7 @@
 package com.li.wisdomcashier.controller.shop.shopApply.dto;
 
 
-import com.li.wisdomcashier.pojo.PageDTO;
+import com.li.wisdomcashier.entry.PageDTO;
 import lombok.Data;
 
 /**

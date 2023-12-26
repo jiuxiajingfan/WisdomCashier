@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.controller.goods.dto.*;
 import com.li.wisdomcashier.controller.goods.vo.GoodsVO;
 import com.li.wisdomcashier.entry.Goods;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 
 /**
  * <p>

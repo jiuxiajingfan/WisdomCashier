@@ -1,4 +1,4 @@
-package com.li.wisdomcashier.pojo;
+package com.li.wisdomcashier.entry;
 
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

@@ -18,7 +18,7 @@ import com.li.wisdomcashier.entry.Trade;
 import com.li.wisdomcashier.enums.trade.TradeEnum;
 import com.li.wisdomcashier.mapper.GoodsMapper;
 import com.li.wisdomcashier.mapper.TradeMapper;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.AlipayService;
 import com.li.wisdomcashier.service.GoodsService;
 import com.li.wisdomcashier.service.TradeService;

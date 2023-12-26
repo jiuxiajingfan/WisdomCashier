@@ -6,7 +6,7 @@ import com.li.wisdomcashier.controller.shop.shopApply.dto.ShopApplyDTO;
 import com.li.wisdomcashier.controller.shop.shopApply.dto.ShopQueryDTO;
 import com.li.wisdomcashier.controller.shop.shopApply.vo.ShopApplyVO;
 import com.li.wisdomcashier.controller.shop.shopApply.vo.ShopVO;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.ShopApplyService;
 import com.li.wisdomcashier.service.ShopCategoryService;
 import com.li.wisdomcashier.service.ShopService;

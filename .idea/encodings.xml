@@ -1,13 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="Encoding">
-    <file url="file://$PROJECT_DIR$/WisdomCashier-admin/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/WisdomCashier-admin/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/WisdomCashier-base/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/WisdomCashier-base/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/accountServer/account-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/accountServer/account-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/accountServer/account-biz/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/accountServer/account-biz/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/accountServer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/accountServer/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/authenticationServer/authentication-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/authenticationServer/authentication-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/authenticationServer/authentication-biz/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/authenticationServer/authentication-biz/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/authenticationServer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/authenticationServer/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/businessService/business-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/businessService/business-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/businessService/business-biz/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/businessService/business-biz/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/businessService/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/businessService/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/common/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/common/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/gatewayServer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/gatewayServer/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/payServer/payServer-api/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/payServer/payServer-api/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/payServer/payServer-biz/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/payServer/payServer-biz/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/payServer/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/WisdomCashier-customer/payServer/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/WisdomCashier-customer/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/WisdomCashier-customer/src/main/resources" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/java" charset="UTF-8" />
-    <file url="file://$PROJECT_DIR$/src/main/resources" charset="UTF-8" />
   </component>
 </project>

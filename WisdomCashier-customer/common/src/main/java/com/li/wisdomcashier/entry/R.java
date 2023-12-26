@@ -1,4 +1,4 @@
-package com.li.wisdomcashier.pojo;
+package com.li.wisdomcashier.entry;
 
 import com.li.wisdomcashier.enums.ResultStatus;
 import lombok.Data;

@@ -11,12 +11,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.multipart.MultipartFile;
-import sun.misc.BASE64Decoder;
 
 import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
-import java.io.ByteArrayInputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -212,41 +210,5 @@ public class MinioUtils {
         }
         return true;
     }
-
-
-    /**
-     * 接收base64图片并生成流
-     * @param base64
-     * @return
-     */
-    public String base64ConvertPNG(String base64){
-        BASE64Decoder decoder = new BASE64Decoder();
-        //解码
-        String fileName = UserUtils.getUser().getId()+".jpg";
-        String objectName =  "icon/" + fileName;
-        try {
-
-            byte[] buffer = decoder.decodeBuffer(base64.substring(base64.indexOf(",", 1) + 1));
-            for(int i = 0;i<buffer.length;i++){
-                if(buffer[i] < 0){
-                    buffer[i] += 256;
-                }
-            }
-            //生成流
-            ByteArrayInputStream stream = new ByteArrayInputStream(buffer);
-            //上传
-            minioClient.putObject(PutObjectArgs.builder()
-                    .stream(stream, stream.available(), PutObjectArgs.MAX_PART_SIZE)
-                    .object(objectName)
-                    .contentType("image/jpeg")
-                    .bucket(prop.getBucketName())
-                    .build());
-            return objectName;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
 
 }

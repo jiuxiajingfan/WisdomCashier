@@ -2,7 +2,7 @@ package com.li.wisdomcashier.service;
 
 
 import com.li.wisdomcashier.controller.goods.dto.PayDTO;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 
 /**
  * @ClassName PayService

@@ -1,9 +1,10 @@
 package com.li.wisdomcashier.service;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.li.wisdomcashier.entry.Role;
+import com.li.wisdomcashier.entry.User;
 import com.li.wisdomcashier.mapper.RoleMapper;
 import com.li.wisdomcashier.mapper.UserMapper;
-import com.li.wisdomcashier.po.Role;
-import com.li.wisdomcashier.po.User;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,7 +37,7 @@ public class AuthorizeService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        User user = userMapper.selectOne(lambdaQuery(User.class).eq(User::getUserName, userName));
+        User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getUserName, userName));
         if(Objects.isNull(user)){
             throw new UsernameNotFoundException("用户名或密码错误！");
         }

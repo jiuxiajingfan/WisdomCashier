@@ -1,7 +1,7 @@
 package com.li.wisdomcashier.controller.news;
 
 import com.li.wisdomcashier.controller.news.vo.NewsVO;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.NewsService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

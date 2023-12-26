@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.li.wisdomcashier.controller.shop.shopApply.dto.ShopQueryDTO;
 import com.li.wisdomcashier.controller.shop.shopApply.vo.ShopVO;
 import com.li.wisdomcashier.entry.Shop;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 
 import java.util.List;
 

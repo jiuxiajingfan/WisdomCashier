@@ -6,8 +6,8 @@ import com.li.wisdomcashier.controller.account.dto.ChangeEmailDTO;
 import com.li.wisdomcashier.controller.account.dto.ChangePwdDTO;
 import com.li.wisdomcashier.controller.account.vo.UserDetailVO;
 import com.li.wisdomcashier.dto.CreateUserDTO;
-import com.li.wisdomcashier.po.User;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
+import com.li.wisdomcashier.entry.User;
 
 import java.util.List;
 

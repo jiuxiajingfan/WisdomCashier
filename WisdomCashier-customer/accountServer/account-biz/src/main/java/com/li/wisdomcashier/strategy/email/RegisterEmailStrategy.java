@@ -2,7 +2,7 @@ package com.li.wisdomcashier.strategy.email;
 
 import com.li.wisdomcashier.dto.EmailDTO;
 import com.li.wisdomcashier.enums.EmailEnums;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;

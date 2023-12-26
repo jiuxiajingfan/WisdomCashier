@@ -1,0 +1,95 @@
+security:
+  oauth2:
+    resource:
+      jwt:
+        key-value: *********
+    client:
+      client-id: *********
+      client-secret: *********
+spring:
+  rabbitmq:
+    host: *********
+    port: *********
+    username: *********
+    password: *********
+  mail:
+    host: *********
+    protocol: smtp
+    default-encoding: utf-8
+    username: *********
+    password: *********
+    test-connection: true
+  datasource:
+    username: *********
+    password: *********
+    url: jdbc:mysql://*********/wisdomcashier?useSSL=true&useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    #druid 数据源专有配置
+    initialSize: 5
+    minIdle: 5
+    maxActive: 20
+    maxWait: 60000
+    timeBetweenEvictionRunsMillis: 60000
+    minEvictableIdleTimeMillis: 300000
+    validationQuery: SELECT 1 FROM DUAL
+    testWhileIdle: true
+    testOnBorrow: false
+    testOnReturn: false
+    poolPreparedStatements: true
+
+    #配置监控统计拦截的filters，stat:监控统计、log4j：日志记录、wall：防御sql注入
+    #如果允许时报错  java.lang.ClassNotFoundException: org.apache.log4j.Priority
+    #则导入 log4j 依赖即可，Maven 地址：https://mvnrepository.com/artifact/log4j/log4j
+    filters: stat,wall,log4j
+    maxPoolPreparedStatementPerConnectionSize: 20
+    useGlobalDataSourceStat: true
+    connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=500
+  redis:
+    host: *********
+    port: *********
+    password: *********
+    # Redis数据库索引（默认为0）
+    database: 0
+    # Redis服务器连接端口
+    lettuce:
+      pool:
+        max-active: 100 # 连接池最大连接数（使用负值表示没有限制） 太小可能出现connection.PoolExcelption
+        max-idle: 8 # 连接池中的最大空闲连接
+        min-idle: 0 # 连接池中的最小空闲连接
+        max-wait: 1000 # 连接池最大阻塞等待时间（使用负值表示没有限制）
+      shutdown-timeout: 100    # 关闭超时时间
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    #自动峰驼
+    map-underscore-to-camel-case: true
+  mapper-locations: classpath*:com/li/wisdomcashier/mapper/xml/*.xml
+
+aj:
+  captcha:
+    jigsaw: classpath:images/code
+    # 验证码类型default两种都实例化。
+    type: blockPuzzle
+    # 校验滑动拼图允许误差偏移量(默认5像素)
+    slip-offset: 5
+    # aes加密坐标开启或者禁用(true|false)
+    aes-status: true
+    # 滑动干扰项(0/1/2)
+    interference-options: 2
+    history-data-clear-enable: false
+    # 接口请求次数一分钟限制是否开启 true|false
+    req-frequency-limit-enable: false
+    cache-type: redis
+
+swagger:
+  enabled: true
+  basePackage: com.li.wisdomcashier.controller
+  title: 智慧收银账户模块
+  version: 1.0
+  name: nine99
+  url: dianaforever.cn
+  email: jiuxiajingfan@163.com
+
+#滑动验证码开关
+captcha: false

@@ -1,7 +1,7 @@
 package com.li.wisdomcashier.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.li.wisdomcashier.po.User;
+import com.li.wisdomcashier.entry.User;
 
 /**
  * <p>

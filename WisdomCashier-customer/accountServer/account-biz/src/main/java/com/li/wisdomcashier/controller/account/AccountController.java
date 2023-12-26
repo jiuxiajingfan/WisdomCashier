@@ -11,7 +11,7 @@ import com.li.wisdomcashier.controller.account.dto.LoginDTO;
 import com.li.wisdomcashier.controller.account.vo.TokenVO;
 import com.li.wisdomcashier.controller.account.vo.UserDetailVO;
 import com.li.wisdomcashier.dto.CreateUserDTO;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.UserService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

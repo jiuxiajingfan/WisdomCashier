@@ -1,4 +1,4 @@
-package com.li.wisdomcashier.po;
+package com.li.wisdomcashier.entry;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

@@ -13,7 +13,7 @@ public class BannerApplicationRunner implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         try {
-            Thread.sleep(3000);
+            Thread.sleep(1000);
             log.info("\n-------------------\n\t项目启动成功\n-------------------");
         } catch (InterruptedException e) {
             throw new RuntimeException(e);

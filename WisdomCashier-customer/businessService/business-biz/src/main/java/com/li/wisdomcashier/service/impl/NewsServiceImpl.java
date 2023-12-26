@@ -7,7 +7,7 @@ import com.li.wisdomcashier.entry.News;
 import com.li.wisdomcashier.enums.BaseEnum;
 import com.li.wisdomcashier.enums.news.NewsTypeEnum;
 import com.li.wisdomcashier.mapper.NewsMapper;
-import com.li.wisdomcashier.pojo.R;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.NewsService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
