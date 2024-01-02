@@ -1,8 +1,8 @@
 package com.li.wisdomcashier.utils;
 
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.li.wisdomcashier.entry.User;
 import com.li.wisdomcashier.mapper.UserMapper;
-import com.li.wisdomcashier.po.User;
 import lombok.SneakyThrows;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;

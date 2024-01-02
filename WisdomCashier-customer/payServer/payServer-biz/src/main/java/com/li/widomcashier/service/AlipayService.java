@@ -43,7 +43,7 @@ public interface AlipayService {
      */
     R<String> closePay(String tradeNo,Long sid);
 
-    QueryTrade queryPayDetil(String tradeNo);
+    QueryTrade queryPayDetail(String tradeNo);
 
     /**
      * 退款接口

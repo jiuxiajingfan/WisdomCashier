@@ -208,7 +208,7 @@ public class AlipayServiceImpl implements AlipayService {
     }
 
     @Override
-    public QueryTrade queryPayDetil(String tradeNo) {
+    public QueryTrade queryPayDetail(String tradeNo) {
         AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
         AlipayTradeQueryModel model = new AlipayTradeQueryModel();
