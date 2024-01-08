@@ -18,16 +18,17 @@
     </modules>
 
     <properties>
-        <maven.compiler.source>8</maven.compiler.source>
-        <maven.compiler.target>8</maven.compiler.target>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-cloud.version>Hoxton.SR8</spring-cloud.version>
-        <spring-cloud-alibaba.version>2.2.5.RELEASE</spring-cloud-alibaba.version>
-        <spring-boot.varsion>2.3.2.RELEASE</spring-boot.varsion>
-        <dubbo.version>2.7.8</dubbo.version>
+        <spring-cloud.version>2022.0.4</spring-cloud.version>
+        <spring-cloud-alibaba.version>2022.0.0.0-RC2</spring-cloud-alibaba.version>
+        <spring-boot.varsion>3.1.4</spring-boot.varsion>
+        <dubbo.version>3.2.2</dubbo.version>
         <lombok.version>1.18.26</lombok.version>
         <mybatisplus.version>3.5.3</mybatisplus.version>
         <redisson.version>3.22.1</redisson.version>
+        <guava.version>18.0</guava.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -78,6 +79,12 @@
                 <groupId>org.apache.dubbo</groupId>
                 <artifactId>dubbo</artifactId>
                 <version>${dubbo.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

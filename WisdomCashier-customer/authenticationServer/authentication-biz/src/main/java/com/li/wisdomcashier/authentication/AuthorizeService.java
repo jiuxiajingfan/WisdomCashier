@@ -1,17 +1,17 @@
-package com.li.wisdomcashier.service;
+package com.li.wisdomcashier.authentication;
 
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+
 import com.li.wisdomcashier.entry.Role;
 import com.li.wisdomcashier.entry.User;
 import com.li.wisdomcashier.mapper.RoleMapper;
 import com.li.wisdomcashier.mapper.UserMapper;
+import jakarta.annotation.Resource;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -20,7 +20,7 @@ import static com.baomidou.mybatisplus.core.toolkit.Wrappers.lambdaQuery;
 
 /**
  * @ClassName AuthorizeService
- * @Description TODO
+ * @Description 自定义userDetails
  * @Author Nine
  * @Date 2023/7/10 13:46
  * @Version 1.0
@@ -37,7 +37,7 @@ public class AuthorizeService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
-        User user = userMapper.selectOne(Wrappers.lambdaQuery(User.class).eq(User::getUserName, userName));
+        User user = userMapper.selectOne(lambdaQuery(User.class).eq(User::getUserName, userName));
         if(Objects.isNull(user)){
             throw new UsernameNotFoundException("用户名或密码错误！");
         }

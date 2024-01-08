@@ -1,12 +1,11 @@
 package com.li.wisdomcashier.config;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.PermissionEvaluator;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -17,25 +16,21 @@ import java.util.Collection;
  * @Version 1.0
  */
 @Slf4j
-public class PermissionConfig implements PermissionEvaluator {
-    @Override
-    @SneakyThrows
-    public boolean hasPermission(Authentication authentication, Object o, Object o1) {
+public class PermissionConfig {
+    public boolean hasPermission(Long id,Integer role) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null)
             return false;
-        if (o == null || o1 == null)
+        if (id == null || role == null)
             return true;
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        if(null != authorities && (authorities.contains(o + o1.toString()))){
+        if(null != authorities) {
+            SimpleGrantedAuthority o = new SimpleGrantedAuthority(id + role.toString());
+            if (authorities.contains(o)) {
                 return true;
-
+            }
         }
         log.warn("用户{}正试图访问无权限接口",authentication.getName());
-        return false;
-    }
-
-    @Override
-    public boolean hasPermission(Authentication authentication, Serializable serializable, String s, Object o) {
         return false;
     }
 }
