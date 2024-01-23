@@ -1,8 +1,8 @@
 package com.li.wisdomcashier.strategy.email;
 
-import com.li.wisdomcashier.dto.EmailDTO;
-import com.li.wisdomcashier.enums.EmailEnums;
+import com.li.wisdomcashier.controller.email.dto.EmailDTO;
 import com.li.wisdomcashier.entry.R;
+import com.li.wisdomcashier.enums.EmailEnums;
 import com.li.wisdomcashier.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
@@ -17,16 +17,16 @@ import static com.li.wisdomcashier.constant.MQConstant.ROUTING_KEY_REGISTER;
  * @Version 1.0
  */
 @Component
-public class ChangeEmailStrategy extends AbstractEmailStrategy{
+public class ChangeEmailStrategy extends AbstractEmailStrategy {
     @Override
     protected EmailEnums getTypeEnum() {
         return EmailEnums.CHANGE_EMAIL;
     }
 
     @Override
-    public R<String> Send(String email) {
+    public R<String> send(String email) {
         email = UserUtils.getUser().getEmail();
-        rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_EMAIL,ROUTING_KEY_REGISTER,
+        rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_EMAIL, ROUTING_KEY_REGISTER,
                 EmailDTO.builder()
                         .email(email)
                         .type(getTypeEnum().getValue())

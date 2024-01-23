@@ -16,5 +16,4 @@ public class MQConstant {
     public static final String ROUTING_KEY_REGISTER = "email";
 
 
-
 }

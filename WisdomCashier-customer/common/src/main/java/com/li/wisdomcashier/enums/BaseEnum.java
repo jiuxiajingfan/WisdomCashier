@@ -13,8 +13,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum BaseEnum {
-    FALSE(1,"false"),
-    TRUE(1,"true");
+    FALSE(1, "false"),
+    TRUE(1, "true");
     private Integer value;
     private String desc;
 }

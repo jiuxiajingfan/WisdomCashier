@@ -25,14 +25,14 @@ public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.getWriter().print(jsonResult);
     }
 
-    private  R<?> translator(Exception e){
+    private R<?> translator(Exception e) {
         if (e instanceof InsufficientAuthenticationException) {
-            return R.error("请先登录！",401);
-        }else if(e instanceof AccessDeniedException){
-            return R.error("权限不足！",403);
-        }else if(e instanceof MyAuthenticationException){
-            return R.error(e.getMessage(),401);
+            return R.error("请先登录！", 401);
+        } else if (e instanceof AccessDeniedException) {
+            return R.error("权限不足！", 403);
+        } else if (e instanceof MyAuthenticationException) {
+            return R.error(e.getMessage(), 401);
         }
-        return R.error("验证失败！",400);
+        return R.error("验证失败！", 400);
     }
 }

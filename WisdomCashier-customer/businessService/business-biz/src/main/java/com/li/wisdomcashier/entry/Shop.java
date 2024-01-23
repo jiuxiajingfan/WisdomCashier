@@ -24,7 +24,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_shop")
-@ApiModel(value="Shop对象", description="")
+@ApiModel(value = "Shop对象", description = "")
 public class Shop implements Serializable {
 
     private static final long serialVersionUID = 1L;

@@ -28,10 +28,11 @@ public class MinIoClientConfig {
 
     /**
      * 注入minio 客户端
+     *
      * @return
      */
     @Bean
-    public MinioClient minioClient(){
+    public MinioClient minioClient() {
 
         return MinioClient.builder()
                 .endpoint(endpoint)

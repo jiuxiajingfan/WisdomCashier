@@ -8,13 +8,13 @@ import com.li.wisdomcashier.service.TradeService;
 import org.springframework.stereotype.Service;
 
 /**
-* @author Li
-* @description 针对表【t_trade】的数据库操作Service实现
-* @createDate 2023-11-08 20:15:56
-*/
+ * @author Li
+ * @description 针对表【t_trade】的数据库操作Service实现
+ * @createDate 2023-11-08 20:15:56
+ */
 @Service
 public class TradeServiceImpl extends ServiceImpl<TradeMapper, Trade>
-    implements TradeService {
+        implements TradeService {
 
 }
 

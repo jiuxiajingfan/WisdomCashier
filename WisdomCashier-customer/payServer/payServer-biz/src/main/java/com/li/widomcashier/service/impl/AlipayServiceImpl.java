@@ -21,11 +21,11 @@ import com.li.widomcashier.service.AlipayService;
 import com.li.widomcashier.service.TradeRefundService;
 import com.li.widomcashier.utils.RedisUtils;
 import com.li.wisdomcashier.entry.R;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -110,7 +110,7 @@ public class AlipayServiceImpl implements AlipayService {
         /**
          * 订单标题
          **/
-        model.setSubject(shop.getShopName()+"消费");
+        model.setSubject(shop.getShopName() + "消费");
         /**
          * 订单金额，精确到小数点后两位
          **/
@@ -168,7 +168,7 @@ public class AlipayServiceImpl implements AlipayService {
     }
 
     @Override
-    public R<String> cancelPay(String tradeNo,Long sid) {
+    public R<String> cancelPay(String tradeNo, Long sid) {
         UserUtils.hasPermissions(sid.toString(), RoleEnum.SHOP.getCode());
         AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         User user = UserUtils.getUser();
@@ -188,7 +188,7 @@ public class AlipayServiceImpl implements AlipayService {
     }
 
     @Override
-    public R<String> closePay(String tradeNo,Long sid) {
+    public R<String> closePay(String tradeNo, Long sid) {
         UserUtils.hasPermissions(sid.toString(), RoleEnum.SHOP.getCode());
         AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         User user = UserUtils.getUser();
@@ -238,8 +238,8 @@ public class AlipayServiceImpl implements AlipayService {
         User user = UserUtils.getUser();
         Trade trade = tradeMapper.selectById(Long.parseLong(refundDTO.getTradeNo()));
         List<TradeRefund> tradeRefunds = tradeRefundMapper.selectList(Wrappers.lambdaQuery(TradeRefund.class).eq(TradeRefund::getSid, Long.parseLong(refundDTO.getTradeNo())));
-        BigDecimal reduce = tradeRefunds.stream().filter(e->
-                e.getStatus()==1
+        BigDecimal reduce = tradeRefunds.stream().filter(e ->
+                e.getStatus() == 1
         ).map(TradeRefund::getMoney).reduce(BigDecimal.ZERO, BigDecimal::add);
         tradeRefund.setMsg(refundDTO.getMsg());
         tradeRefund.setSid(Long.parseLong(refundDTO.getTradeNo()));
@@ -249,7 +249,7 @@ public class AlipayServiceImpl implements AlipayService {
         tradeRefund.setOperater(user.getId());
         tradeRefund.setType(2);
         tradeRefund.setCtrateTime(LocalDateTime.now());
-        if(reduce.add(new BigDecimal(refundDTO.getMoney())).compareTo(trade.getIncome())>0){
+        if (reduce.add(new BigDecimal(refundDTO.getMoney())).compareTo(trade.getIncome()) > 0) {
             tradeRefund.setStatus(0);
             tradeRefund.setErrMsg("总退款金额大于付款！");
             //退款失败记录
@@ -267,23 +267,20 @@ public class AlipayServiceImpl implements AlipayService {
         AlipayTradeRefundResponse response = null;
         try {
             response = alipayClient.execute(request);
-            if(response.getCode().compareTo("10000")==0){
+            if (response.getCode().compareTo("10000") == 0) {
 
-                if(response.getFundChange().compareTo("Y")==0) {
+                if (response.getFundChange().compareTo("Y") == 0) {
                     tradeRefund.setStatus(1);
-                }
-                else{
+                } else {
                     Thread.sleep(10000);
                     R<String> stringR = this.queryRefund(refundDTO);
-                    if(stringR.getCode() == 200){
+                    if (stringR.getCode() == 200) {
                         tradeRefund.setStatus(1);
-                    }
-                    else{
+                    } else {
                         tradeRefund.setStatus(0);
                     }
                 }
-            }
-            else{
+            } else {
                 tradeRefund.setStatus(0);
                 tradeRefund.setErrMsg(response.getSubMsg());
                 tradeRefundService.TradeRefundRecord(tradeRefund);
@@ -291,11 +288,11 @@ public class AlipayServiceImpl implements AlipayService {
             }
             tradeRefundService.TradeRefundRecord(tradeRefund);
         } catch (AlipayApiException e) {
-           log.error("交易退款失败，订单号：{},Err:{}",refundDTO.getTradeNo(),e.getErrMsg());
+            log.error("交易退款失败，订单号：{},Err:{}", refundDTO.getTradeNo(), e.getErrMsg());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        return R.ok(response.getCode(),response.getFundChange());
+        return R.ok(response.getCode(), response.getFundChange());
     }
 
     @Override
@@ -308,13 +305,13 @@ public class AlipayServiceImpl implements AlipayService {
         model.setOutRequestNo(refundDTO.getNo());
         request.setBizModel(model);
         AlipayTradeFastpayRefundQueryResponse response = null;
-        try{
+        try {
             response = alipayClient.execute(request);
-            if(response.getRefundStatus().compareTo("REFUND_SUCCESS")!=0){
+            if (response.getRefundStatus().compareTo("REFUND_SUCCESS") != 0) {
                 return R.error("退款失败！");
             }
         } catch (AlipayApiException e) {
-            log.info("退款查询失败，订单号：{}，errMsg:{}",refundDTO.getTradeNo(),response.getSubMsg());
+            log.info("退款查询失败，订单号：{}，errMsg:{}", refundDTO.getTradeNo(), response.getSubMsg());
         }
         return R.ok("退款成功！");
     }

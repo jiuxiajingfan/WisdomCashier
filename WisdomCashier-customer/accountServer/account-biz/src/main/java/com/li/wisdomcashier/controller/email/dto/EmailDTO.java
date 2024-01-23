@@ -1,4 +1,4 @@
-package com.li.wisdomcashier.dto;
+package com.li.wisdomcashier.controller.email.dto;
 
 import lombok.Builder;
 import lombok.Data;

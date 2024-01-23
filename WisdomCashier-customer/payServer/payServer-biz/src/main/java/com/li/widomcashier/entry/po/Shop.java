@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author lsw
@@ -24,29 +24,29 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_shop")
-@ApiModel(value="Shop对象", description="")
+@ApiModel(value = "Shop对象", description = "")
 public class Shop implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
     @ApiModelProperty(value = "id主键")
-      @TableId(value = "id", type = IdType.ASSIGN_ID)
+    @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
     @ApiModelProperty(value = "店铺名")
     @TableField("shop_name")
     private String shopName;
 
-      @TableField(value = "gmt_create", fill = FieldFill.INSERT)
-      //redis序列化需要
-      @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-      @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @TableField(value = "gmt_create", fill = FieldFill.INSERT)
+    //redis序列化需要
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime gmtCreate;
 
-      @TableField(value = "gmt_update", fill = FieldFill.UPDATE)
-      //redis序列化需要
-      @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-      @JsonSerialize(using = LocalDateTimeSerializer.class)
+    @TableField(value = "gmt_update", fill = FieldFill.UPDATE)
+    //redis序列化需要
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime gmtUpdate;
 
     @ApiModelProperty(value = "介绍")

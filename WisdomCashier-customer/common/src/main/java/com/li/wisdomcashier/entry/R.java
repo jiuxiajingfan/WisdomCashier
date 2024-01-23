@@ -1,7 +1,9 @@
 package com.li.wisdomcashier.entry;
 
 import com.li.wisdomcashier.enums.ResultStatus;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
@@ -13,12 +15,14 @@ import java.io.Serializable;
  * @Version 1.0
  */
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class R<T> implements Serializable {
-    private final Integer code;   // 状态码
+    private Integer code;   // 状态码
 
-    private final T data;   // 返回的数据
+    private T data;   // 返回的数据
 
-    private final String msg;    // 自定义信息
+    private String msg;    // 自定义信息
 
     /**
      * 成功的结果

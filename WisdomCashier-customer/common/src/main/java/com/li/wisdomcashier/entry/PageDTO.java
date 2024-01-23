@@ -1,9 +1,7 @@
 package com.li.wisdomcashier.entry;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 
 /**
  * @ClassName PageDTO
@@ -14,11 +12,7 @@ import javax.validation.constraints.NotNull;
  */
 @Data
 public class PageDTO {
-    @NotNull(message = "页码不可为空")
-    @ApiModelProperty(value = "页码")
-    private Integer current=1;
+    private Integer current = 1;
 
-    @NotNull(message = "页大小不可为空")
-    @ApiModelProperty(value = "页大小")
-    private Integer pageSize=10;
+    private Integer pageSize = 10;
 }

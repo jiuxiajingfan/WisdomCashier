@@ -8,13 +8,13 @@ import com.li.wisdomcashier.service.TradeGoodsService;
 import org.springframework.stereotype.Service;
 
 /**
-* @author Li
-* @description 针对表【t_trade_goods】的数据库操作Service实现
-* @createDate 2023-11-08 20:16:00
-*/
+ * @author Li
+ * @description 针对表【t_trade_goods】的数据库操作Service实现
+ * @createDate 2023-11-08 20:16:00
+ */
 @Service
 public class TradeGoodsServiceImpl extends ServiceImpl<TradeGoodsMapper, TradeGoods>
-    implements TradeGoodsService {
+        implements TradeGoodsService {
 
 }
 

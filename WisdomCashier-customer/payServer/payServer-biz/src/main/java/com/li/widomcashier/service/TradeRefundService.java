@@ -9,14 +9,16 @@ import java.util.List;
 public interface TradeRefundService extends IService<TradeRefund> {
     /**
      * 退款记录
+     *
      * @param tradeRefund
      */
     void TradeRefundRecord(TradeRefund tradeRefund);
 
     /**
      * 单号查询退款记录
+     *
      * @param sid 店铺id
-     * @param id 单号
+     * @param id  单号
      * @return
      */
     R<List<TradeRefund>> queryRefund(Long sid, Long id);

@@ -6,15 +6,15 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.controller.shop.shopApply.dto.ShopApplyDTO;
 import com.li.wisdomcashier.controller.shop.shopApply.vo.ShopApplyVO;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.ShopApply;
 import com.li.wisdomcashier.enums.shop.ApplyEnum;
 import com.li.wisdomcashier.mapper.ShopApplyMapper;
-import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.ShopApplyService;
 import com.li.wisdomcashier.utils.UserUtils;
+import jakarta.annotation.Resource;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -51,7 +51,7 @@ public class ShopApplyServiceImpl extends ServiceImpl<ShopApplyMapper, ShopApply
             apply.setId(e.getId());
             return apply;
         }).collect(Collectors.toList());
-        if (shopApplies.isEmpty()){
+        if (shopApplies.isEmpty()) {
             collect = new ArrayList<>();
         }
         shopApplyVO.setList(collect);
@@ -63,15 +63,15 @@ public class ShopApplyServiceImpl extends ServiceImpl<ShopApplyMapper, ShopApply
         Long id = UserUtils.getUser().getId();
         ShopApply shopApply = shopApplyMapper.selectOne(Wrappers.lambdaQuery(ShopApply.class)
                 .eq(ShopApply::getApplyId, id)
-                .eq(ShopApply::getStatus,ApplyEnum.WAIT.getCode())
+                .eq(ShopApply::getStatus, ApplyEnum.WAIT.getCode())
         );
-        if(!Objects.isNull(shopApply)){
+        if (!Objects.isNull(shopApply)) {
             return R.error("存在一份待审批的申请，请耐心等待！");
         }
         ShopApply apply = CglibUtil.copy(shopApplyDTO, ShopApply.class);
         apply.setStatus(ApplyEnum.WAIT.getCode());
         apply.setApplyId(id);
-        return R.ok(shopApplyMapper.insert(apply)==1?"申请成功！":"申请失败！请重新提交");
+        return R.ok(shopApplyMapper.insert(apply) == 1 ? "申请成功！" : "申请失败！请重新提交");
     }
 }
 

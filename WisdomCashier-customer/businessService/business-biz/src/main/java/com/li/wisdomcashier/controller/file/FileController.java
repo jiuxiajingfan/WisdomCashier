@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 /**
  * @ClassName FileController
@@ -40,6 +40,6 @@ public class FileController {
         } catch (MaxUploadSizeExceededException e) {
             return R.error("文件大小过大！");
         }
-        return R.ok(address+"/"+bucketName+"/"+upload);
+        return R.ok(address + "/" + bucketName + "/" + upload);
     }
 }

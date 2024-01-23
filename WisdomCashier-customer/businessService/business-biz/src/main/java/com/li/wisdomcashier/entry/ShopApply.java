@@ -8,10 +8,9 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
- * 
  * @TableName t_shop_apply
  */
-@TableName(value ="t_shop_apply")
+@TableName(value = "t_shop_apply")
 @Data
 public class ShopApply implements Serializable {
     private static final long serialVersionUID = 1L;

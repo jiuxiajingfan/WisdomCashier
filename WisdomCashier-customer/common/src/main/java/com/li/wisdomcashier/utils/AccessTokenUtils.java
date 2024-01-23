@@ -31,15 +31,15 @@ public class AccessTokenUtils {
     public static final String RDM_SEP = "#";
 
     /**
-     *  AccessToken 签名
+     * AccessToken 签名
      */
-    public static JwtClaimsSet.Builder signAccessToken(JwtClaimsSet.Builder claims, String privateKey){
+    public static JwtClaimsSet.Builder signAccessToken(JwtClaimsSet.Builder claims, String privateKey) {
 
         String uuIdStr = UUID.randomUUID().toString();
         long currentTimeMillis = System.currentTimeMillis();
 
         String rdmSource = uuIdStr + RDM_SEP + claims.build().getExpiresAt().getEpochSecond() + RDM_SEP + currentTimeMillis;
-        String rdmTarget = RSAUtils.encryptByPriKey(rdmSource,privateKey);
+        String rdmTarget = RSAUtils.encryptByPriKey(rdmSource, privateKey);
         String signSource = uuIdStr + RDM_SEP + currentTimeMillis;
         String signature;
         try {
@@ -47,37 +47,37 @@ public class AccessTokenUtils {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        claims.claim("rdm",rdmTarget);
-        claims.claim("sign",signature);
-        
+        claims.claim("rdm", rdmTarget);
+        claims.claim("sign", signature);
+
         return claims;
     }
 
     /**
      * 验签
      */
-    public static boolean verifyAccessToken(String authorizationToken,String publicKey){
+    public static boolean verifyAccessToken(String authorizationToken, String publicKey) {
 
-        String accessToken = authorizationToken.replace("Bearer ","");
+        String accessToken = authorizationToken.replace("Bearer ", "");
         try {
             JWT jwtToken = JWTUtil.parseToken(accessToken);
             JWTPayload jwtPayload = jwtToken.getPayload();
-            String rdm = jwtPayload.getClaim("rdm")+ "";
-            String sign = jwtPayload.getClaim("sign") +"";
+            String rdm = jwtPayload.getClaim("rdm") + "";
+            String sign = jwtPayload.getClaim("sign") + "";
             //解密
             String rdmSource;
-            rdmSource = RSAUtils.decryptByPubKey(rdm,publicKey);
-            String[] rdmData =rdmSource.split(RDM_SEP);
+            rdmSource = RSAUtils.decryptByPubKey(rdm, publicKey);
+            String[] rdmData = rdmSource.split(RDM_SEP);
             long exp = Long.parseLong(rdmData[1]);
             long now = Instant.now().getEpochSecond();
-            if(exp<now){
+            if (exp < now) {
                 throw new MyAuthenticationException("账户已过期，请重新登录!");
             }
             String signSource = rdmData[0] + RDM_SEP + rdmData[2];
             //验签
             boolean verifyResult;
-            verifyResult = RSAUtils.verify(signSource.getBytes(), Base64Decoder.decode(sign),Base64Decoder.decode(publicKey));
-            if(!verifyResult){
+            verifyResult = RSAUtils.verify(signSource.getBytes(), Base64Decoder.decode(sign), Base64Decoder.decode(publicKey));
+            if (!verifyResult) {
                 return false;
             }
             JSONArray authorities = (JSONArray) jwtPayload.getClaim("authorities");
@@ -89,12 +89,12 @@ public class AccessTokenUtils {
             authenticated = UsernamePasswordAuthenticationToken.authenticated(
                     jwtPayload.getClaim("sub"), null, collect);
             SecurityContextHolder.getContext().setAuthentication(authenticated);
-        }catch (JSONException e){
+        } catch (JSONException e) {
             throw new MyAuthenticationException("无效Token!");
         } catch (BadPaddingException e) {
             throw new MyAuthenticationException("无效Token！");
         } catch (Exception e) {
-            logger.info("accessToken验签异常，accessToken="+accessToken,e);
+            logger.info("accessToken验签异常，accessToken=" + accessToken, e);
             throw new RuntimeException(e);
         }
         return true;

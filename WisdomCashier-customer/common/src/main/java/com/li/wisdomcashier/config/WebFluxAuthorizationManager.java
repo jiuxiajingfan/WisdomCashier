@@ -1,6 +1,7 @@
 package com.li.wisdomcashier.config;
 
 import com.li.wisdomcashier.utils.AccessTokenUtils;
+import jakarta.annotation.PostConstruct;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,9 +10,13 @@ import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.authorization.ReactiveAuthorizationManager;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.server.authorization.AuthorizationContext;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
+
+import java.util.Set;
+import java.util.concurrent.ConcurrentSkipListSet;
 
 /**
  * 网关鉴权管理器
@@ -21,6 +26,7 @@ public class WebFluxAuthorizationManager implements ReactiveAuthorizationManager
     @Value("${authorization.rsa.public}")
     private String publicKey;
     private final Log logger = LogFactory.getLog(getClass());
+
 
     @Override
     public Mono<AuthorizationDecision> check(Mono<Authentication> mono, AuthorizationContext authorizationContext) {
@@ -32,8 +38,8 @@ public class WebFluxAuthorizationManager implements ReactiveAuthorizationManager
             logger.warn("当前请求头Authorization中的值不存在");
             return Mono.just(new AuthorizationDecision(false));
         }
-        boolean verifyResult = AccessTokenUtils.verifyAccessToken(authorizationToken,publicKey);
-        if(!verifyResult){
+        boolean verifyResult = AccessTokenUtils.verifyAccessToken(authorizationToken, publicKey);
+        if (!verifyResult) {
             return Mono.just(new AuthorizationDecision(false));
         }
         return Mono.just(new AuthorizationDecision(true));

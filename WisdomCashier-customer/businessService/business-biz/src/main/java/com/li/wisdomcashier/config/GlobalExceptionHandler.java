@@ -1,9 +1,9 @@
 package com.li.wisdomcashier.config;
 
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.exception.BusinessException;
 import com.li.wisdomcashier.exception.CommonErrorEnum;
 import com.li.wisdomcashier.exception.FrequencyControlException;
-import com.li.wisdomcashier.entry.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
         e.getBindingResult().getFieldErrors().forEach(x -> errorMsg.append(x.getField()).append(x.getDefaultMessage()).append(","));
         String message = errorMsg.toString();
         log.warn("validation parameters error！The reason is:{}", message);
-        return R.error(message.substring(0, message.length() - 1),CommonErrorEnum.PARAM_VALID.getErrorCode());
+        return R.error(message.substring(0, message.length() - 1), CommonErrorEnum.PARAM_VALID.getErrorCode());
     }
 
     /**
@@ -66,7 +66,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = BusinessException.class)
     public R businessExceptionHandler(BusinessException e) {
         log.warn("business exception！The reason is：{}", e.getMessage(), e);
-        return R.error(e.getMessage(),e.getErrorCode());
+        return R.error(e.getMessage(), e.getErrorCode());
     }
 
     /**
@@ -84,16 +84,16 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = FrequencyControlException.class)
     public R frequencyControlExceptionHandler(FrequencyControlException e) {
         log.warn("frequencyControl exception！The reason is：{}", e.getMessage(), e);
-        return R.error(e.getMessage(),e.getErrorCode());
+        return R.error(e.getMessage(), e.getErrorCode());
     }
 
     @ExceptionHandler(value = MissingServletRequestParameterException.class)
-    public R missingServletRequestParameterExceptionHandler(MissingServletRequestParameterException e){
-        return R.error(CommonErrorEnum.LACK_PARAM.getMsg(),CommonErrorEnum.LACK_PARAM.getErrorCode());
+    public R missingServletRequestParameterExceptionHandler(MissingServletRequestParameterException e) {
+        return R.error(CommonErrorEnum.LACK_PARAM.getMsg(), CommonErrorEnum.LACK_PARAM.getErrorCode());
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
-    public R accessDeniedException(AccessDeniedException e){
-        return R.error(CommonErrorEnum.ACCESS_LACK.getMsg(),CommonErrorEnum.ACCESS_LACK.getErrorCode());
+    public R accessDeniedException(AccessDeniedException e) {
+        return R.error(CommonErrorEnum.ACCESS_LACK.getMsg(), CommonErrorEnum.ACCESS_LACK.getErrorCode());
     }
 }

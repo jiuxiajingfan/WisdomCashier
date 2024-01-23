@@ -1,6 +1,7 @@
 package com.li.wisdomcashier.config;
 
 import com.li.wisdomcashier.authentication.AuthorizeService;
+import com.li.wisdomcashier.exception.MyAuthenticationEntryPoint;
 import jakarta.annotation.Resource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,9 +35,14 @@ public class DefaultSecurityConfig {
                 )
                 .cors(Customizer.withDefaults())
                 .csrf(AbstractHttpConfigurer::disable)
+                .oauth2ResourceServer((resourceServer) ->
+                        resourceServer
+                                .jwt(Customizer.withDefaults())
+                                .authenticationEntryPoint(new MyAuthenticationEntryPoint())
+                )
 //                .httpBasic(Customizer.withDefaults())
-				// Form login handles the redirect to the login page from the
-				// authorization server filter chain
+                // Form login handles the redirect to the login page from the
+                // authorization server filter chain
                 .formLogin(Customizer.withDefaults())
         ;
 

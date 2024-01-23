@@ -2,9 +2,10 @@ package com.li.wisdomcashier.config;
 
 import com.anji.captcha.service.CaptchaCacheService;
 import com.li.wisdomcashier.utils.RedisUtils;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 
 /**
  * @ClassName CaptchaCacheServiceRedisImpl
@@ -14,6 +15,7 @@ import javax.annotation.Resource;
  * @Version 1.0
  */
 @Slf4j
+@Service
 public class CaptchaCacheServiceRedisImpl implements CaptchaCacheService {
 
     @Resource

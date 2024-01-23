@@ -3,12 +3,12 @@ package com.li.wisdomcashier.utils;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.li.wisdomcashier.entry.User;
 import com.li.wisdomcashier.mapper.UserMapper;
+import jakarta.annotation.Resource;
 import lombok.SneakyThrows;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
 
 /**
  * @ClassName UserUtils

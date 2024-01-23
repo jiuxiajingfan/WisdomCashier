@@ -42,9 +42,9 @@ public class WrapperRequestGlobalFilter implements GlobalFilter, Ordered {
         log.info("");
         log.info("***********************************请求信息**********************************");
         log.info("\n请求request信息：URI = {}\n" +
-                "path = {}\n" +
-                "，method = {}\n" +
-                "，header = {}。\n"
+                        "path = {}\n" +
+                        "，method = {}\n" +
+                        "，header = {}。\n"
                 , URIPath, path, method, header);
         if ("POST".equals(method)) {
             return DataBufferUtils.join(exchange.getRequest().getBody())

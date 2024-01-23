@@ -19,16 +19,17 @@ public class WebMvcAuthorizationManager implements AuthorizationManager<RequestA
 
     @Value("${authorization.rsa.public}")
     private String publicKey;
+
     @Override
     public AuthorizationDecision check(Supplier<Authentication> authentication, RequestAuthorizationContext object) {
         HttpServletRequest request = object.getRequest();
         String authorizationToken = request.getHeader(HttpHeaders.AUTHORIZATION);
-        if(!StringUtils.hasText(authorizationToken)){
+        if (!StringUtils.hasText(authorizationToken)) {
             return new AuthorizationDecision(false);
         }
-        boolean verifyResult = AccessTokenUtils.verifyAccessToken(authorizationToken,publicKey);
+        boolean verifyResult = AccessTokenUtils.verifyAccessToken(authorizationToken, publicKey);
 
-        if(!verifyResult){
+        if (!verifyResult) {
             return new AuthorizationDecision(false);
         }
         return new AuthorizationDecision(true);

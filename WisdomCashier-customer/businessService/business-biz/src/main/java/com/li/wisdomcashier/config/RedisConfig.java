@@ -60,6 +60,7 @@ public class RedisConfig extends CachingConfigurerSupport {
 
         return template;
     }
+
     @Bean
     public CacheManager cacheManager(RedisConnectionFactory factory) {
         RedisSerializer<String> redisSerializer = new StringRedisSerializer();

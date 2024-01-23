@@ -38,7 +38,7 @@ public class SwaggerResourceConfig implements SwaggerResourcesProvider {
         List<String> routes = new ArrayList<>();
         routeLocator.getRoutes().subscribe(route -> routes.add(route.getId()));
         gatewayProperties.getRoutes().stream().filter(routeDefinition -> routes.contains(routeDefinition.getId())).forEach(route -> {
-            if(route.getId().compareTo("oauth2-server") != 0) {
+            if (route.getId().compareTo("oauth2-server") != 0) {
                 route.getPredicates().stream()
                         .filter(predicateDefinition -> ("Path").equalsIgnoreCase(predicateDefinition.getName()))
                         .forEach(predicateDefinition -> resources.add(swaggerResource(route.getId(),
@@ -52,7 +52,7 @@ public class SwaggerResourceConfig implements SwaggerResourcesProvider {
     }
 
     private SwaggerResource swaggerResource(String name, String location) {
-        log.info("name:{},location:{}",name,location);
+        log.info("name:{},location:{}", name, location);
         SwaggerResource swaggerResource = new SwaggerResource();
         swaggerResource.setName(name);
         swaggerResource.setLocation(location);

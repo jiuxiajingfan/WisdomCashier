@@ -8,15 +8,16 @@ import com.li.wisdomcashier.entry.R;
 import java.util.List;
 
 /**
-* @author Li
-* @description 针对表【t_shop_category】的数据库操作Service
-* @createDate 2023-11-08 20:15:43
-*/
+ * @author Li
+ * @description 针对表【t_shop_category】的数据库操作Service
+ * @createDate 2023-11-08 20:15:43
+ */
 public interface ShopCategoryService extends IService<ShopCategory> {
 
 
     /**
      * 获取店铺分类
+     *
      * @param sid 店铺id
      * @return
      */
@@ -24,6 +25,7 @@ public interface ShopCategoryService extends IService<ShopCategory> {
 
     /**
      * 新增标签
+     *
      * @param sid
      * @param category
      * @return
@@ -32,6 +34,7 @@ public interface ShopCategoryService extends IService<ShopCategory> {
 
     /**
      * 删除标签
+     *
      * @param sid
      * @param category
      * @return

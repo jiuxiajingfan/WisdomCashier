@@ -1,10 +1,10 @@
 package com.li.wisdomcashier.filter;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.server.ServerWebExchange;
 
 /**
@@ -23,7 +23,7 @@ public class SwaggerHeaderFilter extends AbstractGatewayFilterFactory {
         return (exchange, chain) -> {
             ServerHttpRequest request = exchange.getRequest();
             String path = request.getURI().getPath();
-            if (!StringUtils.endsWithIgnoreCase(path,URI )) {
+            if (!StringUtils.endsWithIgnoreCase(path, URI)) {
                 return chain.filter(exchange);
             }
             String basePath = path.substring(0, path.lastIndexOf(URI));

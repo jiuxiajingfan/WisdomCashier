@@ -6,15 +6,12 @@ import com.alibaba.csp.sentinel.slots.block.degrade.DegradeException;
 import com.alibaba.csp.sentinel.slots.block.flow.FlowException;
 import com.alibaba.csp.sentinel.slots.system.SystemBlockException;
 import com.li.wisdomcashier.entry.R;
+import jakarta.annotation.PostConstruct;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerResponse;
-import org.springframework.web.server.ServerWebExchange;
-import reactor.core.publisher.Mono;
-
-import javax.annotation.PostConstruct;
 
 
 /**
@@ -27,18 +24,18 @@ import javax.annotation.PostConstruct;
 @Component
 public class GatewayConfig {
     /**
-     *限流配置
+     * 限流配置
      */
     @PostConstruct
-    public void init(){
+    public void init() {
         BlockRequestHandler blockRequestHandler = (serverWebExchange, throwable) -> {
             R result = null;
 
-            if (throwable instanceof FlowException){
+            if (throwable instanceof FlowException) {
                 result = R.error("操作太快，请稍后再试");
-            }else if (throwable instanceof DegradeException){
+            } else if (throwable instanceof DegradeException) {
                 result = R.error("服务繁忙，请稍后再试");
-            }else if (throwable instanceof SystemBlockException){
+            } else if (throwable instanceof SystemBlockException) {
                 result = R.error("活动太火爆，请稍后再试");
             }
 

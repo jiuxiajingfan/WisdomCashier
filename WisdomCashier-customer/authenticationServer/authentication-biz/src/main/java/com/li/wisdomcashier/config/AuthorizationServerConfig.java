@@ -192,7 +192,7 @@ public class AuthorizationServerConfig {
             UserDetails userDetails = userDetailsService.loadUserByUsername(context.getPrincipal().getName());
             if (context.getTokenType().equals(OAuth2TokenType.ACCESS_TOKEN)) {
                 //给 AccessToken 添加签名信息
-                claims.claim("authorities",userDetails.getAuthorities());
+                claims.claim("authorities", userDetails.getAuthorities());
                 AccessTokenUtils.signAccessToken(claims, accessTokenRsaPrivateKey);
             } else if (context.getTokenType().getValue().equals(OidcParameterNames.ID_TOKEN)) {
                 // Customize headers/claims for id_token

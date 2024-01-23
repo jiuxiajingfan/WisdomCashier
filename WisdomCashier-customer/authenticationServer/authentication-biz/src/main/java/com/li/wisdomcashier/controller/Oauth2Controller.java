@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RefreshScope
 public class Oauth2Controller {
     @GetMapping("test")
-    public String test(){
+    public String test() {
         return "pong";
     }
 }

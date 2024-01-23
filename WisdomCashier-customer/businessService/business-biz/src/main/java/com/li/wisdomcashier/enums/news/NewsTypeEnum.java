@@ -13,8 +13,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum NewsTypeEnum {
-    NEWS(0,"新闻"),
-    ACTIVITY(1,"活动");
+    NEWS(0, "新闻"),
+    ACTIVITY(1, "活动");
     private Integer value;
     private String desc;
 }

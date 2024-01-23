@@ -13,7 +13,7 @@ import lombok.Data;
  */
 @Data
 public class UserDetailVO {
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
     private String userName;
     private String userNickname;

@@ -6,13 +6,13 @@ import io.minio.*;
 import io.minio.http.Method;
 import io.minio.messages.Bucket;
 import io.minio.messages.Item;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.annotation.Resource;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import java.time.LocalDate;
@@ -39,6 +39,7 @@ public class MinioUtils {
 
     /**
      * 查看存储bucket是否存在
+     *
      * @return boolean
      */
     public Boolean bucketExists(String bucketName) {
@@ -54,6 +55,7 @@ public class MinioUtils {
 
     /**
      * 创建存储bucket
+     *
      * @return Boolean
      */
     public Boolean makeBucket(String bucketName) {
@@ -67,8 +69,10 @@ public class MinioUtils {
         }
         return true;
     }
+
     /**
      * 删除存储bucket
+     *
      * @return Boolean
      */
     public Boolean removeBucket(String bucketName) {
@@ -82,6 +86,7 @@ public class MinioUtils {
         }
         return true;
     }
+
     /**
      * 获取全部bucket
      */
@@ -96,7 +101,6 @@ public class MinioUtils {
     }
 
 
-
     /**
      * 文件上传
      *
@@ -105,17 +109,17 @@ public class MinioUtils {
      */
     public String upload(MultipartFile file) {
         String originalFilename = file.getOriginalFilename();
-        if (StringUtils.isBlank(originalFilename)){
+        if (StringUtils.isBlank(originalFilename)) {
             throw new RuntimeException();
         }
         String type = originalFilename.substring(originalFilename.lastIndexOf("."));
-        if(CommonUtils.compare(type,".jpeg")||CommonUtils.compare(type,".jpg")||CommonUtils.compare(type,".png")){}
-        else{
+        if (CommonUtils.compare(type, ".jpeg") || CommonUtils.compare(type, ".jpg") || CommonUtils.compare(type, ".png")) {
+        } else {
             throw new BusinessException("仅允许上传jpg及png类型文件！");
         }
-        String fileName = UUID.randomUUID() + type ;
+        String fileName = UUID.randomUUID() + type;
         String objectName = LocalDate.now() + "/" + fileName;
-        log.info("桶名{}",prop.getBucketName());
+        log.info("桶名{}", prop.getBucketName());
         try {
             PutObjectArgs objectArgs = PutObjectArgs.builder().bucket(prop.getBucketName()).object(objectName)
                     .stream(file.getInputStream(), file.getSize(), -1).contentType(file.getContentType()).build();
@@ -130,10 +134,11 @@ public class MinioUtils {
 
     /**
      * 预览
+     *
      * @param fileName
      * @return
      */
-    public String preview(String fileName){
+    public String preview(String fileName) {
         // 查看文件地址
         GetPresignedObjectUrlArgs build = new GetPresignedObjectUrlArgs().builder().bucket(prop.getBucketName()).object(fileName).method(Method.GET).build();
         try {
@@ -147,19 +152,20 @@ public class MinioUtils {
 
     /**
      * 文件下载
+     *
      * @param fileName 文件名称
-     * @param res response
+     * @param res      response
      * @return Boolean
      */
     public void download(String fileName, HttpServletResponse res) {
         GetObjectArgs objectArgs = GetObjectArgs.builder().bucket(prop.getBucketName())
                 .object(fileName).build();
-        try (GetObjectResponse response = minioClient.getObject(objectArgs)){
+        try (GetObjectResponse response = minioClient.getObject(objectArgs)) {
             byte[] buf = new byte[1024];
             int len;
-            try (FastByteArrayOutputStream os = new FastByteArrayOutputStream()){
-                while ((len=response.read(buf))!=-1){
-                    os.write(buf,0,len);
+            try (FastByteArrayOutputStream os = new FastByteArrayOutputStream()) {
+                while ((len = response.read(buf)) != -1) {
+                    os.write(buf, 0, len);
                 }
                 os.flush();
                 byte[] bytes = os.toByteArray();
@@ -167,7 +173,7 @@ public class MinioUtils {
                 // 设置强制下载不打开
                 // res.setContentType("application/force-download");
                 res.addHeader("Content-Disposition", "attachment;fileName=" + fileName);
-                try (ServletOutputStream stream = res.getOutputStream()){
+                try (ServletOutputStream stream = res.getOutputStream()) {
                     stream.write(bytes);
                     stream.flush();
                 }
@@ -179,6 +185,7 @@ public class MinioUtils {
 
     /**
      * 查看文件对象
+     *
      * @return 存储bucket内文件对象信息
      */
     public List<Item> listObjects() {
@@ -198,14 +205,15 @@ public class MinioUtils {
 
     /**
      * 删除
+     *
      * @param fileName
      * @return
      * @throws Exception
      */
-    public boolean remove(String fileName){
+    public boolean remove(String fileName) {
         try {
-            minioClient.removeObject( RemoveObjectArgs.builder().bucket(prop.getBucketName()).object(fileName).build());
-        }catch (Exception e){
+            minioClient.removeObject(RemoveObjectArgs.builder().bucket(prop.getBucketName()).object(fileName).build());
+        } catch (Exception e) {
             return false;
         }
         return true;

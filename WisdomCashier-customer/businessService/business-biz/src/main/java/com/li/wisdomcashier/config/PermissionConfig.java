@@ -27,11 +27,11 @@ public class PermissionConfig implements PermissionEvaluator {
         if (o == null || o1 == null)
             return true;
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-        if(null != authorities && (authorities.contains(new SimpleGrantedAuthority(o+o1.toString())))){
-                return true;
+        if (null != authorities && (authorities.contains(new SimpleGrantedAuthority(o + o1.toString())))) {
+            return true;
 
         }
-        log.warn("用户{}正试图访问无权限接口",authentication.getName());
+        log.warn("用户{}正试图访问无权限接口", authentication.getName());
         return false;
     }
 

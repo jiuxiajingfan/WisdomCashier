@@ -9,7 +9,7 @@ package com.li.wisdomcashier.utils;
  */
 
 public class CommonUtils {
-    public static boolean compare(Object a,Object b){
+    public static boolean compare(Object a, Object b) {
         return a.equals(b);
     }
 }

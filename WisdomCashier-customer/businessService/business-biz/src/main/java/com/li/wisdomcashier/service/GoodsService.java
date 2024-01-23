@@ -9,7 +9,7 @@ import com.li.wisdomcashier.entry.R;
 
 /**
  * <p>
- *  服务类
+ * 服务类
  * </p>
  *
  * @author lsw
@@ -19,6 +19,7 @@ public interface GoodsService extends IService<Goods> {
 
     /**
      * 查询商品信息
+     *
      * @param gid
      * @return
      */
@@ -26,6 +27,7 @@ public interface GoodsService extends IService<Goods> {
 
     /**
      * 新增商品
+     *
      * @param goods
      * @return
      */
@@ -33,6 +35,7 @@ public interface GoodsService extends IService<Goods> {
 
     /**
      * 根据ID查询
+     *
      * @param goodQueryDTO
      * @return
      */
@@ -40,6 +43,7 @@ public interface GoodsService extends IService<Goods> {
 
     /**
      * 修稿商品信息
+     *
      * @param good
      * @return
      */
@@ -47,6 +51,7 @@ public interface GoodsService extends IService<Goods> {
 
     /**
      * 条形码获取商品信息
+     *
      * @param gid
      * @param sid
      * @return
@@ -55,25 +60,27 @@ public interface GoodsService extends IService<Goods> {
 
     /**
      * 商品交易
+     *
      * @return
      */
     R<String> buyGood(BuyGoodDTO buyGoodDTO);
 
     /**
      * 返回一个随机订单号
+     *
      * @return
      */
     R<String> getRandID();
 
     /**
      * 失败订单处理
+     *
      * @param
      */
 
-    void failTradeLogAsunc(String tradeNo,Long sid,Integer type);
+    void failTradeLogAsunc(String tradeNo, Long sid, Integer type);
 
     /**
-     *
      * @param deleteDTO
      * @return
      */
@@ -81,6 +88,7 @@ public interface GoodsService extends IService<Goods> {
 
     /**
      * 获取临期商品
+     *
      * @param goodQueryDTO
      * @return
      */
@@ -88,6 +96,7 @@ public interface GoodsService extends IService<Goods> {
 
     /**
      * 更新预览图
+     *
      * @param payDTO
      * @return
      */

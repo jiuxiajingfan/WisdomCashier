@@ -12,23 +12,22 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.controller.OauthFeignClient;
 import com.li.wisdomcashier.controller.account.dto.ChangeEmailDTO;
 import com.li.wisdomcashier.controller.account.dto.ChangePwdDTO;
+import com.li.wisdomcashier.controller.account.dto.CreateUserDTO;
 import com.li.wisdomcashier.controller.account.vo.UserDetailVO;
-import com.li.wisdomcashier.dto.CreateUserDTO;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.SysMenu;
 import com.li.wisdomcashier.entry.User;
 import com.li.wisdomcashier.mapper.SysMenuMapper;
 import com.li.wisdomcashier.mapper.UserMapper;
-import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.UserService;
 import com.li.wisdomcashier.utils.CommonUtils;
 import com.li.wisdomcashier.utils.RedisUtils;
 import com.li.wisdomcashier.utils.UserUtils;
-import org.apache.commons.lang.StringUtils;
+import io.micrometer.common.util.StringUtils;
+import jakarta.annotation.Resource;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 
 import static com.li.wisdomcashier.constant.ExceptionConstant.*;
@@ -69,25 +68,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<User> users = userMapper.selectList(Wrappers.lambdaQuery(User.class)
                 .eq(User::getEmail, createUserDTO.getEmail())
                 .or()
-                .eq(User::getUserName,createUserDTO.getUserName())
+                .eq(User::getUserName, createUserDTO.getUserName())
         );
         if (!users.isEmpty()) {
             for (User user : users) {
-                if(StringUtils.equals(createUserDTO.getUserName(), user.getUserName())){
+                if (CommonUtils.compare(createUserDTO.getUserName(), user.getUserName())) {
                     return R.error(NAME_BIND_ERROR);
                 }
-                if(StringUtils.equals(createUserDTO.getEmail(),user.getEmail())){
+                if (CommonUtils.compare(createUserDTO.getEmail(), user.getEmail())) {
                     return R.error(EMAIL_BIND_ERROR);
                 }
             }
         }
         User copy = CglibUtil.copy(createUserDTO, User.class);
         copy.setUserPwd(new BCryptPasswordEncoder().encode(createUserDTO.getPassword()));
-        copy.setUserNickname("用户"+ RandomUtil.randomString(6));
+        copy.setUserNickname("用户" + RandomUtil.randomString(6));
         userMapper.insert(copy);
         redisUtils.del(REGISTER_CODE + createUserDTO.getEmail());
-        OAuth2AccessToken oAuth2AccessToken = oauthFeignClient.postAccessToken("password", createUserDTO.getUserName(), createUserDTO.getPassword());
-        return R.ok(oAuth2AccessToken.getValue(),"注册成功！");
+        String oAuth2AccessToken = oauthFeignClient.postAccessToken("password", createUserDTO.getUserName(), createUserDTO.getPassword(), "scope");
+        return null;
     }
 
     @Override
@@ -101,7 +100,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         List<Tree<String>> build = TreeUtil.build(userCenterMenu, null, treeNodeConfig, ((sysMenu, tree) -> {
             tree.setId(sysMenu.getMenuId().toString());
             tree.setName(sysMenu.getName());
-            tree.setParentId(null == sysMenu.getParentId()?null:sysMenu.getParentId().toString());
+            tree.setParentId(null == sysMenu.getParentId() ? null : sysMenu.getParentId().toString());
             tree.setWeight(sysMenu.getSort());
             tree.putExtra("path", sysMenu.getPath());
             tree.putExtra("component", sysMenu.getComponent());
@@ -136,7 +135,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         return userMapper.update(null, new LambdaUpdateWrapper<User>()
                 .eq(User::getId, user.getId())
                 .set(User::getUserNickname, name)
-        )==1?R.ok("修改成功！"):R.error(CHANGE_ERROR);
+        ) == 1 ? R.ok("修改成功！") : R.error(CHANGE_ERROR);
 
     }
 
@@ -154,20 +153,20 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         int update = userMapper.update(null, Wrappers.lambdaUpdate(User.class)
                 .eq(User::getId, user.getId())
                 .set(User::getEmail, changeEmailDto.getEmail()));
-        if(update==1)redisUtils.del(user.getEmail());
-        return update==1?R.ok("修改绑定邮箱成功！"):R.error(CHANGE_ERROR);
+        if (update == 1) redisUtils.del(user.getEmail());
+        return update == 1 ? R.ok("修改绑定邮箱成功！") : R.error(CHANGE_ERROR);
     }
 
     @Override
     public R<String> changePwd(ChangePwdDTO changePwdDto) {
         User user = UserUtils.getUser();
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-        if (user.getUserPwd().equals( bCryptPasswordEncoder.encode(changePwdDto.getPwdOriginal()))) {
-            if (CommonUtils.compare(changePwdDto.getPwdNew() , changePwdDto.getPwdConfirm())) {
+        if (user.getUserPwd().equals(bCryptPasswordEncoder.encode(changePwdDto.getPwdOriginal()))) {
+            if (CommonUtils.compare(changePwdDto.getPwdNew(), changePwdDto.getPwdConfirm())) {
                 return userMapper.update(null, Wrappers.lambdaUpdate(User.class)
                         .eq(User::getId, user.getId())
-                        .set(User::getUserPwd,bCryptPasswordEncoder.encode(changePwdDto.getPwdNew()))
-                )==1?R.ok("修改成功！"):R.error(CHANGE_ERROR);
+                        .set(User::getUserPwd, bCryptPasswordEncoder.encode(changePwdDto.getPwdNew()))
+                ) == 1 ? R.ok("修改成功！") : R.error(CHANGE_ERROR);
             } else {
                 return R.error(PWD_COMPARE_ERROR);
             }

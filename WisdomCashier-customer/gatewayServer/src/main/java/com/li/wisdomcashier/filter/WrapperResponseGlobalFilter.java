@@ -47,7 +47,7 @@ public class WrapperResponseGlobalFilter implements GlobalFilter, Ordered {
                         String responseData = new String(content, Charset.forName("UTF-8"));
                         log.info("");
                         log.info("***********************************响应信息**********************************");
-                        log.info("\n响应内容:{}", responseData.replace(",","\n"));
+                        log.info("\n响应内容:{}", responseData.replace(",", "\n"));
                         log.info("****************************************************************************\n");
                         byte[] uppedContent = new String(content, Charset.forName("UTF-8")).getBytes();
                         return bufferFactory.wrap(uppedContent);

@@ -1,10 +1,10 @@
 package com.li.wisdomcashier.utils;
 
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
 
 /**
  * @ClassName EmailUtils
@@ -17,18 +17,18 @@ public class EmailUtils {
     private static final String content = "这是邮件的主内容";
 
     // 纯文本邮件
-    public static SimpleMailMessage simple(String from, String to,String code,String title){
+    public static SimpleMailMessage simple(String from, String to, String code, String title) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(from);
         message.setTo(to);
         message.setSubject(title);
-        message.setText("您的验证码为："+code+",请在5分钟内使用");
+        message.setText("您的验证码为：" + code + ",请在5分钟内使用");
         return message;
     }
 
     // 多媒体邮件
     public static MimeMessage mimeMessage(MimeMessage message, String from, String to) throws MessagingException {
-        MimeMessageHelper helper = new MimeMessageHelper(message,true);
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
         helper.setFrom(from);
         helper.setTo(to);
         helper.setSubject("复杂邮件主题");

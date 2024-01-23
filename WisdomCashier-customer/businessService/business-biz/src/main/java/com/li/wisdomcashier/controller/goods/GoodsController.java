@@ -11,7 +11,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
 
 /**
  * @ClassName GoodsController
@@ -59,32 +59,32 @@ public class GoodsController {
 
     @PostMapping("/buyGood")
     @ApiOperation(value = "商品交易")
-    R<String> buyGood(@RequestBody @Validated BuyGoodDTO buyGoodDTO){
+    R<String> buyGood(@RequestBody @Validated BuyGoodDTO buyGoodDTO) {
         return goodsService.buyGood(buyGoodDTO);
     }
 
     @GetMapping("/getRandID")
     @ApiOperation(value = "返回一个随机订单号")
-    R<String> getRandID(){
+    R<String> getRandID() {
         return goodsService.getRandID();
     }
 
     @PostMapping("/deleteGood")
     @ApiOperation(value = "删除商品")
-    public R<String> deleteGood(@RequestBody @Validated DeleteDTO deleteDTO){
+    public R<String> deleteGood(@RequestBody @Validated DeleteDTO deleteDTO) {
         return goodsService.deleteGood(deleteDTO);
     }
 
 
     @PostMapping("/getGoodTemporaryPage")
     @ApiOperation(value = "获取临期商品")
-    R<IPage<Goods>> getGoodTemporaryPage(@RequestBody @Validated GoodQueryDTO goodQueryDTO){
+    R<IPage<Goods>> getGoodTemporaryPage(@RequestBody @Validated GoodQueryDTO goodQueryDTO) {
         return goodsService.getGoodTemporaryPage(goodQueryDTO);
     }
 
     @PostMapping("/updateGoodImg")
     @ApiOperation(value = "更新商品图片")
-    public R<String> updateGoodImg(@RequestBody @Validated PayDTO payDTO){
+    public R<String> updateGoodImg(@RequestBody @Validated PayDTO payDTO) {
         return goodsService.updateGoodImg(payDTO);
     }
 

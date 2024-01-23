@@ -2,9 +2,9 @@ package com.li.wisdomcashier.authentication.password;
 
 import com.li.wisdomcashier.authentication.AuthorizeService;
 import com.li.wisdomcashier.exception.MyAuthenticationException;
+import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -76,13 +76,13 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
 
         // Ensure the client is configured to use this authorization grant type
         if (!registeredClient.getAuthorizationGrantTypes().contains(authorizationGrantType)) {
-            throw new OAuth2AuthenticationException(OAuth2ErrorCodes.UNAUTHORIZED_CLIENT);
+            throw new MyAuthenticationException(OAuth2ErrorCodes.UNAUTHORIZED_CLIENT);
         }
 
         //校验用户名信息
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-            throw new OAuth2AuthenticationException("密码不正确！");
+            throw new MyAuthenticationException("密码不正确！");
         }
 
         //由于在上面已验证过用户名、密码，现在构建一个已认证的对象UsernamePasswordAuthenticationToken
@@ -111,7 +111,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         if (generatedAccessToken == null) {
             OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
                     "The token generator failed to generate the access token.", ERROR_URI);
-            throw new OAuth2AuthenticationException(error);
+            throw new MyAuthenticationException(error.toString());
         }
 
         OAuth2AccessToken accessToken = new OAuth2AccessToken(OAuth2AccessToken.TokenType.BEARER,
@@ -135,7 +135,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
             if (!(generatedRefreshToken instanceof OAuth2RefreshToken)) {
                 OAuth2Error error = new OAuth2Error(OAuth2ErrorCodes.SERVER_ERROR,
                         "The token generator failed to generate the refresh token.", ERROR_URI);
-                throw new OAuth2AuthenticationException(error);
+                throw new MyAuthenticationException(error.toString());
             }
             refreshToken = (OAuth2RefreshToken) generatedRefreshToken;
             authorizationBuilder.refreshToken(refreshToken);
@@ -162,6 +162,6 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         if (clientPrincipal != null && clientPrincipal.isAuthenticated()) {
             return clientPrincipal;
         }
-        throw new OAuth2AuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
+        throw new MyAuthenticationException(OAuth2ErrorCodes.INVALID_CLIENT);
     }
 }

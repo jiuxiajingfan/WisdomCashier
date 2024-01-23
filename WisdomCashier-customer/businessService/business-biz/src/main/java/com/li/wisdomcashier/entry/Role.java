@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author Nine
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_role")
-@ApiModel(value="Role对象", description="")
+@ApiModel(value = "Role对象", description = "")
 public class Role implements Serializable {
 
     private static final long serialVersionUID = 1L;

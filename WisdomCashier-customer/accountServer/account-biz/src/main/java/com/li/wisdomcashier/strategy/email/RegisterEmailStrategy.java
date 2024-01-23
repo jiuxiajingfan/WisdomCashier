@@ -1,8 +1,8 @@
 package com.li.wisdomcashier.strategy.email;
 
-import com.li.wisdomcashier.dto.EmailDTO;
-import com.li.wisdomcashier.enums.EmailEnums;
+import com.li.wisdomcashier.controller.email.dto.EmailDTO;
 import com.li.wisdomcashier.entry.R;
+import com.li.wisdomcashier.enums.EmailEnums;
 import org.springframework.stereotype.Component;
 
 import java.util.Objects;
@@ -14,19 +14,19 @@ import static com.li.wisdomcashier.constant.MQConstant.ROUTING_KEY_REGISTER;
  * 注册邮件策略
  */
 @Component
-public class RegisterEmailStrategy extends AbstractEmailStrategy{
+public class RegisterEmailStrategy extends AbstractEmailStrategy {
     @Override
     protected EmailEnums getTypeEnum() {
         return EmailEnums.REGISTER;
     }
 
     @Override
-    public R<String> Send(String email) {
-        if(Objects.isNull(email))
+    public R<String> send(String email) {
+        if (Objects.isNull(email))
             return R.error("请输入邮箱！");
         if (redisUtils.hasKey(this.getTypeEnum().getValue() + email))
             return R.error("发送频繁，请耐心等待！");
-        rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_EMAIL,ROUTING_KEY_REGISTER,
+        rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_EMAIL, ROUTING_KEY_REGISTER,
                 EmailDTO.builder()
                         .email(email)
                         .type(getTypeEnum().getValue())

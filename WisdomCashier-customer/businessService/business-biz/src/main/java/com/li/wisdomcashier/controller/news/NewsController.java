@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
+
 import java.util.List;
 
 /**
@@ -30,13 +31,13 @@ public class NewsController {
 
     @GetMapping("/getNews")
     @ApiOperation("获取新闻")
-    public R<NewsVO> getNews(){
+    public R<NewsVO> getNews() {
         return newsService.getNews();
     }
 
     @GetMapping("getAdvertising")
     @ApiOperation("获取广告跑马灯图片")
-    public R<List<String>> getAdvertising(){
+    public R<List<String>> getAdvertising() {
         return newsService.getAdvertising();
     }
 

@@ -2,16 +2,12 @@ package com.li.wisdomcashier.controller.email;
 
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.EmailService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
+import jakarta.annotation.Resource;
+import jakarta.annotation.security.PermitAll;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
-import javax.annotation.security.PermitAll;
 
 /**
  * @ClassName EmailController
@@ -22,17 +18,21 @@ import javax.annotation.security.PermitAll;
  */
 @RestController
 @RequestMapping("/email")
-@Api(tags = "邮件相关")
+//@Api(tags = "邮件相关")
 public class EmailController {
     @Resource
     private EmailService emailService;
 
     @GetMapping("/getCode")
-    @ApiOperation("获取邮件")
+//    @ApiOperation("获取邮件")
     @PermitAll
-    public R<String> getCode(@RequestParam("email") @ApiParam("邮箱") String email,
-                             @RequestParam("type") @ApiParam("类型") Integer type){
-        return emailService.getCode(email,type);
+    public R<String> getCode(@RequestParam("email")
+//                                 @ApiParam("邮箱")
+                             String email,
+                             @RequestParam("type")
+//                             @ApiParam("类型")
+                             Integer type) {
+        return emailService.getCode(email, type);
     }
 
 

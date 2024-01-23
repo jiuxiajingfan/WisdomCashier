@@ -17,6 +17,7 @@ public interface AlipayService {
 
     /**
      * 支付宝提交收款接口
+     *
      * @param aliPayDTO
      * @return
      */
@@ -24,6 +25,7 @@ public interface AlipayService {
 
     /**
      * 查询订单号状态
+     *
      * @param tradeNo 支付宝订单号
      * @return
      */
@@ -31,6 +33,7 @@ public interface AlipayService {
 
     /**
      * 支付未知错误撤销订单
+     *
      * @param tradeNo 支付宝订单号
      * @return
      */
@@ -38,15 +41,17 @@ public interface AlipayService {
 
     /**
      * 超时主动取消
+     *
      * @param tradeNo
      * @return
      */
-    R<String> closePay(String tradeNo,Long sid);
+    R<String> closePay(String tradeNo, Long sid);
 
     QueryTrade queryPayDetail(String tradeNo);
 
     /**
      * 退款接口
+     *
      * @param refundDTO
      * @return
      */
@@ -54,6 +59,7 @@ public interface AlipayService {
 
     /**
      * 退款查询接口
+     *
      * @param refundDTO
      * @return
      */

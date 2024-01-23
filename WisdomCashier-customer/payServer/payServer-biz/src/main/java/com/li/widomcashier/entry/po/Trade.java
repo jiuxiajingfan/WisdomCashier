@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author lsw
@@ -23,7 +23,7 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_trade")
-@ApiModel(value="Trade对象", description="")
+@ApiModel(value = "Trade对象", description = "")
 public class Trade implements Serializable {
 
     private static final long serialVersionUID = 1L;

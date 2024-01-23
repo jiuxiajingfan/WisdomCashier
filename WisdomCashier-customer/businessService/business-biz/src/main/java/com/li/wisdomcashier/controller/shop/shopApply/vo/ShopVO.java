@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  */
 @Data
 public class ShopVO {
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     Long id;
     String shopName;
     @ApiModelProperty(value = "权限")

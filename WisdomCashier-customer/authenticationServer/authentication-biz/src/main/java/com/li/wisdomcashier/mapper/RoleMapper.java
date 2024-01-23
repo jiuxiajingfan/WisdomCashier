@@ -5,7 +5,7 @@ import com.li.wisdomcashier.entry.Role;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author Nine

@@ -11,10 +11,10 @@ import com.li.wisdomcashier.entry.R;
 import java.util.List;
 
 /**
-* @author Li
-* @description 针对表【t_shop】的数据库操作Service
-* @createDate 2023-11-08 20:06:06
-*/
+ * @author Li
+ * @description 针对表【t_shop】的数据库操作Service
+ * @createDate 2023-11-08 20:06:06
+ */
 public interface ShopService extends IService<Shop> {
     /**
      * 获取用户相关店铺
@@ -28,6 +28,7 @@ public interface ShopService extends IService<Shop> {
 
     /**
      * 获取交易方式状态
+     *
      * @param sid
      * @return
      */

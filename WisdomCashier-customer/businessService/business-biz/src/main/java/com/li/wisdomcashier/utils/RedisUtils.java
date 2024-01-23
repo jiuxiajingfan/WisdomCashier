@@ -7,6 +7,7 @@ package com.li.wisdomcashier.utils;
  * @Date 2022/10/12 14:48
  * @Version 1.0
  */
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -27,8 +28,10 @@ public final class RedisUtils {
 
 
     // =============================common============================
+
     /**
      * 指定缓存失效时间
+     *
      * @param key  键
      * @param time 时间(秒)
      */
@@ -46,6 +49,7 @@ public final class RedisUtils {
 
     /**
      * 根据key 获取过期时间
+     *
      * @param key 键 不能为null
      * @return 时间(秒) 返回0代表为永久有效
      */
@@ -56,6 +60,7 @@ public final class RedisUtils {
 
     /**
      * 判断key是否存在
+     *
      * @param key 键
      * @return true 存在 false不存在
      */
@@ -72,6 +77,7 @@ public final class RedisUtils {
 
     /**
      * 删除缓存
+     *
      * @param key 可以传一个值 或多个
      */
     @SuppressWarnings("unchecked")
@@ -90,6 +96,7 @@ public final class RedisUtils {
 
     /**
      * 普通缓存获取
+     *
      * @param key 键
      * @return 值
      */
@@ -99,6 +106,7 @@ public final class RedisUtils {
 
     /**
      * 普通缓存放入
+     *
      * @param key   键
      * @param value 值
      * @return true成功 false失败
@@ -109,7 +117,7 @@ public final class RedisUtils {
             redisTemplate.opsForValue().set(key, value);
             return true;
         } catch (Exception e) {
-            log.info("redis设置失败！{}",e.toString());
+            log.info("redis设置失败！{}", e.toString());
             return false;
         }
     }
@@ -117,6 +125,7 @@ public final class RedisUtils {
 
     /**
      * 普通缓存放入并设置时间
+     *
      * @param key   键
      * @param value 值
      * @param time  时间(秒) time要大于0 如果time小于等于0 将设置无限期
@@ -132,7 +141,7 @@ public final class RedisUtils {
             }
             return true;
         } catch (Exception e) {
-            log.info("redis设置失败！{}",e.toString());
+            log.info("redis设置失败！{}", e.toString());
             return false;
         }
     }
@@ -140,6 +149,7 @@ public final class RedisUtils {
 
     /**
      * 递增
+     *
      * @param key   键
      * @param delta 要增加几(大于0)
      */
@@ -153,6 +163,7 @@ public final class RedisUtils {
 
     /**
      * 递减
+     *
      * @param key   键
      * @param delta 要减少几(小于0)
      */
@@ -168,6 +179,7 @@ public final class RedisUtils {
 
     /**
      * HashGet
+     *
      * @param key  键 不能为null
      * @param item 项 不能为null
      */
@@ -177,6 +189,7 @@ public final class RedisUtils {
 
     /**
      * 获取hashKey对应的所有键值
+     *
      * @param key 键
      * @return 对应的多个键值
      */
@@ -186,6 +199,7 @@ public final class RedisUtils {
 
     /**
      * HashSet
+     *
      * @param key 键
      * @param map 对应多个键值
      */
@@ -194,7 +208,7 @@ public final class RedisUtils {
             redisTemplate.opsForHash().putAll(key, map);
             return true;
         } catch (Exception e) {
-            log.info("redis设置失败！{}",e.toString());
+            log.info("redis设置失败！{}", e.toString());
             return false;
         }
     }
@@ -202,6 +216,7 @@ public final class RedisUtils {
 
     /**
      * HashSet 并设置时间
+     *
      * @param key  键
      * @param map  对应多个键值
      * @param time 时间(秒)
@@ -215,7 +230,7 @@ public final class RedisUtils {
             }
             return true;
         } catch (Exception e) {
-            log.info("redis设置失败！{}",e.toString());
+            log.info("redis设置失败！{}", e.toString());
             return false;
         }
     }
@@ -234,7 +249,7 @@ public final class RedisUtils {
             redisTemplate.opsForHash().put(key, item, value);
             return true;
         } catch (Exception e) {
-            log.info("redis设置失败！{}",e.toString());
+            log.info("redis设置失败！{}", e.toString());
             return false;
         }
     }
@@ -256,7 +271,7 @@ public final class RedisUtils {
             }
             return true;
         } catch (Exception e) {
-            log.info("redis设置失败！{}",e.toString());
+            log.info("redis设置失败！{}", e.toString());
             return false;
         }
     }
@@ -313,13 +328,14 @@ public final class RedisUtils {
 
     /**
      * 根据key获取Set中的所有值
+     *
      * @param key 键
      */
     public Set<Object> sGet(String key) {
         try {
             return redisTemplate.opsForSet().members(key);
         } catch (Exception e) {
-            log.info("redis获取失败！{}",e.toString());
+            log.info("redis获取失败！{}", e.toString());
             return null;
         }
     }
@@ -336,7 +352,7 @@ public final class RedisUtils {
         try {
             return redisTemplate.opsForSet().isMember(key, value);
         } catch (Exception e) {
-            log.info("redis查询失败！{}",e.toString());
+            log.info("redis查询失败！{}", e.toString());
             return false;
         }
     }
@@ -375,7 +391,7 @@ public final class RedisUtils {
             }
             return count;
         } catch (Exception e) {
-            log.info("redis设置失败！{}",e.toString());
+            log.info("redis设置失败！{}", e.toString());
             return 0;
         }
     }
@@ -390,7 +406,7 @@ public final class RedisUtils {
         try {
             return redisTemplate.opsForSet().size(key);
         } catch (Exception e) {
-            log.info("redis获取失败！{}",e.toString());
+            log.info("redis获取失败！{}", e.toString());
             return 0;
         }
     }
@@ -409,7 +425,7 @@ public final class RedisUtils {
             Long count = redisTemplate.opsForSet().remove(key, values);
             return count;
         } catch (Exception e) {
-            log.info("redis移除失败！{}",e.toString());
+            log.info("redis移除失败！{}", e.toString());
             return 0;
         }
     }
@@ -427,7 +443,7 @@ public final class RedisUtils {
         try {
             return redisTemplate.opsForList().range(key, start, end);
         } catch (Exception e) {
-            log.info("redis获取失败！{}",e.toString());
+            log.info("redis获取失败！{}", e.toString());
             return null;
         }
     }
@@ -442,7 +458,7 @@ public final class RedisUtils {
         try {
             return redisTemplate.opsForList().size(key);
         } catch (Exception e) {
-            log.info("redis获取失败！{}",e.toString());
+            log.info("redis获取失败！{}", e.toString());
             return 0;
         }
     }
@@ -458,7 +474,7 @@ public final class RedisUtils {
         try {
             return redisTemplate.opsForList().index(key, index);
         } catch (Exception e) {
-            log.info("redis获取失败！{}",e.toString());
+            log.info("redis获取失败！{}", e.toString());
             return null;
         }
     }
@@ -475,7 +491,7 @@ public final class RedisUtils {
             redisTemplate.opsForList().rightPush(key, value);
             return true;
         } catch (Exception e) {
-            log.info("redis设置失败！{}",e.toString());
+            log.info("redis设置失败！{}", e.toString());
             return false;
         }
     }
@@ -483,6 +499,7 @@ public final class RedisUtils {
 
     /**
      * 将list放入缓存
+     *
      * @param key   键
      * @param value 值
      * @param time  时间(秒)
@@ -495,7 +512,7 @@ public final class RedisUtils {
             }
             return true;
         } catch (Exception e) {
-            log.info("redis设置失败！{}",e.toString());
+            log.info("redis设置失败！{}", e.toString());
             return false;
         }
     }
@@ -513,7 +530,7 @@ public final class RedisUtils {
             redisTemplate.opsForList().rightPushAll(key, value);
             return true;
         } catch (Exception e) {
-            log.info("redis设置失败！{}",e.toString());
+            log.info("redis设置失败！{}", e.toString());
             return false;
         }
     }
@@ -535,7 +552,7 @@ public final class RedisUtils {
             }
             return true;
         } catch (Exception e) {
-            log.info("redis设置失败！{}",e.toString());
+            log.info("redis设置失败！{}", e.toString());
             return false;
         }
     }
@@ -555,7 +572,7 @@ public final class RedisUtils {
             redisTemplate.opsForList().set(key, index, value);
             return true;
         } catch (Exception e) {
-            log.info("redis更新失败！{}",e.toString());
+            log.info("redis更新失败！{}", e.toString());
             return false;
         }
     }
@@ -575,13 +592,14 @@ public final class RedisUtils {
             Long remove = redisTemplate.opsForList().remove(key, count, value);
             return remove;
         } catch (Exception e) {
-            log.info("redis移除失败！{}",e.toString());
+            log.info("redis移除失败！{}", e.toString());
             return 0;
         }
     }
 
     /**
      * list 左出队列
+     *
      * @param key
      * @return
      */
@@ -590,11 +608,10 @@ public final class RedisUtils {
             redisTemplate.opsForList().leftPop(key);
             return true;
         } catch (Exception e) {
-            log.info("redis移除失败！{}",e.toString());
+            log.info("redis移除失败！{}", e.toString());
             return false;
         }
     }
-
 
 
 }

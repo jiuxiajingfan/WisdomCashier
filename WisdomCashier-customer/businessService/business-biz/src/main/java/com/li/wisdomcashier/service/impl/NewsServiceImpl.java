@@ -4,16 +4,16 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.controller.news.vo.NewsVO;
 import com.li.wisdomcashier.entry.News;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.enums.BaseEnum;
 import com.li.wisdomcashier.enums.news.NewsTypeEnum;
 import com.li.wisdomcashier.mapper.NewsMapper;
-import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.NewsService;
+import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 
-import javax.annotation.Resource;
 import java.util.List;
 import java.util.stream.Collectors;
 

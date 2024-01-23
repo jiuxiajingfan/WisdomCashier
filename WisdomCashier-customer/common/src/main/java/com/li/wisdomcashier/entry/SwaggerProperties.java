@@ -1,12 +1,10 @@
 package com.li.wisdomcashier.entry;
 
-import io.swagger.annotations.ApiModel;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 @Component
-@ApiModel
 @ConfigurationProperties(prefix = "swagger")
 @Data
 public class SwaggerProperties {

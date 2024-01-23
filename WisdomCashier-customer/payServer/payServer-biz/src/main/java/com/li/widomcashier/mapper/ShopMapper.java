@@ -5,7 +5,7 @@ import com.li.widomcashier.entry.po.Shop;
 
 /**
  * <p>
- *  Mapper 接口
+ * Mapper 接口
  * </p>
  *
  * @author Nine

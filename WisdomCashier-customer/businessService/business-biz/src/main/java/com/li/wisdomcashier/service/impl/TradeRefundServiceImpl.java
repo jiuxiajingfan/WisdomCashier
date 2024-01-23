@@ -8,13 +8,13 @@ import com.li.wisdomcashier.service.TradeRefundService;
 import org.springframework.stereotype.Service;
 
 /**
-* @author Li
-* @description 针对表【t_trade_refund】的数据库操作Service实现
-* @createDate 2023-11-08 20:16:06
-*/
+ * @author Li
+ * @description 针对表【t_trade_refund】的数据库操作Service实现
+ * @createDate 2023-11-08 20:16:06
+ */
 @Service
 public class TradeRefundServiceImpl extends ServiceImpl<TradeRefundMapper, TradeRefund>
-    implements TradeRefundService {
+        implements TradeRefundService {
 
 }
 

@@ -1,8 +1,8 @@
-package com.li.wisdomcashier.dto;
+package com.li.wisdomcashier.controller.account.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
 import java.io.Serializable;
 
 /**

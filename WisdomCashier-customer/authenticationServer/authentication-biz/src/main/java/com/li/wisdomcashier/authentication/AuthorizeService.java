@@ -38,14 +38,14 @@ public class AuthorizeService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         User user = userMapper.selectOne(lambdaQuery(User.class).eq(User::getUserName, userName));
-        if(Objects.isNull(user)){
+        if (Objects.isNull(user)) {
             throw new UsernameNotFoundException("用户名或密码错误！");
         }
         List<Role> roles = roleMapper.selectList(lambdaQuery(Role.class)
                 .eq(Role::getUserId, user.getId()));
         ArrayList<SimpleGrantedAuthority> userRoles = new ArrayList<>();
         for (Role role : roles) {
-                userRoles.add(new SimpleGrantedAuthority(role.getShopId().toString() + role.getRole()));
+            userRoles.add(new SimpleGrantedAuthority(role.getShopId().toString() + role.getRole()));
         }
         return org.springframework.security.core.userdetails.User
                 .withUsername(user.getUserName())

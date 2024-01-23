@@ -8,13 +8,13 @@ import com.li.wisdomcashier.service.VipService;
 import org.springframework.stereotype.Service;
 
 /**
-* @author Li
-* @description 针对表【t_vip】的数据库操作Service实现
-* @createDate 2023-11-08 20:16:12
-*/
+ * @author Li
+ * @description 针对表【t_vip】的数据库操作Service实现
+ * @createDate 2023-11-08 20:16:12
+ */
 @Service
 public class VipServiceImpl extends ServiceImpl<VipMapper, Vip>
-    implements VipService {
+        implements VipService {
 
 }
 

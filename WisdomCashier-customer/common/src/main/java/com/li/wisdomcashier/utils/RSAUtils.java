@@ -25,7 +25,7 @@ public class RSAUtils {
 
 
     /**
-     *  私钥加密
+     * 私钥加密
      */
     public static String encryptByPriKey(String text, String privateKey) {
         try {
@@ -38,7 +38,7 @@ public class RSAUtils {
     }
 
     /**
-     *  私钥加密
+     * 私钥加密
      */
     public static byte[] encryptByPriKey(byte[] data, byte[] priKey) throws Exception {
         PKCS8EncodedKeySpec pkcs8KeySpec = new PKCS8EncodedKeySpec(priKey);
@@ -50,7 +50,7 @@ public class RSAUtils {
     }
 
     /**
-     *  公钥解密
+     * 公钥解密
      */
     public static byte[] decryptByPubKey(byte[] data, byte[] pubKey) throws Exception {
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(pubKey);
@@ -62,16 +62,17 @@ public class RSAUtils {
     }
 
     /**
-     *  公钥解密
+     * 公钥解密
      */
     public static String decryptByPubKey(String data, String publicKey) throws Exception {
-        byte[] pubKey = Base64Decoder.decode(publicKey);;
+        byte[] pubKey = Base64Decoder.decode(publicKey);
+        ;
         byte[] design = decryptByPubKey(Base64Decoder.decode(data), pubKey);
         return new String(design);
     }
 
     /**
-     *  RSA签名
+     * RSA签名
      */
     public static String sign(byte[] data, byte[] priKey) throws Exception {
         // 取得私钥
@@ -89,7 +90,7 @@ public class RSAUtils {
     }
 
     /**
-     *  RSA校验数字签名
+     * RSA校验数字签名
      */
     public static boolean verify(byte[] data, byte[] sign, byte[] pubKey) throws Exception {
         // 实例化密钥工厂

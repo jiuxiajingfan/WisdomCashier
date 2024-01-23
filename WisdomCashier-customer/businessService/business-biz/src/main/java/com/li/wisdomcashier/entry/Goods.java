@@ -12,75 +12,74 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
- * 
  * @TableName t_goods
  */
-@TableName(value ="t_goods")
+@TableName(value = "t_goods")
 @Data
 public class Goods implements Serializable {
     /**
-     * 
+     *
      */
     @TableId(type = IdType.AUTO)
     private Long id;
 
     /**
-     * 
+     *
      */
     private String name;
 
     /**
-     * 
+     *
      */
     private String gid;
 
     /**
-     * 
+     *
      */
     private BigDecimal priceIn;
 
     /**
-     * 
+     *
      */
     private BigDecimal priceOut;
 
     /**
-     * 
+     *
      */
     private Long sid;
 
     /**
-     * 
+     *
      */
     private LocalDate deadline;
 
     /**
-     * 
+     *
      */
     private Long num;
 
     /**
-     * 
+     *
      */
     private String picUrl;
 
     /**
-     * 
+     *
      */
     private BigDecimal profit;
 
     /**
-     * 
+     *
      */
     private String metrology;
 
     /**
-     * 
+     *
      */
     private String type;
 
     /**
-     * 
+     *
      */
     private BigDecimal priceVip;
 

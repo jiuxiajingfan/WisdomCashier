@@ -15,7 +15,8 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
+import jakarta.annotation.Resource;
+
 import java.util.List;
 
 /**
@@ -42,37 +43,37 @@ public class ShopController {
 
     @ApiOperation(value = "申请进度")
     @GetMapping("/getApply")
-    public R<ShopApplyVO> getApply(){
+    public R<ShopApplyVO> getApply() {
         return shopApplyService.getApply();
     }
 
     @ApiOperation(value = "申请店铺")
     @PostMapping("/applyShop")
-    public R<String> applyShop(@RequestBody @Validated ShopApplyDTO shopApplyDTO){
+    public R<String> applyShop(@RequestBody @Validated ShopApplyDTO shopApplyDTO) {
         return shopApplyService.applyShop(shopApplyDTO);
     }
 
     @ApiOperation(value = "分页获取用户相关店铺")
     @PostMapping("/getUserShopPage")
-    private R<IPage<ShopVO>> getUserShopPage(@RequestBody ShopQueryDTO shopQueryDTO){
+    private R<IPage<ShopVO>> getUserShopPage(@RequestBody ShopQueryDTO shopQueryDTO) {
         return shopService.getUserShopPage(shopQueryDTO);
     }
 
     @ApiOperation(value = "获取店铺菜单")
     @GetMapping("/getShopMenu")
-    public R<List<Tree<String>>> getMenu(String shopId){
+    public R<List<Tree<String>>> getMenu(String shopId) {
         return shopService.getMenu(Long.parseLong(shopId));
     }
 
     @ApiOperation(value = "获取店铺分类")
     @GetMapping("/getCategory")
-    R<List<String>> getCategory(String sid){
+    R<List<String>> getCategory(String sid) {
         return shopCategoryService.getCategory(sid);
     }
 
     @ApiOperation(value = "支持支付状态")
     @GetMapping("/getTradeStatus")
-    R<List<Integer>> getTradeStatus(String sid){
+    R<List<Integer>> getTradeStatus(String sid) {
         return shopService.getTradeStatus(sid);
     }
 
