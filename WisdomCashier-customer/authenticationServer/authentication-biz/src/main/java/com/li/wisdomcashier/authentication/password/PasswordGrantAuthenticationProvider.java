@@ -82,7 +82,7 @@ public class PasswordGrantAuthenticationProvider implements AuthenticationProvid
         //校验用户名信息
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
         if (!passwordEncoder.matches(password, userDetails.getPassword())) {
-            throw new MyAuthenticationException("密码不正确！");
+            throw new MyAuthenticationException("用户名或密码错误！");
         }
 
         //由于在上面已验证过用户名、密码，现在构建一个已认证的对象UsernamePasswordAuthenticationToken

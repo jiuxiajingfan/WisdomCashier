@@ -4,6 +4,7 @@ import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.exception.BusinessException;
 import com.li.wisdomcashier.exception.CommonErrorEnum;
 import com.li.wisdomcashier.exception.FrequencyControlException;
+import com.li.wisdomcashier.exception.MyAuthenticationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.BindException;
@@ -95,5 +96,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = AccessDeniedException.class)
     public R accessDeniedException(AccessDeniedException e) {
         return R.error(CommonErrorEnum.ACCESS_LACK.getMsg(), CommonErrorEnum.ACCESS_LACK.getErrorCode());
+    }
+
+    @ExceptionHandler(value = MyAuthenticationException.class)
+    public R MyAuthenticationException(MyAuthenticationException e){
+        return R.error(e.getMessage(), CommonErrorEnum.LACK_PARAM.getCode());
     }
 }

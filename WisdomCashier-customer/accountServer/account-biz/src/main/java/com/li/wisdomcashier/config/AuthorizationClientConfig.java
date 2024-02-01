@@ -12,6 +12,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -55,7 +56,7 @@ public class AuthorizationClientConfig {
                         )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new MyAuthenticationEntryPoint())
-                ).csrf(csrf -> csrf.disable());
+                ).csrf(AbstractHttpConfigurer::disable);
         return http.build();
     }
 

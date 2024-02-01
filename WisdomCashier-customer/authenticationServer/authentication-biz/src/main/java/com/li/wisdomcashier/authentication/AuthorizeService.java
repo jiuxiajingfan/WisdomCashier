@@ -3,6 +3,7 @@ package com.li.wisdomcashier.authentication;
 
 import com.li.wisdomcashier.entry.Role;
 import com.li.wisdomcashier.entry.User;
+import com.li.wisdomcashier.exception.MyAuthenticationException;
 import com.li.wisdomcashier.mapper.RoleMapper;
 import com.li.wisdomcashier.mapper.UserMapper;
 import jakarta.annotation.Resource;
@@ -39,7 +40,7 @@ public class AuthorizeService implements UserDetailsService {
     public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
         User user = userMapper.selectOne(lambdaQuery(User.class).eq(User::getUserName, userName));
         if (Objects.isNull(user)) {
-            throw new UsernameNotFoundException("用户名或密码错误！");
+            throw new MyAuthenticationException("用户名或密码错误！");
         }
         List<Role> roles = roleMapper.selectList(lambdaQuery(Role.class)
                 .eq(Role::getUserId, user.getId()));

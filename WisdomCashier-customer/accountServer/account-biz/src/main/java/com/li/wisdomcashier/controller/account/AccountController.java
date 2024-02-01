@@ -1,6 +1,8 @@
 package com.li.wisdomcashier.controller.account;
 
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.json.JSONObject;
+import cn.hutool.json.JSONUtil;
 import com.anji.captcha.model.vo.CaptchaVO;
 import com.li.wisdomcashier.controller.OauthFeignClient;
 import com.li.wisdomcashier.controller.account.dto.ChangeEmailDTO;
@@ -10,6 +12,7 @@ import com.li.wisdomcashier.controller.account.dto.LoginDTO;
 import com.li.wisdomcashier.controller.account.vo.TokenVO;
 import com.li.wisdomcashier.controller.account.vo.UserDetailVO;
 import com.li.wisdomcashier.entry.R;
+import com.li.wisdomcashier.exception.MyAuthenticationException;
 import com.li.wisdomcashier.service.UserService;
 import jakarta.annotation.Resource;
 import jakarta.annotation.security.PermitAll;
@@ -72,6 +75,16 @@ public class AccountController {
                 loginDTO.getUsername(),
                 loginDTO.getPassword(),
                 "profile");
+        JSONObject parseObj = JSONUtil.parseObj(accessToken);
+        String code = parseObj.getStr("code");
+        if (code.equals("200")) {
+            return R.ok(
+                    TokenVO.builder()
+                            .token(parseObj.toString())
+                            .build()
+            );
+        }
+        throw new MyAuthenticationException(parseObj.getStr("msg"));
 //        if (accessToken.getValue() == null) {
 //            return R.error((String) accessToken.getAdditionalInformation().get("msg"), 401);
 //        } else {
@@ -82,9 +95,7 @@ public class AccountController {
 //                    .build(),
 //                    "登录成功！"
 //            );
-//        }
-        System.out.println(accessToken);
-        return null;
+//        };
     }
 
 //    @PostMapping("/getCaptcha")
