@@ -55,7 +55,7 @@ public class AuthorizationClientConfig {
                         (authorize ->
                                 authorize
                                         //swagger
-                                        .requestMatchers(HttpMethod.GET, "/v3/api-docs","/v3/api-docs/**", "/swagger-resources","/swagger-resources/**").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/v3/api-docs","/v3/api-docs/**","/webjars/**", "/swagger-resources","/swagger-resources/**").permitAll()
                                         //静态资源
                                         .requestMatchers(HttpMethod.GET, "/**.html",  "/**.css", "/**.js", "/**.ico").permitAll()
                                         //放行@Permit注解
@@ -114,4 +114,18 @@ public class AuthorizationClientConfig {
         }
         return result;
     }
+
+
+//    @Bean
+//    public WebSecurityCustomizer webSecurityCustomizer() {
+//        return (web) -> web.ignoring().requestMatchers(
+//                "/doc.html",
+//                "/doc.html/**",
+//                "/v3/api-docs/",
+//                "/v3/api-docs/**",
+//                "/webjars/**",
+//                "/swagger-resources",
+//                "/swagger-resources/**"
+//        );
+//    }
 }
