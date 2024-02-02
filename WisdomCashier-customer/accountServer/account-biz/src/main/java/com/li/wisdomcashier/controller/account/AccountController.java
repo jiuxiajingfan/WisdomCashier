@@ -14,6 +14,8 @@ import com.li.wisdomcashier.controller.account.vo.UserDetailVO;
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.exception.MyAuthenticationException;
 import com.li.wisdomcashier.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @ClassName UserController
@@ -32,7 +35,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/account")
-//@Tag(name = "账户相关")
+@Tag(name = "账户相关")
 public class AccountController {
 
     /**
@@ -51,14 +54,14 @@ public class AccountController {
     OauthFeignClient oauthFeignClient;
 
     @PostMapping("/createUser")
-//    @Operation(summary = "创建用户")
+    @Operation(summary = "创建用户")
     @PermitAll
     R<String> createUser(@RequestBody @Validated CreateUserDTO createUserDTO) {
         return userService.createUser(createUserDTO);
     }
 
     @PostMapping("/login")
-//    @Operation(summary = "登录")
+    @Operation(summary = "登录")
     @PermitAll
     R<TokenVO> postAccessToken(@RequestBody @Validated LoginDTO loginDTO) {
         if (Boolean.TRUE.equals(chaptcha)) {
@@ -77,25 +80,16 @@ public class AccountController {
                 "profile");
         JSONObject parseObj = JSONUtil.parseObj(accessToken);
         String code = parseObj.getStr("code");
-        if (code.equals("200")) {
+        if (Objects.isNull(code)) {
             return R.ok(
                     TokenVO.builder()
-                            .token(parseObj.toString())
+                            .token(parseObj.getStr("access_token"))
+                            .refresh(parseObj.getStr("refresh_token"))
                             .build()
+                    , "登录成功！"
             );
         }
         throw new MyAuthenticationException(parseObj.getStr("msg"));
-//        if (accessToken.getValue() == null) {
-//            return R.error((String) accessToken.getAdditionalInformation().get("msg"), 401);
-//        } else {
-//            return R.ok(
-//                    TokenVO.builder()
-//                    .token(accessToken.getValue())
-//                    .refresh(String.valueOf(accessToken.getRefreshToken()))
-//                    .build(),
-//                    "登录成功！"
-//            );
-//        };
     }
 
 //    @PostMapping("/getCaptcha")
@@ -119,30 +113,30 @@ public class AccountController {
     }
 
     @GetMapping("/getUserCenterMenu")
-//    @Operation(summary = "用户中心菜单")
+    @Operation(summary = "用户中心菜单")
     public R<List<Tree<String>>> getUserCenterMenu() {
         return userService.getUserCenterMenu();
     }
 
     @GetMapping("/getUserDetail")
-//    @Operation(summary = "获取用户信息")
+    @Operation(summary = "获取用户信息")
     public R<UserDetailVO> getUserDetail() {
         return userService.getUserDetail();
     }
 
     @GetMapping("/changeUserNickName")
-//    @Operation(summary = "修改用户名")
+    @Operation(summary = "修改用户名")
     public R<String> changeUserNickName(String name) {
         return userService.changeUserNickName(name);
     }
 
-    //    @Operation(summary = "修改绑定邮箱")
+    @Operation(summary = "修改绑定邮箱")
     @PostMapping("/changeUserEmail")
     public R<String> changeUserEmail(@RequestBody @Validated ChangeEmailDTO changeEmailDto) {
         return userService.changeUserEmail(changeEmailDto);
     }
 
-    //    @Operation(summary = "修改用户密码")
+    @Operation(summary = "修改用户密码")
     @PostMapping("/changePwd")
     public R<String> changePwd(@RequestBody @Validated ChangePwdDTO changePwdDto) {
         return userService.changePwd(changePwdDto);

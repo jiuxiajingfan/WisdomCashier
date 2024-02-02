@@ -12,7 +12,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
@@ -39,24 +41,34 @@ public class AuthorizationClientConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         Multimap<HttpMethod, String> permitAllUrls = getPermitAllUrlsFromAnnotations();
-        http.authorizeHttpRequests
+        // 禁用basic明文验证
+        http.httpBasic(AbstractHttpConfigurer::disable)
+                // 前后端分离架构不需要csrf保护
+                .csrf(AbstractHttpConfigurer::disable)
+                // 禁用默认登录页
+                .formLogin(AbstractHttpConfigurer::disable)
+                // 禁用默认登出页
+                .logout(AbstractHttpConfigurer::disable)
+                // 前后端分离是无状态的，不需要session了，直接禁用。
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeHttpRequests
                         (authorize ->
-                                        authorize
-//								//swagger
-                                                .requestMatchers("/favicon.ico", "/webjars/**", "/*/v3/api-docs**", "/v3/api-docs/**").permitAll()
-//								//静态资源
-                                                .requestMatchers(HttpMethod.GET, "/*.html", "/**.html", "/**.css", "/**.js", "/**.ico").permitAll()
-                                                //放行@Permit注解
-                                                .requestMatchers(HttpMethod.GET, permitAllUrls.get(HttpMethod.GET).toArray(new String[0])).permitAll()
-                                                .requestMatchers(HttpMethod.POST, permitAllUrls.get(HttpMethod.POST).toArray(new String[0])).permitAll()
-                                                .requestMatchers(HttpMethod.PUT, permitAllUrls.get(HttpMethod.PUT).toArray(new String[0])).permitAll()
-                                                .requestMatchers(HttpMethod.DELETE, permitAllUrls.get(HttpMethod.DELETE).toArray(new String[0])).permitAll()
-                                                // 鉴权管理器配置
-                                                .anyRequest().access(webMvcAuthorizationManager())
+                                authorize
+                                        //swagger
+                                        .requestMatchers(HttpMethod.GET, "/v3/api-docs","/v3/api-docs/**", "/swagger-resources","/swagger-resources/**").permitAll()
+                                        //静态资源
+                                        .requestMatchers(HttpMethod.GET, "/**.html",  "/**.css", "/**.js", "/**.ico").permitAll()
+                                        //放行@Permit注解
+                                        .requestMatchers(HttpMethod.GET, permitAllUrls.get(HttpMethod.GET).toArray(new String[0])).permitAll()
+                                        .requestMatchers(HttpMethod.POST, permitAllUrls.get(HttpMethod.POST).toArray(new String[0])).permitAll()
+                                        .requestMatchers(HttpMethod.PUT, permitAllUrls.get(HttpMethod.PUT).toArray(new String[0])).permitAll()
+                                        .requestMatchers(HttpMethod.DELETE, permitAllUrls.get(HttpMethod.DELETE).toArray(new String[0])).permitAll()
+                                        // 鉴权管理器配置
+                                        .anyRequest().access(webMvcAuthorizationManager())
                         )
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(new MyAuthenticationEntryPoint())
-                ).csrf(AbstractHttpConfigurer::disable);
+                );
         return http.build();
     }
 
