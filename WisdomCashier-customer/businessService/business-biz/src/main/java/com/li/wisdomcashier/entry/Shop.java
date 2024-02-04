@@ -27,11 +27,11 @@ public class Shop implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Schema(name = "id主键")
+    @Schema(description = "id主键")
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
-    @Schema(name = "店铺名")
+    @Schema(description = "店铺名")
     @TableField("shop_name")
     private String shopName;
 
@@ -47,19 +47,19 @@ public class Shop implements Serializable {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime gmtUpdate;
 
-    @Schema(name = "介绍")
+    @Schema(description = "介绍")
     @TableField("tip")
     private String tip;
 
-    @Schema(name = "店铺状态 0正常 1封禁 2注销")
+    @Schema(description = "店铺状态 0正常 1封禁 2注销")
     @TableField("status")
     private Integer status;
 
-    @Schema(name = "支付宝付款商家授权码")
+    @Schema(description = "支付宝付款商家授权码")
     @TableField("auth_zfb")
     private String authZfb;
 
-    @Schema(name = "微信付款商家授权码")
+    @Schema(description = "微信付款商家授权码")
     @TableField("auth_wx")
     private String authWx;
 

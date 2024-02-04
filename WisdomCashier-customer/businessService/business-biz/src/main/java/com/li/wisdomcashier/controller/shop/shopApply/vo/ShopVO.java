@@ -19,7 +19,7 @@ public class ShopVO {
     @JsonSerialize(using = ToStringSerializer.class)
     Long id;
     String shopName;
-    @Schema(name = "权限")
+    @Schema(description = "权限")
     Integer role;
     LocalDateTime createTime;
     String desc;

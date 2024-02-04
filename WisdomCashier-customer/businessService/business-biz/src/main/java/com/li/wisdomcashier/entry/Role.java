@@ -23,7 +23,7 @@ public class Role implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Schema(name = "id主键")
+    @Schema(description = "id主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
@@ -33,7 +33,7 @@ public class Role implements Serializable {
     @TableField("shop_id")
     private Long shopId;
 
-    @Schema(name = "角色 0为普通用户 1为收银员 2为店主 3为超级管理员")
+    @Schema(description = "角色 0为普通用户 1为收银员 2为店主 3为超级管理员")
     @TableField("role")
     private Integer role;
 

@@ -18,29 +18,29 @@ import java.util.List;
 @Data
 public class BuyGoodDTO {
 
-    @Schema(name = "商品数组")
+    @Schema(description = "商品数组")
     @NotEmpty(message = "商品不能为空！")
     List<Goods> goods;
 
-    @Schema(name ="店铺id")
+    @Schema(description = "店铺id")
     @NotNull(message = "店铺id不能为空！")
     String sid;
 
-    @Schema(name ="支付类型 1现金 2wx 3zfb")
+    @Schema(description = "支付类型 1现金 2wx 3zfb")
     @NotNull(message = "支付类型不能为空！")
     int type;
 
-    @Schema(name ="总价")
+    @Schema(description = "总价")
     @NotNull(message = "总价不能为空")
     String sum;
 
-    @Schema(name ="远程订单号")
+    @Schema(description = "远程订单号")
     String remoteNo;
 
-    @Schema(name ="订单状态")
+    @Schema(description = "订单状态")
     Integer status;
 
-    @Schema(name ="订单消息")
+    @Schema(description = "订单消息")
     String msg;
 
     String id;
