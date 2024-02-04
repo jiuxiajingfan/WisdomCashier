@@ -1,10 +1,10 @@
 package com.li.wisdomcashier.controller.goods.dto;
 
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 /**
@@ -17,49 +17,49 @@ import java.time.LocalDate;
 @Data
 public class GoodsDTO {
     @NotBlank(message = "商品名不能为空！")
-    @ApiModelProperty("商品名")
+    @Schema(name = "商品名")
     private String name;
 
     @NotBlank(message = "商品条码号不能为空！")
-    @ApiModelProperty("商品条码")
+    @Schema(name = "商品条码")
     private String gid;
 
-    @ApiModelProperty("进价")
+    @Schema(name = "进价")
     private String priceIn;
 
     @NotNull(message = "商品售价不能为空！")
-    @ApiModelProperty("售价")
+    @Schema(name = "售价")
     private String priceOut;
 
     @NotNull(message = "商品售价不能为空！")
-    @ApiModelProperty("Vip售价")
+    @Schema(name = "Vip售价")
     private String priceVip;
 
     @NotNull(message = "商店id不能为空!")
-    @ApiModelProperty("商店id")
+    @Schema(name = "商店id")
 
     private String sid;
 
-    @ApiModelProperty("生产日期")
+    @Schema(name = "生产日期")
     private LocalDate date;
 
     @NotNull(message = "保质期不能为空！")
-    @ApiModelProperty("保质期")
+    @Schema(name = "保质期")
     private Integer shelfLife;
 
     @NotNull(message = "数量不能为空!")
-    @ApiModelProperty("数量")
+    @Schema(name = "数量")
     private Integer num;
 
-    @ApiModelProperty("图片地址")
+    @Schema(name = "图片地址")
     private String picUrl;
 
-    @ApiModelProperty("利润")
+    @Schema(name = "利润")
     private String profit;
 
-    @ApiModelProperty("计量")
+    @Schema(name = "计量")
     private String metrology;
 
-    @ApiModelProperty("分类")
+    @Schema(name = "分类")
     private String type;
 }

@@ -2,6 +2,8 @@ package com.li.wisdomcashier.controller.email;
 
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.EmailService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.annotation.security.PermitAll;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,13 +20,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/email")
-//@Api(tags = "邮件相关")
+@Tag(name = "邮件相关")
 public class EmailController {
     @Resource
     private EmailService emailService;
 
     @GetMapping("/getCode")
-//    @ApiOperation("获取邮件")
+    @Operation(summary = "获取邮件")
     @PermitAll
     public R<String> getCode(@RequestParam("email")
 //                                 @ApiParam("邮箱")

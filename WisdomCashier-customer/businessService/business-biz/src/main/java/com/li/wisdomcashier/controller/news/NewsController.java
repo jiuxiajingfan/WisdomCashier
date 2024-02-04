@@ -3,8 +3,8 @@ package com.li.wisdomcashier.controller.news;
 import com.li.wisdomcashier.controller.news.vo.NewsVO;
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.NewsService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,7 +22,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/news")
-@Api(tags = "新闻")
+@Tag(name = "新闻")
 public class NewsController {
 
     @Resource
@@ -30,13 +30,13 @@ public class NewsController {
 
 
     @GetMapping("/getNews")
-    @ApiOperation("获取新闻")
+    @Operation(summary = "获取新闻")
     public R<NewsVO> getNews() {
         return newsService.getNews();
     }
 
     @GetMapping("getAdvertising")
-    @ApiOperation("获取广告跑马灯图片")
+    @Operation(summary ="获取广告跑马灯图片")
     public R<List<String>> getAdvertising() {
         return newsService.getAdvertising();
     }

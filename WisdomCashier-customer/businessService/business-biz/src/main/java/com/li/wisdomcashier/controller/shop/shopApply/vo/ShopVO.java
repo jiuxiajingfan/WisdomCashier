@@ -2,7 +2,7 @@ package com.li.wisdomcashier.controller.shop.shopApply.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -19,7 +19,7 @@ public class ShopVO {
     @JsonSerialize(using = ToStringSerializer.class)
     Long id;
     String shopName;
-    @ApiModelProperty(value = "权限")
+    @Schema(name = "权限")
     Integer role;
     LocalDateTime createTime;
     String desc;

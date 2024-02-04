@@ -16,7 +16,7 @@ import org.springframework.web.server.ServerWebExchange;
  */
 @Component
 public class SwaggerHeaderFilter extends AbstractGatewayFilterFactory {
-    private static final String URI = "/v2/api-docs";
+    private static final String URI = "/v3/api-docs";
 
     @Override
     public GatewayFilter apply(Object config) {

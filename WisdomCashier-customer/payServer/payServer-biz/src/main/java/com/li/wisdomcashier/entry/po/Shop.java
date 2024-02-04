@@ -1,11 +1,12 @@
-package com.li.wisdomcashier.entry;
+package com.li.wisdomcashier.entry.po;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
-import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -23,15 +24,18 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_shop")
+@ApiModel(value = "Shop对象", description = "")
 public class Shop implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @Schema(name = "id主键")
+    @Schema(name =
+value = "id主键")
     @TableId(value = "id", type = IdType.ASSIGN_ID)
     private Long id;
 
-    @Schema(name = "店铺名")
+    @Schema(name =
+value = "店铺名")
     @TableField("shop_name")
     private String shopName;
 
@@ -47,19 +51,23 @@ public class Shop implements Serializable {
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime gmtUpdate;
 
-    @Schema(name = "介绍")
+    @Schema(name =
+value = "介绍")
     @TableField("tip")
     private String tip;
 
-    @Schema(name = "店铺状态 0正常 1封禁 2注销")
+    @Schema(name =
+value = "店铺状态 0正常 1封禁 2注销")
     @TableField("status")
     private Integer status;
 
-    @Schema(name = "支付宝付款商家授权码")
+    @Schema(name =
+value = "支付宝付款商家授权码")
     @TableField("auth_zfb")
     private String authZfb;
 
-    @Schema(name = "微信付款商家授权码")
+    @Schema(name =
+value = "微信付款商家授权码")
     @TableField("auth_wx")
     private String authWx;
 
@@ -77,4 +85,6 @@ public class Shop implements Serializable {
 
     @TableField("img_shop")
     private String imgShop;
+
+
 }

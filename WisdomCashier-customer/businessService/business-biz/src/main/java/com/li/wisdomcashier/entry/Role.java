@@ -1,8 +1,7 @@
 package com.li.wisdomcashier.entry;
 
 import com.baomidou.mybatisplus.annotation.*;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -20,12 +19,11 @@ import java.time.LocalDateTime;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @TableName("t_role")
-@ApiModel(value = "Role对象", description = "")
 public class Role implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    @ApiModelProperty(value = "id主键")
+    @Schema(name = "id主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
@@ -35,7 +33,7 @@ public class Role implements Serializable {
     @TableField("shop_id")
     private Long shopId;
 
-    @ApiModelProperty(value = "角色 0为普通用户 1为收银员 2为店主 3为超级管理员")
+    @Schema(name = "角色 0为普通用户 1为收银员 2为店主 3为超级管理员")
     @TableField("role")
     private Integer role;
 

@@ -2,7 +2,7 @@ package com.li.wisdomcashier.controller.file;
 
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.utils.MinioUtils;
-import io.swagger.annotations.Api;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,7 +22,7 @@ import jakarta.annotation.Resource;
  */
 @RestController
 @RequestMapping("/file")
-@Api(tags = "文件上传下载相关")
+@Tag(name = "文件上传下载相关")
 @Slf4j
 public class FileController {
     @Resource

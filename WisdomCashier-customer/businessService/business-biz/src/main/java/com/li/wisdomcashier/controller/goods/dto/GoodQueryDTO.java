@@ -1,9 +1,9 @@
 package com.li.wisdomcashier.controller.goods.dto;
 
 import com.li.wisdomcashier.entry.PageDTO;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 
 /**
  * @ClassName GoodQueryDTO

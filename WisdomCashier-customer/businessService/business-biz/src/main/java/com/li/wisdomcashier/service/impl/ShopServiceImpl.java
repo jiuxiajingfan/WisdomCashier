@@ -18,7 +18,7 @@ import com.li.wisdomcashier.mapper.SysMenuMapper;
 import com.li.wisdomcashier.service.ShopService;
 import com.li.wisdomcashier.utils.UserUtils;
 import jakarta.annotation.Resource;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
