@@ -3,6 +3,7 @@ package com.li.wisdomcashier.controller.email;
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.EmailService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.annotation.security.PermitAll;
@@ -29,10 +30,10 @@ public class EmailController {
     @Operation(summary = "获取邮件")
     @PermitAll
     public R<String> getCode(@RequestParam("email")
-//                                 @ApiParam("邮箱")
+                             @Parameter(description = "邮箱")
                              String email,
                              @RequestParam("type")
-//                             @ApiParam("类型")
+                             @Parameter(description = "类型")
                              Integer type) {
         return emailService.getCode(email, type);
     }

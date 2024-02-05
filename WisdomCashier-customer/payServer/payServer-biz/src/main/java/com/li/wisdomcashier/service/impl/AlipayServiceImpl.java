@@ -11,9 +11,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.li.wisdomcashier.entry.dto.AliPayDTO;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.RefundDTO;
-import com.li.wisdomcashier.entry.po.QueryTrade;
-import com.li.wisdomcashier.entry.po.Trade;
-import com.li.wisdomcashier.entry.po.TradeRefund;
+import com.li.wisdomcashier.entry.po.*;
+import com.li.wisdomcashier.entry.po.Shop;
+import com.li.wisdomcashier.enums.RoleEnum;
 import com.li.wisdomcashier.mapper.ShopMapper;
 import com.li.wisdomcashier.mapper.TradeMapper;
 import com.li.wisdomcashier.mapper.TradeRefundMapper;
@@ -21,9 +21,12 @@ import com.li.wisdomcashier.service.AlipayService;
 import com.li.wisdomcashier.service.TradeRefundService;
 import com.li.wisdomcashier.utils.RedisUtils;
 import com.li.wisdomcashier.entry.R;
+import com.li.wisdomcashier.utils.UserUtils;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -39,23 +42,24 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@RefreshScope
 public class AlipayServiceImpl implements AlipayService {
 
     //app ID
     @Value("${alipay.appId}")
-    private String APP_ID;
+    private String app_id;
 
     //应用私钥
     @Value("${alipay.privateKey}")
-    private String APP_PRIVATE_KEY;
+    private String app_key;
 
     //字符集
     @Value("${alipay.charset}")
-    private String CHARSET;
+    private String charset;
 
     // 支付宝公钥
     @Value("${alipay.alipaypublickey}")
-    private String ALIPAY_PUBLIC_KEY;
+        private String ALIPAY_PUBLIC_KEY;
 
     //接口路径
     @Value("${alipay.serverUrl}")
@@ -91,8 +95,8 @@ public class AlipayServiceImpl implements AlipayService {
     private String RETURN_URL = "http://localhost:8080/returnUrl";
 
     @Override
+    @PreAuthorize("@ss.hasPermission(#aliPayDTO.getShopName(),3,2,1)")
     public R<PayDTO> aliPay(AliPayDTO aliPayDTO) {
-        UserUtils.hasPermissions(aliPayDTO.getShopName(), RoleEnum.SHOP.getCode());
         Shop shop = shopMapper.selectById(Long.parseLong(aliPayDTO.getShopName()));
         User user = UserUtils.getUser();
         //同一用户同一时间只能产生一笔交易

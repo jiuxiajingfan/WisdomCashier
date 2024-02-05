@@ -17,17 +17,19 @@ import java.util.Collection;
  */
 @Slf4j
 public class PermissionConfig {
-    public boolean hasPermission(Long id, Integer role) {
+    public boolean hasPermission(Long id, Integer... roles) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null)
             return false;
-        if (id == null || role == null)
+        if (id == null || roles == null)
             return true;
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         if (null != authorities) {
-            SimpleGrantedAuthority o = new SimpleGrantedAuthority(id + role.toString());
-            if (authorities.contains(o)) {
-                return true;
+            for (Integer role : roles) {
+                SimpleGrantedAuthority o = new SimpleGrantedAuthority(id + role.toString());
+                if (authorities.contains(o)) {
+                    return true;
+                }
             }
         }
         log.warn("用户{}正试图访问无权限接口", authentication.getName());

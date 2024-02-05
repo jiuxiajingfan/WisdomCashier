@@ -1,7 +1,5 @@
 server:
   port: 9702
-  servlet:
-    context-path: /gateway
 spring:
   cloud:
     sentinel:
@@ -18,28 +16,27 @@ spring:
         - id: oauth2-server
           uri: lb://oauth2-server
           predicates:
-            - Path=/oauth/**
-        - id: account-server-swagger
-          uri: lb://account-server
-          predicates:
-            - Path=/account/v2/**,/email/v2/**
-          filters:
-            - SwaggerHeaderFilter
-            - StripPrefix=1
+            - Path=/oauth2_api/**
         - id: account-server
           uri: lb://account-server
           predicates:
-            - Path=/account/**,/email/**
-        - id: business-server-swagger
-          uri: lb://business-server
-          predicates:
-            - Path=/shop/v2/**,/news/v2/**
+            - Path=/account_api/**
           filters:
-            - SwaggerHeaderFilter
             - StripPrefix=1
         - id: business-server
           uri: lb://business-server
           predicates:
-            - Path=/shop/**,/news/**,/file/**
-
+            - Path=/biz_api/**
+          filters:
+            - StripPrefix=1
+knife4j:
+  gateway:
+    enabled: true
+    strategy: discover
+    discover:
+      enabled: true
+      version: openapi3
+      excluded-services:
+        - gateway
+        - oauth2-server
 
