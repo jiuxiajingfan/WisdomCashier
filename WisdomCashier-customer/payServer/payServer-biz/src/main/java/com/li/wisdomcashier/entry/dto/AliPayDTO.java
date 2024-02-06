@@ -12,7 +12,6 @@ import lombok.Data;
 @Data
 public class AliPayDTO {
     String shopName;
-    String id;
     String price;
 
     /**

@@ -1,5 +1,6 @@
 package com.li.wisdomcashier.service.impl;
 
+import cn.hutool.core.comparator.CompareUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
@@ -8,22 +9,24 @@ import com.alipay.api.domain.*;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.li.wisdomcashier.annotation.RedissonLock;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.dto.AliPayDTO;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.RefundDTO;
 import com.li.wisdomcashier.entry.po.*;
-import com.li.wisdomcashier.entry.po.Shop;
 import com.li.wisdomcashier.enums.RoleEnum;
 import com.li.wisdomcashier.mapper.ShopMapper;
-import com.li.wisdomcashier.mapper.TradeMapper;
-import com.li.wisdomcashier.mapper.TradeRefundMapper;
+import com.li.wisdomcashier.mapper.SysPayMapper;
 import com.li.wisdomcashier.service.AlipayService;
-import com.li.wisdomcashier.service.TradeRefundService;
+import com.li.wisdomcashier.utils.CommonUtils;
 import com.li.wisdomcashier.utils.RedisUtils;
-import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.utils.UserUtils;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.redisson.Redisson;
+import org.redisson.api.RBucket;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,6 +35,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+
+import static com.alipay.api.AlipayConstants.APP_ID;
 
 /**
  * @ClassName PayServiceImpl
@@ -42,70 +47,47 @@ import java.util.List;
  */
 @Service
 @Slf4j
-@RefreshScope
 public class AlipayServiceImpl implements AlipayService {
-
-    //app ID
-    @Value("${alipay.appId}")
-    private String app_id;
-
-    //应用私钥
-    @Value("${alipay.privateKey}")
-    private String app_key;
-
-    //字符集
-    @Value("${alipay.charset}")
-    private String charset;
-
-    // 支付宝公钥
-    @Value("${alipay.alipaypublickey}")
-        private String ALIPAY_PUBLIC_KEY;
-
-    //接口路径
-    @Value("${alipay.serverUrl}")
-    private String GATEWAY_URL;
-
-    //返回格式
-    @Value("${alipay.format}")
-    private String FORMAT;
-
-    //签名方式
-    @Value("${alipay.signType}")
-    private String SIGN_TYPE;
-
     @Resource
     private RedisUtils redisUtils;
 
     @Resource
-    private ShopMapper shopMapper;
+    private SysPayMapper sysPayMapper;
 
     @Resource
-    private TradeRefundService tradeRefundService;
+    private Redisson redisson;
 
-    @Resource
-    private TradeMapper tradeMapper;
+    @Value("${pay.ali.active}")
+    private String activeName;
 
-    @Resource
-    private TradeRefundMapper tradeRefundMapper;
+    private AlipayClient alipayClient;
 
-    //支付宝异步通知路径,付款完毕后会异步调用本项目的方法,必须为公网地址
-    private String NOTIFY_URL = "http://127.0.0.1/notifyUrl";
-
-    //支付宝同步通知路径,也就是当付款完毕后跳转本项目的页面,可以不是公网地址
-    private String RETURN_URL = "http://localhost:8080/returnUrl";
+    @PostConstruct
+    void payInit(){
+        List<SysPay> sysPays = sysPayMapper.selectList(null);
+        sysPays.forEach(e->{
+            RBucket<SysPay> bucket = redisson.getBucket(e.getName());
+            bucket.set(e);
+            if(CommonUtils.compare(e.getName(),activeName)){
+                alipayClient =  new DefaultAlipayClient(
+                        e.getAppUrl(),
+                        e.getAppId(),
+                        e.getAppPrivateKey(),
+                        "json",
+                        "utf-8",
+                        e.getAppPublicKey(),
+                        e.getSignType()
+                );
+            }
+        });
+    }
 
     @Override
     @PreAuthorize("@ss.hasPermission(#aliPayDTO.getShopName(),3,2,1)")
+    @RedissonLock(keyPrefix = "ALIPAY:",key = "#aliPayDTO.operatorId",time = 3000)
     public R<PayDTO> aliPay(AliPayDTO aliPayDTO) {
-        Shop shop = shopMapper.selectById(Long.parseLong(aliPayDTO.getShopName()));
-        User user = UserUtils.getUser();
-        //同一用户同一时间只能产生一笔交易
-        if (redisUtils.hasKey("aliPay" + user.getId()))
-            return R.error("存在一笔订单未处理，请先处理！");
-        AlipayClient alipayClient = new DefaultAlipayClient(GATEWAY_URL, APP_ID, APP_PRIVATE_KEY, FORMAT, CHARSET, ALIPAY_PUBLIC_KEY, SIGN_TYPE);
         AlipayTradePayRequest request = new AlipayTradePayRequest();
         String id = IdUtil.getSnowflake().nextIdStr();
-        redisUtils.set("aliPay" + user.getId(), id, 60);
         AlipayTradePayModel model = new AlipayTradePayModel();
         /**
          * 商户订单号，商户自定义，需保证在商户端不重复

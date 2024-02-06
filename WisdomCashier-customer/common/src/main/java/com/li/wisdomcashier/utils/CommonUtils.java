@@ -10,6 +10,9 @@ package com.li.wisdomcashier.utils;
 
 public class CommonUtils {
     public static boolean compare(Object a, Object b) {
+        if(null == a || null == b){
+            return false;
+        }
         return a.equals(b);
     }
 }
