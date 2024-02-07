@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Data
 public class AliPayDTO {
-    String shopName;
+    String shopId;
     String price;
 
     /**
@@ -23,4 +23,8 @@ public class AliPayDTO {
      * 付款用户ID
      */
     String userID;
+    /**
+     * 订单id
+     */
+    String id;
 }

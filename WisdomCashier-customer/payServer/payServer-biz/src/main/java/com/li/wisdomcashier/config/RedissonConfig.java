@@ -1,6 +1,7 @@
 package com.li.wisdomcashier.config;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
+import com.li.wisdomcashier.entry.SwaggerProperties;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.Redisson;
@@ -9,17 +10,21 @@ import org.redisson.config.ClusterServersConfig;
 import org.redisson.config.Config;
 import org.redisson.config.SentinelServersConfig;
 import org.redisson.config.SingleServerConfig;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
 @Configuration
+@EnableConfigurationProperties(RedissonConfigProperties.class)
 public class RedissonConfig {
 
-    @Resource
     private RedissonConfigProperties redissonConfigProperties;
 
+    public RedissonConfig(RedissonConfigProperties redissonConfigProperties){
+        this.redissonConfigProperties = redissonConfigProperties;
+    }
     @Bean
     public RedissonClient redissonClient() {
         Config config = new Config();
