@@ -3,7 +3,6 @@ package com.li.wisdomcashier.service.impl;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.core.lang.tree.TreeNodeConfig;
 import cn.hutool.core.lang.tree.TreeUtil;
-import cn.hutool.extra.cglib.CglibUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -11,6 +10,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.controller.shop.shopApply.dto.ShopQueryDTO;
 import com.li.wisdomcashier.controller.shop.shopApply.vo.ShopVO;
+import com.li.wisdomcashier.convert.ShopConvert;
 import com.li.wisdomcashier.entry.*;
 import com.li.wisdomcashier.mapper.RoleMapper;
 import com.li.wisdomcashier.mapper.ShopMapper;
@@ -57,7 +57,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
                 .like(!StringUtils.isBlank(shopQueryDTO.getName()), Shop::getShopName, shopQueryDTO.getName());
         Page<Shop> page = new Page<>(shopQueryDTO.getCurrent(), shopQueryDTO.getPageSize());
         IPage<ShopVO> result = shopMapper.selectPage(page, wapper).convert(e -> {
-            ShopVO copy = CglibUtil.copy(e, ShopVO.class);
+            ShopVO copy = ShopConvert.INSTANCE.toShopVo(e);
             copy.setRole(roleMap.get(e.getId()));
             return copy;
         });

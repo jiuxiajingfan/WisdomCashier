@@ -1,11 +1,11 @@
 package com.li.wisdomcashier.service.impl;
 
 
-import cn.hutool.extra.cglib.CglibUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.controller.shop.shopApply.dto.ShopApplyDTO;
 import com.li.wisdomcashier.controller.shop.shopApply.vo.ShopApplyVO;
+import com.li.wisdomcashier.convert.ShopApplyConvert;
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.ShopApply;
 import com.li.wisdomcashier.enums.shop.ApplyEnum;
@@ -68,7 +68,7 @@ public class ShopApplyServiceImpl extends ServiceImpl<ShopApplyMapper, ShopApply
         if (!Objects.isNull(shopApply)) {
             return R.error("存在一份待审批的申请，请耐心等待！");
         }
-        ShopApply apply = CglibUtil.copy(shopApplyDTO, ShopApply.class);
+        ShopApply apply = ShopApplyConvert.INSTANCE.toShopApply(shopApplyDTO);
         apply.setStatus(ApplyEnum.WAIT.getCode());
         apply.setApplyId(id);
         return R.ok(shopApplyMapper.insert(apply) == 1 ? "申请成功！" : "申请失败！请重新提交");

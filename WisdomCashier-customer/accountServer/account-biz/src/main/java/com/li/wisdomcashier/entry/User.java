@@ -15,7 +15,6 @@ import java.time.LocalDateTime;
  * @Version 1.0
  */
 @Data
-@EqualsAndHashCode(callSuper = false)
 @TableName("t_user")
 public class User implements Serializable {
 

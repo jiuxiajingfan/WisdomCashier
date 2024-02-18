@@ -14,6 +14,7 @@ import com.li.wisdomcashier.controller.account.dto.ChangeEmailDTO;
 import com.li.wisdomcashier.controller.account.dto.ChangePwdDTO;
 import com.li.wisdomcashier.controller.account.dto.CreateUserDTO;
 import com.li.wisdomcashier.controller.account.vo.UserDetailVO;
+import com.li.wisdomcashier.convert.UserConvert;
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.SysMenu;
 import com.li.wisdomcashier.entry.User;
@@ -60,8 +61,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public R<String> createUser(CreateUserDTO createUserDTO) {
         //验证码校验
         String redisCode = (String) redisUtils.get(REGISTER_CODE + createUserDTO.getEmail());
-        if (redisCode == null ||
-                redisCode.compareTo(createUserDTO.getCode()) != 0) {
+        if (redisCode == null || redisCode.compareTo(createUserDTO.getCode()) != 0) {
             return R.error(CODE_ERROR);
         }
         //账号重复性校验
@@ -85,8 +85,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         copy.setUserNickname("用户" + RandomUtil.randomString(6));
         userMapper.insert(copy);
         redisUtils.del(REGISTER_CODE + createUserDTO.getEmail());
-        String oAuth2AccessToken = oauthFeignClient.postAccessToken("password", createUserDTO.getUserName(), createUserDTO.getPassword(), "scope");
-        return null;
+        String accessToken = oauthFeignClient.postAccessToken("password", createUserDTO.getUserName(), createUserDTO.getPassword(), "scope");
+        return R.ok(accessToken,"注册成功！");
     }
 
     @Override
@@ -114,11 +114,12 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public R<UserDetailVO> getUserDetail() {
         User user = UserUtils.getUser();
-        UserDetailVO copy = CglibUtil.copy(user, UserDetailVO.class);
+        UserDetailVO copy = UserConvert.INSTANCE.toUserDetailVO(user);
         if (!StringUtils.isBlank(copy.getPhone())) {
             copy.setPhone(DesensitizedUtil.mobilePhone(copy.getPhone()));
-        } else
+        } else {
             copy.setPhone("");
+        }
         copy.setEmail(DesensitizedUtil.email(copy.getEmail()));
         return R.ok(copy);
     }

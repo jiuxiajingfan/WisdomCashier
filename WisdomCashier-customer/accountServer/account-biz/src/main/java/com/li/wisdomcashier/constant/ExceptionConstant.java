@@ -8,6 +8,7 @@ package com.li.wisdomcashier.constant;
  * @Version 1.0
  */
 public class ExceptionConstant {
+    private ExceptionConstant(){}
     public static final String CHANGE_ERROR = "修改失败，请联系管理员！";
     public static final String CODE_ERROR = "验证码错误！";
     public static final String EMAIL_BIND_ERROR = "该邮箱已被绑定！";

@@ -1,16 +1,13 @@
-# 智慧收银
+# Wisdom cashier
+- A retail cashier management system based on Vue, Spring Boot and Spring Cloud Alibaba with separate front and back end and distributed architecture.
+- Support the functions of commodity sale, management and settlement.
+- Provide business data and online cashier services for merchants.
+- Support mobile payments such as Alipay.
 
-- 基于Vue和Spring Boot、Spring Cloud Alibaba构建的前后端分离，分布式架构的零售业收银管理系统。
-- 支持商品出售、管理、结算功能
-- 为商家提供营业数据以及在线收银服务
-- 支持支付宝等移动支付
+Jar package version is mainly used in the backend:
 
-
-
-后端主要使用Jar包版本：
-
-| 依赖                                            | 版本号         |
-| :---------------------------------------------- | -------------- |
+| dependency                                      | version        |
+|:------------------------------------------------|----------------|
 | Java                                            | 21             |
 | spring-boot-dependencies                        | 3.1.4          |
 | spring-boot-starter-web                         |                |
@@ -37,16 +34,16 @@
 | alipay-sdk-java                                 | 4.35.79.ALL    |
 | minio                                           | 8.4.1          |
 
-可供学习参考使用。
+It can be used for learning and reference.
 
 
 
-测试账号：test01\
-密码：123456789qwer
+test username：test01\
+password：123456789qwer
 
 
 
-## 部分功能截图
+## Screenshots of some functions
 
 ![img.png](img.png)
 ![img_1.png](img_1.png)
@@ -54,8 +51,9 @@
 ![img_3.png](img_3.png)
 
 
-## 特别鸣谢
 
-- 感谢 JetBrains 提供的免费开源 License：
+## Project supported by JetBrains
+
+- Many thanks to Jetbrains for kindly providing a license for me to work on this and other open-source projects:
   <img height="400" src="https://camo.githubusercontent.com/815ee6b83c8949f0037d19e10ad06da29a2c00dfec546cb26cd35f11895c66fa/68747470733a2f2f7265736f75726365732e6a6574627261696e732e636f6d2f73746f726167652f70726f64756374732f636f6d70616e792f6272616e642f6c6f676f732f6a625f6265616d2e706e67" width="400"/>
 
