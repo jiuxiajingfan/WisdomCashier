@@ -1,6 +1,8 @@
 package com.li.wisdomcashier.entry.dto;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @ClassName AliPayDTO
  * @Description TODO
@@ -9,7 +11,7 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
-public class AliPayDTO {
+public class AliPayDTO implements Serializable {
     String shopId;
     String price;
 

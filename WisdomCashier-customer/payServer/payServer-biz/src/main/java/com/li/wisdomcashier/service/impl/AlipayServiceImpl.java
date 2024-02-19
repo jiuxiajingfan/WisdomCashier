@@ -12,7 +12,7 @@ import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.dto.AliPayDTO;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.RefundDTO;
-import com.li.wisdomcashier.entry.po.QueryTrade;
+import com.li.wisdomcashier.entry.dto.QueryTrade;
 import com.li.wisdomcashier.entry.po.Shop;
 import com.li.wisdomcashier.entry.po.SysPay;
 import com.li.wisdomcashier.mapper.ShopMapper;
@@ -39,7 +39,7 @@ import java.util.List;
  */
 @Service
 @Slf4j
-@DubboService
+@DubboService(version = "1.0")
 public class AlipayServiceImpl implements AlipayService {
     @Resource
     private SysPayMapper sysPayMapper;

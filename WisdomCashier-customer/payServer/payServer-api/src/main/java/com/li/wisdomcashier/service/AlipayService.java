@@ -1,10 +1,10 @@
 package com.li.wisdomcashier.service;
 
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.dto.AliPayDTO;
 import com.li.wisdomcashier.entry.dto.PayDTO;
+import com.li.wisdomcashier.entry.dto.QueryTrade;
 import com.li.wisdomcashier.entry.dto.RefundDTO;
-import com.li.wisdomcashier.entry.po.QueryTrade;
-import com.li.wisdomcashier.entry.R;
 
 /**
  * @ClassName PayService

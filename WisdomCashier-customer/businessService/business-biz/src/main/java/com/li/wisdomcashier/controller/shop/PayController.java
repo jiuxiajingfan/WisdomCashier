@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "支付相关")
 public class PayController {
 
-    @DubboReference(group = "dubbo-pay-server",check = false)
+    @DubboReference(version = "1.0",check = false)
     private AlipayService alipayService;
 
     @PostMapping("/aliPay")

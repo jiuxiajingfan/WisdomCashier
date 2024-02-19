@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @ClassName RefundDTO
  * @Description TODO
@@ -13,7 +15,7 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
-public class RefundDTO {
+public class RefundDTO implements Serializable {
     @NotBlank(message = "店铺ID不能为空")
     String sid;
 

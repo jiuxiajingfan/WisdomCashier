@@ -3,6 +3,8 @@ package com.li.wisdomcashier.entry.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @ClassName PayDTO
  * @Description TODO
@@ -12,7 +14,7 @@ import lombok.Data;
  */
 
 @Data
-public class PayDTO {
+public class PayDTO implements Serializable {
 
     /**
      * 店铺订单号；

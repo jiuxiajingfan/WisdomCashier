@@ -2,6 +2,8 @@ package com.li.wisdomcashier.entry.dto;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 /**
  * @ClassName QueryTrade
  * @Description TODO
@@ -10,7 +12,7 @@ import lombok.Data;
  * @Version 1.0
  */
 @Data
-public class QueryTrade {
+public class QueryTrade implements Serializable {
     String payUser;
     String sum;
     String tradeNo;
