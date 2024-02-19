@@ -7,6 +7,7 @@ import com.li.wisdomcashier.controller.goods.dto.*;
 import com.li.wisdomcashier.controller.goods.vo.GoodsVO;
 import com.li.wisdomcashier.entry.Goods;
 import com.li.wisdomcashier.entry.R;
+import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.service.GoodsService;
 import org.springframework.stereotype.Service;
 

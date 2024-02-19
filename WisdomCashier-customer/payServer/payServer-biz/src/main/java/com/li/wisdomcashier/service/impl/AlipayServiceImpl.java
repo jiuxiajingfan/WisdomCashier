@@ -19,10 +19,10 @@ import com.li.wisdomcashier.mapper.ShopMapper;
 import com.li.wisdomcashier.mapper.SysPayMapper;
 import com.li.wisdomcashier.service.AlipayService;
 import com.li.wisdomcashier.utils.CommonUtils;
-import com.li.wisdomcashier.utils.RedisUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.dubbo.config.annotation.DubboService;
 import org.redisson.Redisson;
 import org.redisson.api.RBucket;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,10 +39,8 @@ import java.util.List;
  */
 @Service
 @Slf4j
+@DubboService
 public class AlipayServiceImpl implements AlipayService {
-    @Resource
-    private RedisUtils redisUtils;
-
     @Resource
     private SysPayMapper sysPayMapper;
 

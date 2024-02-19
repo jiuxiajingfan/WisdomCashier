@@ -1,4 +1,5 @@
-package com.li.wisdomcashier.controller.goods.dto;
+package com.li.wisdomcashier.entry.dto;
+
 
 import lombok.Data;
 
@@ -27,4 +28,5 @@ public class PayDTO {
      * 远程调用信息
      */
     private String msg;
+
 }

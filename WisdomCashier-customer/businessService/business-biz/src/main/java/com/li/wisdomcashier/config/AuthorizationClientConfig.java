@@ -55,9 +55,9 @@ public class AuthorizationClientConfig {
                         (authorize ->
                                 authorize
                                         //swagger
-                                        .requestMatchers(HttpMethod.GET, "/v3/api-docs", "/v3/api-docs/**", "/webjars/**", "/swagger-resources", "/swagger-resources/**").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/v3/api-docs","/v3/api-docs/**","/webjars/**", "/swagger-resources","/swagger-resources/**").permitAll()
                                         //静态资源
-                                        .requestMatchers(HttpMethod.GET, "/**.html", "/**.css", "/**.js", "/**.ico").permitAll()
+                                        .requestMatchers(HttpMethod.GET, "/**.html",  "/**.css", "/**.js", "/**.ico").permitAll()
                                         //放行@Permit注解
                                         .requestMatchers(HttpMethod.GET, permitAllUrls.get(HttpMethod.GET).toArray(new String[0])).permitAll()
                                         .requestMatchers(HttpMethod.POST, permitAllUrls.get(HttpMethod.POST).toArray(new String[0])).permitAll()
