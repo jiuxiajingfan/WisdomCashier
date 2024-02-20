@@ -1,34 +1,35 @@
 package com.li.wisdomcashier.entry.dto;
-
-
 import lombok.Data;
 
 import java.io.Serializable;
 
 /**
- * @ClassName PayDTO
+ * @ClassName AliPayDTO
  * @Description TODO
  * @Author Nine
- * @Date 2023/3/5 15:49
+ * @Date 2023/3/4 16:33
  * @Version 1.0
  */
-
 @Data
 public class PayDTO implements Serializable {
+    String shopId;
+    String shopName;
+    String price;
+    /**
+     * 代调token
+     */
+    String authToken;
+    /**
+     * 商户操作员编号。
+     */
+    private String operatorId;
 
     /**
-     * 店铺订单号；
+     * 付款用户ID
      */
-    private String shopID;
-
+    String userID;
     /**
-     * 远程订单号
+     * 订单id
      */
-    private String remoteID;
-
-    /**
-     * 远程调用信息
-     */
-    private String msg;
-
+    String id;
 }

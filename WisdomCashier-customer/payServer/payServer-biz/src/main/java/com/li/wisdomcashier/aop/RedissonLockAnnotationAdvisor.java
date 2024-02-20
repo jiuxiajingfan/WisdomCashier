@@ -42,12 +42,13 @@ public class RedissonLockAnnotationAdvisor {
         Optional<String> key = Optional.of(parseSpel(method, arguments, redissonLock.key(), String.class, redissonLock.key()));
         RLock lock = redissonClient.getLock(redissonLock.keyPrefix() + key.get());
         try {
-            log.info("{}尝试上锁", redissonLock.keyPrefix() + key.get());
+            log.info("{}尝试上锁", Thread.currentThread().getName() +redissonLock.keyPrefix() + key.get());
             boolean flag = lock.tryLock(redissonLock.time(), redissonLock.unit());
             if (flag) {
-                log.info("{}上锁成功", redissonLock.keyPrefix() + key.get());
+                log.info("{}上锁成功", Thread.currentThread().getName() +redissonLock.keyPrefix() + key.get());
                 return joinPoint.proceed();
             } else {
+                log.info("{}操作频繁，请稍后再试~", redissonLock.keyPrefix() + key.get());
                 throw new BusinessException("操作频繁，请稍后再试~");
             }
         } catch (Throwable e) {
@@ -58,6 +59,7 @@ public class RedissonLockAnnotationAdvisor {
                 //当前线程
                 if (lock.isHeldByCurrentThread()) {
                     lock.unlock();
+                    log.info("{}已解锁", redissonLock.keyPrefix() + key.get());
                 }
             }
         }

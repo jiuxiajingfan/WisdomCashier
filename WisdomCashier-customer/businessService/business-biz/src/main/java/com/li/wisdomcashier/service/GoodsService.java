@@ -6,7 +6,7 @@ import com.li.wisdomcashier.controller.goods.dto.*;
 import com.li.wisdomcashier.controller.goods.vo.GoodsVO;
 import com.li.wisdomcashier.entry.Goods;
 import com.li.wisdomcashier.entry.R;
-import com.li.wisdomcashier.entry.dto.PayDTO;
+import com.li.wisdomcashier.entry.dto.PayVO;
 
 /**
  * <p>
@@ -98,9 +98,9 @@ public interface GoodsService extends IService<Goods> {
     /**
      * 更新预览图
      *
-     * @param payDTO
+     * @param payVO
      * @return
      */
-    R<String> updateGoodImg(PayDTO payDTO);
+    R<String> updateGoodImg(PayVO payVO);
 
 }

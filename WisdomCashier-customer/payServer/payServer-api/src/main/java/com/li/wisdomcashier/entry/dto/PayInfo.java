@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @Version 1.0
  */
 @Data
-public class QueryTrade implements Serializable {
+public class PayInfo implements Serializable {
     String payUser;
     String sum;
     String tradeNo;

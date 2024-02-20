@@ -1,10 +1,14 @@
 package com.li.wisdomcashier.strategy.email;
 
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class EmailStrategyFactory {
-    public static final HashMap<Integer, AbstractEmailStrategy> STRATEGY_MAP = new HashMap<>();
+
+    private EmailStrategyFactory(){}
+
+    protected static final Map<Integer, AbstractEmailStrategy> STRATEGY_MAP = new HashMap<>();
 
     public static void register(Integer type, AbstractEmailStrategy strategy) {
         STRATEGY_MAP.put(type, strategy);

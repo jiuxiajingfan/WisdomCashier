@@ -1,9 +1,9 @@
 package com.li.wisdomcashier.service;
 
 import com.li.wisdomcashier.entry.R;
-import com.li.wisdomcashier.entry.dto.AliPayDTO;
 import com.li.wisdomcashier.entry.dto.PayDTO;
-import com.li.wisdomcashier.entry.dto.QueryTrade;
+import com.li.wisdomcashier.entry.dto.PayVO;
+import com.li.wisdomcashier.entry.dto.PayInfo;
 import com.li.wisdomcashier.entry.dto.RefundDTO;
 
 /**
@@ -21,7 +21,7 @@ public interface AlipayService {
      * @param aliPayDTO
      * @return
      */
-    R<PayDTO> aliPay(AliPayDTO aliPayDTO);
+    R<PayVO> aliPay(PayDTO aliPayDTO);
 
     /**
      * 查询订单号状态
@@ -47,7 +47,7 @@ public interface AlipayService {
      */
     R<String> closePay(String tradeNo, Long sid);
 
-    QueryTrade queryPayDetail(String tradeNo);
+    PayInfo queryPayDetail(String tradeNo);
 
     /**
      * 退款接口

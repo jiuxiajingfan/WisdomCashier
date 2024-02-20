@@ -15,8 +15,12 @@ public @interface RedissonLock {
 
     String keyPrefix() default "";
 
-    TimeUnit unit() default TimeUnit.SECONDS;
+    TimeUnit unit() default TimeUnit.MICROSECONDS;
 
+    /**
+     * 尝试时间
+     * @return
+     */
     int time() default 30000;
 
     /**

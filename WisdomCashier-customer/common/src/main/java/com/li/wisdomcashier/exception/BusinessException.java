@@ -2,8 +2,10 @@ package com.li.wisdomcashier.exception;
 
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class BusinessException extends RuntimeException {
+public class BusinessException extends RuntimeException implements Serializable {
     private static final long serialVersionUID = 1L;
 
     /**

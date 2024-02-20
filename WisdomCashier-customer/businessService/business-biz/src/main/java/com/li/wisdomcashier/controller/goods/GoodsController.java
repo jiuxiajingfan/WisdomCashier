@@ -5,7 +5,7 @@ import com.li.wisdomcashier.controller.goods.dto.*;
 import com.li.wisdomcashier.controller.goods.vo.GoodsVO;
 import com.li.wisdomcashier.entry.Goods;
 import com.li.wisdomcashier.entry.R;
-import com.li.wisdomcashier.entry.dto.PayDTO;
+import com.li.wisdomcashier.entry.dto.PayVO;
 import com.li.wisdomcashier.service.GoodsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -85,8 +85,8 @@ public class GoodsController {
 
     @PostMapping("/updateGoodImg")
     @Operation(summary = "更新商品图片")
-    public R<String> updateGoodImg(@RequestBody @Validated PayDTO payDTO) {
-        return goodsService.updateGoodImg(payDTO);
+    public R<String> updateGoodImg(@RequestBody @Validated PayVO payVO) {
+        return goodsService.updateGoodImg(payVO);
     }
 
 

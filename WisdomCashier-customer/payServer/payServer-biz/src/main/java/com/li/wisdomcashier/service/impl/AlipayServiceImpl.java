@@ -7,12 +7,11 @@ import com.alipay.api.domain.*;
 import com.alipay.api.request.*;
 import com.alipay.api.response.*;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.li.wisdomcashier.annotation.RedissonLock;
 import com.li.wisdomcashier.entry.R;
-import com.li.wisdomcashier.entry.dto.AliPayDTO;
 import com.li.wisdomcashier.entry.dto.PayDTO;
+import com.li.wisdomcashier.entry.dto.PayVO;
 import com.li.wisdomcashier.entry.dto.RefundDTO;
-import com.li.wisdomcashier.entry.dto.QueryTrade;
+import com.li.wisdomcashier.entry.dto.PayInfo;
 import com.li.wisdomcashier.entry.po.Shop;
 import com.li.wisdomcashier.entry.po.SysPay;
 import com.li.wisdomcashier.mapper.ShopMapper;
@@ -43,9 +42,6 @@ import java.util.List;
 public class AlipayServiceImpl implements AlipayService {
     @Resource
     private SysPayMapper sysPayMapper;
-
-    @Resource
-    private ShopMapper shopMapper;
 
     @Resource
     private Redisson redisson;
@@ -79,39 +75,37 @@ public class AlipayServiceImpl implements AlipayService {
     }
 
     @Override
-    @RedissonLock(keyPrefix = "ALIPAY:", key = "#aliPayDTO.operatorId", time = 3000)
-    public R<PayDTO> aliPay(AliPayDTO aliPayDTO) {
-        Shop shop = shopMapper.selectOne(Wrappers.lambdaQuery(Shop.class).eq(Shop::getId, aliPayDTO.getShopId()));
+    public R<PayVO> aliPay(PayDTO dto) {
         AlipayTradePayRequest request = new AlipayTradePayRequest();
         AlipayTradePayModel model = new AlipayTradePayModel();
-        model.setOutTradeNo(aliPayDTO.getId());
-        model.setSubject(shop.getShopName() + "消费");
+        model.setOutTradeNo(dto.getId());
+        model.setSubject(dto.getShopName());
         //订单金额，精确到小数点后两位
-        model.setTotalAmount(aliPayDTO.getPrice());
+        model.setTotalAmount(dto.getPrice());
         //订单描述
-        model.setBody(shop.getShopName() + "购物支付");
+        model.setBody(dto.getShopName() + "购物支付");
         //付款用户
-        model.setAuthCode(aliPayDTO.getUserID());
+        model.setAuthCode(dto.getUserID());
         //操作员
-        model.setOperatorId(aliPayDTO.getOperatorId());
+        model.setOperatorId(dto.getOperatorId());
         // 1分钟有效
         model.setTimeoutExpress("1m");
         request.setBizModel(model);
         //代调用商户支付接口
-        request.putOtherTextParam("app_auth_token", shop.getAuthZfb());
+        request.putOtherTextParam("app_auth_token", dto.getAuthToken());
         /** 异步通知地址，以http或者https开头的，商户外网可以post访问的异步地址，用于接收支付宝返回的支付结果，如果未收到该通知可参考该文档进行确认：			https://opensupport.alipay.com/support/helpcenter/193/201602475759 **/
         request.setNotifyUrl(payInfo.getNotifyUrl());
         AlipayTradePayResponse response = null;
-        PayDTO payDTO = new PayDTO();
+        PayVO payVO = new PayVO();
         try {
             response = alipayClient.execute(request);
-            payDTO.setRemoteID(response.getTradeNo());
-            payDTO.setShopID(shop.getId().toString());
-            payDTO.setMsg(response.getSubMsg());
+            payVO.setRemoteID(response.getTradeNo());
+            payVO.setShopID(dto.getShopId());
+            payVO.setMsg(response.getSubMsg());
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }
-        return R.ok(payDTO, response.getCode());
+        return R.ok(payVO, response.getCode());
     }
 
     @Override
@@ -163,24 +157,24 @@ public class AlipayServiceImpl implements AlipayService {
     }
 
     @Override
-    public QueryTrade queryPayDetail(String tradeNo) {
+    public PayInfo queryPayDetail(String tradeNo) {
         AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
         AlipayTradeQueryModel model = new AlipayTradeQueryModel();
         model.setTradeNo(tradeNo);
         request.setBizModel(model);
         AlipayTradeQueryResponse response = null;
-        QueryTrade queryTrade = new QueryTrade();
+        PayInfo payInfo = new PayInfo();
         try {
             response = alipayClient.execute(request);
-            queryTrade.setSum(response.getTotalAmount());
-            queryTrade.setPayUserId(response.getBuyerUserId());
-            queryTrade.setTradeNo(response.getOutTradeNo());
-            queryTrade.setPayUser(response.getBuyerLogonId());
-            queryTrade.setRemoteNo(response.getTradeNo());
+            payInfo.setSum(response.getTotalAmount());
+            payInfo.setPayUserId(response.getBuyerUserId());
+            payInfo.setTradeNo(response.getOutTradeNo());
+            payInfo.setPayUser(response.getBuyerLogonId());
+            payInfo.setRemoteNo(response.getTradeNo());
         } catch (AlipayApiException e) {
             e.printStackTrace();
         }
-        return queryTrade;
+        return payInfo;
     }
 
     @Override

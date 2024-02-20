@@ -42,6 +42,4 @@ public abstract class AbstractEmailStrategy {
     private void init() {
         EmailStrategyFactory.register(getTypeEnum().getType(), this);
     }
-
-    ;
 }
