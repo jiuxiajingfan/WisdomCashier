@@ -5,6 +5,7 @@ import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.PayVO;
 import com.li.wisdomcashier.entry.dto.PayInfo;
 import com.li.wisdomcashier.entry.dto.RefundDTO;
+import com.li.wisdomcashier.entry.vo.StatusVO;
 
 /**
  * @ClassName PayService
@@ -13,31 +14,25 @@ import com.li.wisdomcashier.entry.dto.RefundDTO;
  * @Date 2023/3/4 16:31
  * @Version 1.0
  */
-public interface AlipayService {
+public interface PayService {
 
     /**
-     * 支付宝提交收款接口
-     *
-     * @param aliPayDTO
-     * @return
+     * 提交支付
      */
-    R<PayVO> aliPay(PayDTO aliPayDTO);
+    PayVO pay(Integer type,PayDTO payDTO);
 
     /**
      * 查询订单号状态
-     *
-     * @param tradeNo 支付宝订单号
-     * @return
+     * @param tradeNo 订单号
      */
-    R<String> queryAliPay(String tradeNo);
+    StatusVO status(Integer type, String tradeNo);
 
     /**
      * 支付未知错误撤销订单
-     *
-     * @param tradeNo 支付宝订单号
+     * @param tradeNo 订单号
      * @return
      */
-    R<String> cancelPay(String tradeNo, Long sid);
+    String cancel(Integer type,String tradeNo);
 
     /**
      * 超时主动取消
@@ -45,9 +40,9 @@ public interface AlipayService {
      * @param tradeNo
      * @return
      */
-    R<String> closePay(String tradeNo, Long sid);
+    String close(Integer type,String tradeNo);
 
-    PayInfo queryPayDetail(String tradeNo);
+    PayInfo detail(Integer type,String tradeNo);
 
     /**
      * 退款接口
@@ -55,14 +50,6 @@ public interface AlipayService {
      * @param refundDTO
      * @return
      */
-    R<String> refundPay(RefundDTO refundDTO);
-
-    /**
-     * 退款查询接口
-     *
-     * @param refundDTO
-     * @return
-     */
-    R<String> queryRefund(RefundDTO refundDTO);
+    String refund(Integer type,RefundDTO refundDTO);
 
 }

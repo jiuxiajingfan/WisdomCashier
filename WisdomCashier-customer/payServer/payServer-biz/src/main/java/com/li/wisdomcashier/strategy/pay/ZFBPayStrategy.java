@@ -3,16 +3,9 @@ package com.li.wisdomcashier.strategy.pay;
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
 import com.alipay.api.DefaultAlipayClient;
-import com.alipay.api.domain.AlipayTradeCancelModel;
-import com.alipay.api.domain.AlipayTradePayModel;
-import com.alipay.api.domain.AlipayTradeQueryModel;
-import com.alipay.api.request.AlipayTradeCancelRequest;
-import com.alipay.api.request.AlipayTradePayRequest;
-import com.alipay.api.request.AlipayTradeQueryRequest;
-import com.alipay.api.response.AlipayTradeCancelResponse;
-import com.alipay.api.response.AlipayTradePayResponse;
-import com.alipay.api.response.AlipayTradeQueryResponse;
-import com.li.wisdomcashier.entry.R;
+import com.alipay.api.domain.*;
+import com.alipay.api.request.*;
+import com.alipay.api.response.*;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.PayInfo;
 import com.li.wisdomcashier.entry.dto.PayVO;
@@ -149,16 +142,58 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
 
     @Override
     public String close(String tradeNo) {
+        AlipayTradeCloseRequest request = new AlipayTradeCloseRequest();
+        AlipayTradeCloseModel model = new AlipayTradeCloseModel();
+        model.setTradeNo(tradeNo);
+        request.setBizModel(model);
+        AlipayTradeCloseResponse response = null;
+        try {
+            response = alipayClient.execute(request);
+            return response.getMsg();
+        } catch (AlipayApiException e) {
+            log.error("交易停止失败！停止单号{},返回值{}", tradeNo, response.toString());
+        }
         return null;
     }
 
     @Override
     public PayInfo detail(String tradeNo) {
+        AlipayTradeQueryRequest request = new AlipayTradeQueryRequest();
+        AlipayTradeQueryModel model = new AlipayTradeQueryModel();
+        model.setTradeNo(tradeNo);
+        request.setBizModel(model);
+        AlipayTradeQueryResponse response;
+        try {
+            response = alipayClient.execute(request);
+            return PayInfo.builder()
+                    .sum(response.getTotalAmount())
+                    .payUserId(response.getBuyerUserId())
+                    .tradeNo(response.getOutTradeNo())
+                    .payUser(response.getBuyerLogonId())
+                    .remoteNo(response.getTradeNo())
+                    .build();
+        } catch (AlipayApiException e) {
+            log.info("支付宝订单信息查询失败{}", e.getErrMsg());
+        }
         return null;
     }
 
     @Override
     public String refund(RefundDTO refundDTO) {
+        AlipayTradeRefundRequest request = new AlipayTradeRefundRequest();
+        AlipayTradeRefundModel model = new AlipayTradeRefundModel();
+        model.setOutTradeNo(refundDTO.getTradeNo());
+        model.setRefundAmount(refundDTO.getMoney());
+        model.setRefundReason(refundDTO.getMsg());
+        model.setOutRequestNo(refundDTO.getNo());
+        request.setBizModel(model);
+        AlipayTradeRefundResponse response;
+        try {
+            response = alipayClient.execute(request);
+            return response.getMsg();
+        } catch (AlipayApiException e) {
+            log.error("交易退款失败，订单号：{},Err:{}", refundDTO.getTradeNo(), e.getErrMsg());
+        }
         return null;
     }
 }

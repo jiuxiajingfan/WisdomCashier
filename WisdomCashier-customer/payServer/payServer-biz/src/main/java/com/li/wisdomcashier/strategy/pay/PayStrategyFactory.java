@@ -13,7 +13,7 @@ public class PayStrategyFactory {
         STRATEGY_MAP.put(type, strategy);
     }
 
-    public static AbstractPayStrategy getEmailStrategy(Integer type) {
+    public static AbstractPayStrategy getPayStrategy(Integer type) {
         return STRATEGY_MAP.get(type);
     }
 }
