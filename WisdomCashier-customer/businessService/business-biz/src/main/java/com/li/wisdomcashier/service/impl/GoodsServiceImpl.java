@@ -1,5 +1,7 @@
 package com.li.wisdomcashier.service.impl;
 
+import cn.hutool.http.HttpRequest;
+import cn.hutool.http.HttpUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -7,10 +9,22 @@ import com.li.wisdomcashier.controller.goods.dto.*;
 import com.li.wisdomcashier.controller.goods.vo.GoodsVO;
 import com.li.wisdomcashier.entry.Goods;
 import com.li.wisdomcashier.entry.R;
+import com.li.wisdomcashier.entry.Trade;
 import com.li.wisdomcashier.entry.dto.PayVO;
+import com.li.wisdomcashier.enums.trade.TradeEnum;
+import com.li.wisdomcashier.exception.BusinessException;
+import com.li.wisdomcashier.mapper.TradeMapper;
 import com.li.wisdomcashier.service.GoodsService;
+import com.li.wisdomcashier.utils.UserUtils;
+import jakarta.annotation.Resource;
+import jakarta.validation.ReportAsSingleViolation;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Map;
 import java.util.function.Function;
@@ -24,6 +38,19 @@ import java.util.function.Function;
  */
 @Service
 public class GoodsServiceImpl implements GoodsService {
+
+    @Value("${leaf.url}")
+    private String leafUrl;
+
+    @Value("${leaf.key}")
+    private String leaKey;
+
+    @Resource
+    protected RabbitTemplate rabbitTemplate;
+
+    @Resource
+    private TradeMapper tradeMapper;
+
     @Override
     public R<Goods> reqGood(String gid) {
         return null;
@@ -49,14 +76,26 @@ public class GoodsServiceImpl implements GoodsService {
         return null;
     }
 
-    @Override
-    public R<String> buyGood(BuyGoodDTO buyGoodDTO) {
-        return null;
-    }
 
     @Override
-    public R<String> getRandID() {
-        return null;
+    public R<String> buy(BuyDTO buyDTO) {
+        //获取id
+        String body = HttpRequest.get(leafUrl + leaKey)
+                .execute().body();
+        Long id;
+       try {
+         id =  Long.parseLong(body);
+       } catch (NumberFormatException e) {
+           throw new  BusinessException("访问id生成器获取id失败！");
+       }
+        Trade trade = new Trade();
+        trade.setId(id);
+        trade.setIncome(new BigDecimal(buyDTO.getSum()));
+        trade.setCreateTime(LocalDateTime.now());
+        trade.setStatus(TradeEnum.WAITING.getCode());
+        trade.setOperater(UserUtils.getUser().getId());
+        tradeMapper.insert(trade);
+        return R.ok(body);
     }
 
     @Override

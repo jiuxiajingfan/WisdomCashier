@@ -1,12 +1,11 @@
 package com.li.wisdomcashier.service.impl;
 
-import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.PayInfo;
 import com.li.wisdomcashier.entry.dto.PayVO;
 import com.li.wisdomcashier.entry.dto.RefundDTO;
 import com.li.wisdomcashier.entry.vo.StatusVO;
-import com.li.wisdomcashier.service.PayService;
+import com.li.wisdomcashier.service.DubboPayService;
 import com.li.wisdomcashier.strategy.pay.AbstractPayStrategy;
 import com.li.wisdomcashier.strategy.pay.PayStrategyFactory;
 import lombok.extern.slf4j.Slf4j;
@@ -25,13 +24,13 @@ import java.util.Objects;
 @Service
 @Slf4j
 @DubboService(version = "1.0")
-public class PayServiceImpl implements PayService {
+public class DubboPayServiceImpl implements DubboPayService {
 
     @Override
-    public PayVO pay(Integer type, PayDTO payDTO) {
-        AbstractPayStrategy payStrategy = PayStrategyFactory.getPayStrategy(type);
+    public PayVO pay(PayDTO payDTO) {
+        AbstractPayStrategy payStrategy = PayStrategyFactory.getPayStrategy(payDTO.getType());
         if(Objects.isNull(payStrategy)) {
-            log.error("支付接口调用错误！无该类型{}",type);
+            log.error("支付接口调用错误！无该类型{}",payDTO.getType());
             return null;
         }
         return payStrategy.pay(payDTO);

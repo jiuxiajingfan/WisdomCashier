@@ -58,10 +58,10 @@ public class GoodsController {
         return goodsService.getGood(gid, Long.parseLong(sid));
     }
 
-    @PostMapping("/buyGood")
+    @PostMapping("/buy")
     @Operation(summary = "商品交易")
-    R<String> buyGood(@RequestBody @Validated BuyGoodDTO buyGoodDTO) {
-        return goodsService.buyGood(buyGoodDTO);
+    R<String> buy(@RequestBody @Validated BuyDTO buyDTO) {
+        return goodsService.buy(buyDTO);
     }
 
     @GetMapping("/getRandID")

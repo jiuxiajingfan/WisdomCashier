@@ -7,7 +7,7 @@ import com.li.wisdomcashier.entry.dto.RefundDTO;
 import com.li.wisdomcashier.service.PayService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.apache.dubbo.config.annotation.DubboReference;
+import jakarta.annotation.Resource;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -25,13 +25,13 @@ import org.springframework.web.bind.annotation.*;
 @Tag(name = "支付相关")
 public class PayController {
 
-    @DubboReference(version = "1.0", check = false, timeout = 5000, retries = 0)
-    private PayService payService;
+    @Resource
+    PayService payService;
 
-    @PostMapping("/aliPay")
-    @Operation(summary = "支付宝支付")
-    public R<PayVO> aliPay(@RequestBody PayDTO aliPayDTO) {
-        return payService.pay(aliPayDTO);
+    @PostMapping("/pay")
+    @Operation(summary = "支付")
+    public R<PayVO> aliPay(@RequestBody PayDTO payDTO) {
+        return payService.pay(payDTO);
     }
 
     @GetMapping("/queryAliPay")

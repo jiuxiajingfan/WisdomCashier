@@ -1,7 +1,11 @@
 package com.li.wisdomcashier.entry.dto;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @ClassName AliPayDTO
@@ -12,8 +16,13 @@ import java.io.Serializable;
  */
 @Data
 public class PayDTO implements Serializable {
+    @NotNull(message = "支付类型不能为空！")
+    int type;
+    @NotBlank(message = "店铺id不能为空！")
     String shopId;
+
     String shopName;
+
     String price;
     /**
      * 代调token
@@ -22,7 +31,7 @@ public class PayDTO implements Serializable {
     /**
      * 商户操作员编号。
      */
-    private String operatorId;
+    String operatorId;
 
     /**
      * 付款用户ID
@@ -32,4 +41,7 @@ public class PayDTO implements Serializable {
      * 订单id
      */
     String id;
+
+    @NotEmpty(message = "商品不能为空！")
+    List<Goods> goods;
 }

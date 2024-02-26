@@ -5,11 +5,12 @@ import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.PayVO;
 
 public interface PayService {
+
     /**
      * 支付
-     * @param type
-     * @param aliPayDTO
+     * @param payDTO
      * @return
      */
-    R<PayVO> pay(Integer type, PayDTO aliPayDTO);
+    R<PayVO> pay(PayDTO payDTO);
+
 }

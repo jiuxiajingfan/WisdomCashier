@@ -1,6 +1,5 @@
 package com.li.wisdomcashier.service;
 
-import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.PayVO;
 import com.li.wisdomcashier.entry.dto.PayInfo;
@@ -14,12 +13,12 @@ import com.li.wisdomcashier.entry.vo.StatusVO;
  * @Date 2023/3/4 16:31
  * @Version 1.0
  */
-public interface PayService {
+public interface DubboPayService {
 
     /**
      * 提交支付
      */
-    PayVO pay(Integer type,PayDTO payDTO);
+    PayVO pay(PayDTO payDTO);
 
     /**
      * 查询订单号状态
