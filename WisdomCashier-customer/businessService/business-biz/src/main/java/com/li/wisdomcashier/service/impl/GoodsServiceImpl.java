@@ -2,6 +2,7 @@ package com.li.wisdomcashier.service.impl;
 
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -15,6 +16,7 @@ import com.li.wisdomcashier.enums.trade.TradeEnum;
 import com.li.wisdomcashier.exception.BusinessException;
 import com.li.wisdomcashier.mapper.TradeMapper;
 import com.li.wisdomcashier.service.GoodsService;
+import com.li.wisdomcashier.utils.RedisUtils;
 import com.li.wisdomcashier.utils.UserUtils;
 import jakarta.annotation.Resource;
 import jakarta.validation.ReportAsSingleViolation;
@@ -47,6 +49,9 @@ public class GoodsServiceImpl implements GoodsService {
 
     @Resource
     protected RabbitTemplate rabbitTemplate;
+
+    @Resource
+    private RedisUtils redisUtils;
 
     @Resource
     private TradeMapper tradeMapper;
@@ -95,6 +100,8 @@ public class GoodsServiceImpl implements GoodsService {
         trade.setStatus(TradeEnum.WAITING.getCode());
         trade.setOperater(UserUtils.getUser().getId());
         tradeMapper.insert(trade);
+        redisUtils.set(body, JSONUtil.toJsonStr(buyDTO.getGoods()),600);
+        redisUtils.set(body+"vip", buyDTO.getVip(),600);
         return R.ok(body);
     }
 

@@ -42,6 +42,6 @@ public class PayDTO implements Serializable {
      */
     String id;
 
-    @NotEmpty(message = "商品不能为空！")
-    List<Goods> goods;
+
+    String remoteId;
 }

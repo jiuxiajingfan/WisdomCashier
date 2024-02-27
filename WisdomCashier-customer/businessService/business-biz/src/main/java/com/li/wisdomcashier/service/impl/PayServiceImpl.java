@@ -10,6 +10,9 @@ import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
+import static com.li.wisdomcashier.constant.MQConstant.ROUTING_EXCHANGE_ORDER;
+import static com.li.wisdomcashier.constant.MQConstant.ROUTING_KEY_ORDER_CYCLE;
+
 @Service
 public class PayServiceImpl implements PayService {
     @DubboReference(version = "1.0", check = false, timeout = 5000, retries = 0)
@@ -24,7 +27,8 @@ public class PayServiceImpl implements PayService {
         if(null == payVO)
             return R.error("支付发起失败！");
         //mq
-
+        payDTO.setRemoteId(payDTO.getRemoteId());
+        rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_ORDER,ROUTING_KEY_ORDER_CYCLE,payDTO);
         return R.ok(payVO);
     }
 }

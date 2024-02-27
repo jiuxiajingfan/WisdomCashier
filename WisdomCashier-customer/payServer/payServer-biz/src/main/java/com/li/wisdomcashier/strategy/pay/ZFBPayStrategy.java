@@ -13,6 +13,7 @@ import com.li.wisdomcashier.entry.dto.RefundDTO;
 import com.li.wisdomcashier.entry.po.SysPay;
 import com.li.wisdomcashier.entry.vo.StatusVO;
 import com.li.wisdomcashier.enums.pay.PayEnums;
+import com.li.wisdomcashier.enums.trade.TradeEnum;
 import com.li.wisdomcashier.mapper.SysPayMapper;
 import com.li.wisdomcashier.utils.CommonUtils;
 import jakarta.annotation.PostConstruct;
@@ -23,7 +24,9 @@ import org.redisson.api.RBucket;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -41,6 +44,15 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
     private AlipayClient alipayClient;
 
     private SysPay payInfo;
+
+    private static final Map<String, TradeEnum> statusMap = new HashMap<>();
+
+    static {
+        statusMap.put("WAIT_BUYER_PAY", TradeEnum.WAITING);
+        statusMap.put("TRADE_CLOSED", TradeEnum.FAIL);
+        statusMap.put("TRADE_SUCCESS", TradeEnum.FINISH);
+        statusMap.put("TRADE_FINISHED", TradeEnum.FINAL);
+    }
 
 
     @PostConstruct
@@ -115,7 +127,7 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
             response = alipayClient.execute(request);
             return StatusVO.builder()
                     .code(response.getCode())
-                    .status(response.getTradeStatus())
+                    .status(statusMap.getOrDefault(response.getTradeStatus(), TradeEnum.WAITING).getDes())
                     .build();
         } catch (AlipayApiException e) {
             log.info("支付宝订单查询失败{}", e.getErrMsg());

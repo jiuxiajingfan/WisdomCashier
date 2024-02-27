@@ -36,7 +36,7 @@ public class VerificationCodeReceive {
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(name = ROUTING_MSG_EMAIL),
             exchange = @Exchange(name = ROUTING_EXCHANGE_EMAIL),
-            key = ROUTING_KEY_REGISTER
+            key = ROUTING_KEY_EMAIL
     )
     )
     public void sendCode(EmailDTO emailDTO) {

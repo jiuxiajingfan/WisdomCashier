@@ -7,7 +7,7 @@ import com.li.wisdomcashier.utils.UserUtils;
 import org.springframework.stereotype.Component;
 
 import static com.li.wisdomcashier.constant.MQConstant.ROUTING_EXCHANGE_EMAIL;
-import static com.li.wisdomcashier.constant.MQConstant.ROUTING_KEY_REGISTER;
+import static com.li.wisdomcashier.constant.MQConstant.ROUTING_KEY_EMAIL;
 
 /**
  * @ClassName ChangeEmailStrategy
@@ -26,7 +26,7 @@ public class ChangeEmailStrategy extends AbstractEmailStrategy {
     @Override
     public R<String> send(String email) {
         email = UserUtils.getUser().getEmail();
-        rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_EMAIL, ROUTING_KEY_REGISTER,
+        rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_EMAIL, ROUTING_KEY_EMAIL,
                 EmailDTO.builder()
                         .email(email)
                         .type(getTypeEnum().getValue())
