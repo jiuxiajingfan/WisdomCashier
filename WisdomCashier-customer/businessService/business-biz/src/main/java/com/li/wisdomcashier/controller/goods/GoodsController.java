@@ -22,7 +22,7 @@ import jakarta.annotation.Resource;
  * @Version 1.0
  */
 @RestController
-@RequestMapping("/Goods")
+@RequestMapping("/goods")
 @Tag(name = "商品相关")
 public class GoodsController {
     @Resource
@@ -55,19 +55,13 @@ public class GoodsController {
     @GetMapping("/getGood")
     @Operation(summary = "根据条形码查询商品信息")
     public R<GoodsVO> getGood(String gid, String sid) {
-        return goodsService.getGood(gid, Long.parseLong(sid));
+        return goodsService.getGoods(gid, Long.parseLong(sid));
     }
 
     @PostMapping("/buy")
     @Operation(summary = "商品交易")
     R<String> buy(@RequestBody @Validated BuyDTO buyDTO) {
         return goodsService.buy(buyDTO);
-    }
-
-    @GetMapping("/getRandID")
-    @Operation(summary = "返回一个随机订单号")
-    R<String> getRandID() {
-        return goodsService.getRandID();
     }
 
     @PostMapping("/deleteGood")

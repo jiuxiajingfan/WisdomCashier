@@ -3,6 +3,7 @@ package com.li.wisdomcashier.service.impl;
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.PayVO;
+import com.li.wisdomcashier.exception.BusinessException;
 import com.li.wisdomcashier.service.DubboPayService;
 import com.li.wisdomcashier.service.PayService;
 import jakarta.annotation.Resource;
@@ -25,7 +26,10 @@ public class PayServiceImpl implements PayService {
     public R<PayVO> pay(PayDTO payDTO) {
         PayVO payVO = dubboPayService.pay(payDTO);
         if(null == payVO)
-            return R.error("支付发起失败！");
+            throw new BusinessException("支付发起失败！请检查付款类型");
+        if(!payVO.getSuccess()){
+            throw new BusinessException(payVO.getMsg());
+        }
         //mq
         payDTO.setRemoteId(payDTO.getRemoteId());
         rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_ORDER,ROUTING_KEY_ORDER_CYCLE,payDTO);

@@ -2,6 +2,7 @@ package com.li.wisdomcashier.strategy.pay;
 
 import com.alipay.api.AlipayApiException;
 import com.alipay.api.AlipayClient;
+import com.alipay.api.CertAlipayRequest;
 import com.alipay.api.DefaultAlipayClient;
 import com.alipay.api.domain.*;
 import com.alipay.api.request.*;
@@ -41,7 +42,7 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
     @Value("${pay.ali.active}")
     private String activeName;
 
-    private AlipayClient alipayClient;
+    private final CertAlipayRequest alipayConfig = new CertAlipayRequest();
 
     private SysPay payInfo;
 
@@ -63,15 +64,14 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
             bucket.set(e);
             if (CommonUtils.compare(e.getName(), activeName)) {
                 payInfo = e;
-                alipayClient = new DefaultAlipayClient(
-                        e.getAppUrl(),
-                        e.getAppId(),
-                        e.getAppPrivateKey(),
-                        "json",
-                        "utf-8",
-                        e.getAppPublicKey(),
-                        e.getSignType()
-                );
+                alipayConfig.setPrivateKey(e.getAppPrivateKey());
+                alipayConfig.setServerUrl(e.getAppUrl());
+                alipayConfig.setAppId(e.getAppId());
+                alipayConfig.setCharset("UTF-8");
+                alipayConfig.setSignType(e.getSignType());
+                alipayConfig.setFormat("json");
+                alipayConfig.setCertContent(e.getAppPublicKey());
+                alipayConfig.setRootCertContent(e.getRootKey());
             }
         });
     }
@@ -99,21 +99,30 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
         model.setTimeoutExpress("1m");
         request.setBizModel(model);
         //代调用商户支付接口
-        request.putOtherTextParam("app_auth_token", dto.getAuthToken());
+//        request.putOtherTextParam("app_auth_token", dto.getAuthToken());
         /** 异步通知地址，以http或者https开头的，商户外网可以post访问的异步地址，用于接收支付宝返回的支付结果，如果未收到该通知可参考该文档进行确认：			https://opensupport.alipay.com/support/helpcenter/193/201602475759 **/
         request.setNotifyUrl(payInfo.getNotifyUrl());
         AlipayTradePayResponse response;
+        String errMeg;
         try {
+            AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig);
             response = alipayClient.execute(request);
             return PayVO.builder()
+                    .success(CommonUtils.compare(response.getCode(),"10000"))
                     .remoteID(response.getTradeNo())
                     .shopID(dto.getShopId())
                     .msg(response.getSubMsg())
                     .build();
         } catch (AlipayApiException e) {
+            errMeg = e.getErrMsg();
             log.info("支付宝支付接口调用异常{}", e.getErrMsg());
         }
-        return null;
+        return PayVO.builder()
+                .success(false)
+                .remoteID(null)
+                .shopID(dto.getShopId())
+                .msg(errMeg)
+                .build();
     }
 
     @Override
@@ -124,6 +133,7 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
         request.setBizModel(model);
         AlipayTradeQueryResponse response;
         try {
+            AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig);
             response = alipayClient.execute(request);
             return StatusVO.builder()
                     .code(response.getCode())
@@ -144,6 +154,7 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
         request.setBizModel(model);
         AlipayTradeCancelResponse response;
         try {
+            AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig);
             response = alipayClient.execute(request);
             return response.getMsg();
         } catch (AlipayApiException e) {
@@ -160,6 +171,7 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
         request.setBizModel(model);
         AlipayTradeCloseResponse response = null;
         try {
+            AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig);
             response = alipayClient.execute(request);
             return response.getMsg();
         } catch (AlipayApiException e) {
@@ -176,6 +188,7 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
         request.setBizModel(model);
         AlipayTradeQueryResponse response;
         try {
+            AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig);
             response = alipayClient.execute(request);
             return PayInfo.builder()
                     .sum(response.getTotalAmount())
@@ -201,6 +214,7 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
         request.setBizModel(model);
         AlipayTradeRefundResponse response;
         try {
+            AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig);
             response = alipayClient.execute(request);
             return response.getMsg();
         } catch (AlipayApiException e) {

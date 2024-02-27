@@ -65,7 +65,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     }
 
     @Override
-    @PreAuthorize("hasPermission(#id,1)||hasPermission(#id,2)||hasPermission(#id,3)")
+    @PreAuthorize("@ss.hasPermission(#id,1,2,3)")
     public R<List<Tree<String>>> getMenu(long id) {
         User user = UserUtils.getUser();
         Role role = roleMapper.selectOne(Wrappers.lambdaQuery(Role.class)
@@ -93,7 +93,7 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
     }
 
     @Override
-    @PreAuthorize("hasPermission(#sid,1)||hasPermission(#sid,2)||hasPermission(#sid,3)")
+    @PreAuthorize("@ss.hasPermission(#sid,1,2,3)")
     public R<List<Integer>> getTradeStatus(String sid) {
         ArrayList<Integer> integers = new ArrayList<>();
         Shop shop = shopMapper.selectOne(Wrappers.lambdaQuery(Shop.class)

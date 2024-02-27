@@ -11,7 +11,7 @@ public class BusinessException extends RuntimeException implements Serializable 
     /**
      * 错误码
      */
-    protected Integer errorCode;
+    protected Integer errorCode = 400;
 
     /**
      * 错误信息

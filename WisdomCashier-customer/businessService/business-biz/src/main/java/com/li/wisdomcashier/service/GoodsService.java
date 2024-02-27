@@ -57,7 +57,7 @@ public interface GoodsService extends IService<Goods> {
      * @param sid
      * @return
      */
-    R<GoodsVO> getGood(String gid, Long sid);
+    R<GoodsVO> getGoods(String gid, Long sid);
 
     /**
      * 商品交易

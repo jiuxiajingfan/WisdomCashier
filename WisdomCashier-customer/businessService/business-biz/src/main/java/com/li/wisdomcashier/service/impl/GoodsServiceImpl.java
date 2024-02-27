@@ -1,33 +1,45 @@
 package com.li.wisdomcashier.service.impl;
 
+import cn.hutool.extra.cglib.CglibUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.li.wisdomcashier.controller.goods.dto.*;
 import com.li.wisdomcashier.controller.goods.vo.GoodsVO;
+import com.li.wisdomcashier.convert.GoodsConvert;
 import com.li.wisdomcashier.entry.Goods;
+import com.li.wisdomcashier.entry.GoodsApi;
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.Trade;
 import com.li.wisdomcashier.entry.dto.PayVO;
 import com.li.wisdomcashier.enums.trade.TradeEnum;
 import com.li.wisdomcashier.exception.BusinessException;
+import com.li.wisdomcashier.mapper.GoodsMapper;
 import com.li.wisdomcashier.mapper.TradeMapper;
 import com.li.wisdomcashier.service.GoodsService;
+import com.li.wisdomcashier.utils.CommonUtils;
 import com.li.wisdomcashier.utils.RedisUtils;
 import com.li.wisdomcashier.utils.UserUtils;
+import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Resource;
 import jakarta.validation.ReportAsSingleViolation;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -39,7 +51,7 @@ import java.util.function.Function;
  * @Version 1.0
  */
 @Service
-public class GoodsServiceImpl implements GoodsService {
+public class GoodsServiceImpl  extends ServiceImpl<GoodsMapper, Goods> implements GoodsService {
 
     @Value("${leaf.url}")
     private String leafUrl;
@@ -47,8 +59,11 @@ public class GoodsServiceImpl implements GoodsService {
     @Value("${leaf.key}")
     private String leaKey;
 
-    @Resource
-    protected RabbitTemplate rabbitTemplate;
+//    @Value("${goodsAPI.app_id}")
+    private String apiId;
+
+//    @Value("${goodsAPI.app_secret}")
+    private String apiSecret;
 
     @Resource
     private RedisUtils redisUtils;
@@ -56,9 +71,30 @@ public class GoodsServiceImpl implements GoodsService {
     @Resource
     private TradeMapper tradeMapper;
 
+    @Resource
+    private GoodsMapper goodsMapper;
+
     @Override
     public R<Goods> reqGood(String gid) {
-        return null;
+        if(StringUtils.isBlank(gid)){
+            return R.error("参数错误！");
+        }
+        HashMap<String, Object> paramsMap = new HashMap<>();
+        paramsMap.put("barcode",gid);
+        paramsMap.put("app_id",apiId);
+        paramsMap.put("app_secret",apiSecret);
+        String result = HttpUtil.get("https://www.mxnzp.com/api/barcode/goods/details", paramsMap);
+        Goods goods = new Goods();
+        goods.setGid(gid);
+        JSONObject jsonObject = JSONUtil.parseObj(result);
+        if(CommonUtils.compare(jsonObject.getStr("code"),"0")){
+            return R.ok(goods);
+        }
+        GoodsApi data = jsonObject.getBean("data", GoodsApi.class);
+        goods.setName(data.getGoodsName());
+        goods.setPriceOut(new BigDecimal(data.getPrice()));
+        goods.setMetrology(data.getStandard());
+        return R.ok(goods);
     }
 
     @Override
@@ -77,9 +113,19 @@ public class GoodsServiceImpl implements GoodsService {
     }
 
     @Override
-    public R<GoodsVO> getGood(String gid, Long sid) {
-        return null;
+    public R<GoodsVO> getGoods(String gid, Long sid) {
+        List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class)
+                .eq(Goods::getGid, gid).eq(Goods::getSid, sid));
+        if(CollectionUtils.isEmpty(goods)){
+            return R.error("不存在该商品！");
+        }
+        GoodsVO copy = GoodsConvert.INSTANCE.toGoodsVO(goods.getFirst());
+        copy.setPriceOut(String.format("%.2f",goods.getFirst().getPriceOut()));
+        copy.setPriceIn(String.format("%.2f",goods.getFirst().getPriceIn()));
+        copy.setPriceVip(String.format("%.2f",goods.getFirst().getPriceVip()));
+        return R.ok(copy);
     }
+
 
 
     @Override
@@ -98,11 +144,12 @@ public class GoodsServiceImpl implements GoodsService {
         trade.setIncome(new BigDecimal(buyDTO.getSum()));
         trade.setCreateTime(LocalDateTime.now());
         trade.setStatus(TradeEnum.WAITING.getCode());
+        trade.setSid(Long.parseLong(buyDTO.getSid()));
         trade.setOperater(UserUtils.getUser().getId());
         tradeMapper.insert(trade);
         redisUtils.set(body, JSONUtil.toJsonStr(buyDTO.getGoods()),600);
         redisUtils.set(body+"vip", buyDTO.getVip(),600);
-        return R.ok(body);
+        return R.ok(body,"订单创建成功，等待支付！");
     }
 
     @Override
@@ -125,48 +172,4 @@ public class GoodsServiceImpl implements GoodsService {
         return null;
     }
 
-    @Override
-    public boolean saveBatch(Collection<Goods> entityList, int batchSize) {
-        return false;
-    }
-
-    @Override
-    public boolean saveOrUpdateBatch(Collection<Goods> entityList, int batchSize) {
-        return false;
-    }
-
-    @Override
-    public boolean updateBatchById(Collection<Goods> entityList, int batchSize) {
-        return false;
-    }
-
-    @Override
-    public boolean saveOrUpdate(Goods entity) {
-        return false;
-    }
-
-    @Override
-    public Goods getOne(Wrapper<Goods> queryWrapper, boolean throwEx) {
-        return null;
-    }
-
-    @Override
-    public Map<String, Object> getMap(Wrapper<Goods> queryWrapper) {
-        return null;
-    }
-
-    @Override
-    public <V> V getObj(Wrapper<Goods> queryWrapper, Function<? super Object, V> mapper) {
-        return null;
-    }
-
-    @Override
-    public BaseMapper<Goods> getBaseMapper() {
-        return null;
-    }
-
-    @Override
-    public Class<Goods> getEntityClass() {
-        return null;
-    }
 }

@@ -24,10 +24,7 @@ public class PayDTO implements Serializable {
     String shopName;
 
     String price;
-    /**
-     * 代调token
-     */
-    String authToken;
+
     /**
      * 商户操作员编号。
      */

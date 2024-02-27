@@ -25,6 +25,7 @@ public class SysPay implements Serializable {
     private String appPublicKey;
 
     private String appPrivateKey;
+    private String rootKey;
 
     private String signType;
 

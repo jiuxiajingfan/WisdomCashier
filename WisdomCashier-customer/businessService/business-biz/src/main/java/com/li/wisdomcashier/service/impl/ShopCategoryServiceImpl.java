@@ -29,7 +29,7 @@ public class ShopCategoryServiceImpl extends ServiceImpl<ShopCategoryMapper, Sho
     private ShopCategoryMapper shopCategoryMapper;
 
     @Override
-    @PreAuthorize("hasPermission(#sid,1)||hasPermission(#sid,2)||hasPermission(#sid,3)")
+    @PreAuthorize("@ss.hasPermission(#sid,1,2,3)")
     public R<List<String>> getCategory(String sid) {
         if (StringUtils.isBlank(sid))
             return R.error("店铺ID不能为空！");
@@ -39,7 +39,7 @@ public class ShopCategoryServiceImpl extends ServiceImpl<ShopCategoryMapper, Sho
     }
 
     @Override
-    @PreAuthorize("hasPermission(#sid,1)||hasPermission(#sid,2)")
+    @PreAuthorize("@ss.hasPermission(#sid,1)||@ss.hasPermission(#sid,2)")
     public R<String> addCategory(String sid, String category) {
         if (StringUtils.isBlank(sid))
             return R.error("店铺ID不能为空！");
@@ -57,7 +57,7 @@ public class ShopCategoryServiceImpl extends ServiceImpl<ShopCategoryMapper, Sho
     }
 
     @Override
-    @PreAuthorize("hasPermission(#sid,1)||hasPermission(#sid,2)")
+    @PreAuthorize("@ss.hasPermission(#sid,1)||@ss.hasPermission(#sid,2)")
     public R<String> delCategory(String sid, String category) {
         if (StringUtils.isBlank(sid))
             return R.error("店铺ID不能为空！");

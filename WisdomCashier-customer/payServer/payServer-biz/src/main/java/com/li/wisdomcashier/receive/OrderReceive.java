@@ -66,8 +66,7 @@ public class OrderReceive {
     @Resource
     private TradeGoodsService tradeGoodsService;
 
-    @Resource
-    private final static Map<String, Future> futureTaskMap = new ConcurrentHashMap<>(20);
+    private final Map<String, Future> futureTaskMap = new ConcurrentHashMap<>(20);
 
     /**
      * 轮询查询订单状态，并更新订单状态
@@ -81,8 +80,9 @@ public class OrderReceive {
     public void cycleQuery(PayDTO payDTO) {
         AtomicInteger count = new AtomicInteger(0);
         Runnable getResultTask = () -> {
+            log.info("查询订单{}",payDTO.getRemoteId());
             //60次设置为失败，取消订单
-            if (count.get() >= 60) {
+            if (60 <= count.get()) {
                 dubboPayService.cancel(payDTO.getType(), payDTO.getRemoteId());
                 tradeMapper.update(null, Wrappers.lambdaUpdate(Trade.class)
                         .set(Trade::getStatus, TradeEnum.FAIL.getCode())

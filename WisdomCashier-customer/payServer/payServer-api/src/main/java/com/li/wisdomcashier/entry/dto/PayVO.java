@@ -35,4 +35,6 @@ public class PayVO implements Serializable {
      */
     private String msg;
 
+    private Boolean success;
+
 }
