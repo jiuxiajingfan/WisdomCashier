@@ -13,7 +13,8 @@ public class MQConstant {
      * 订单
      */
     public static final String ROUTING_EXCHANGE_ORDER = "routing.exchange.order";
-    public static final String ROUTING_MSG_ORDER = "routing.msg.order";
+    public static final String ROUTING_MSG_ORDER_CYCLE = "routing.msg.order.cycle";
+    public static final String ROUTING_MSG_ORDER_FINISH = "routing.msg.order.finish";
     public static final String ROUTING_KEY_ORDER_CYCLE = "cycle";
     public static final String ROUTING_KEY_ORDER_FINISH = "finish";
 

@@ -2,7 +2,7 @@ package com.li.wisdomcashier.receive;
 
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.li.wisdomcashier.entry.dto.Goods;
+import com.li.wisdomcashier.entry.dto.BuyGoodsDTO;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.po.Trade;
 import com.li.wisdomcashier.entry.po.TradeGoods;
@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 
 import static com.li.wisdomcashier.constant.MQConstant.*;
 
@@ -70,48 +69,47 @@ public class OrderReceive {
 
     /**
      * 轮询查询订单状态，并更新订单状态
+     *
      * @param payDTO
      */
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(name = ROUTING_MSG_ORDER),
+            value = @Queue(name = ROUTING_MSG_ORDER_CYCLE),
             exchange = @Exchange(name = ROUTING_EXCHANGE_ORDER),
             key = ROUTING_KEY_ORDER_CYCLE
     ))
     public void cycleQuery(PayDTO payDTO) {
+        log.info("收到支付订单消息");
         AtomicInteger count = new AtomicInteger(0);
         Runnable getResultTask = () -> {
-            log.info("查询订单{}",payDTO.getRemoteId());
+            log.info("查询订单{}", payDTO.getRemoteId());
             //60次设置为失败，取消订单
             if (60 <= count.get()) {
                 dubboPayService.cancel(payDTO.getType(), payDTO.getRemoteId());
                 tradeMapper.update(null, Wrappers.lambdaUpdate(Trade.class)
                         .set(Trade::getStatus, TradeEnum.FAIL.getCode())
                         .set(Trade::getRemoteNo, payDTO.getRemoteId())
-                        .set(Trade::getPayer,payDTO.getUserID())
+                        .set(Trade::getType, payDTO.getType())
+                        .set(Trade::getPayer, payDTO.getUserID())
                         .set(Trade::getMsg, "支付超时")
                         .eq(Trade::getId, payDTO.getId())
                 );
+                removeTask(payDTO.getRemoteId());
             }
             count.getAndIncrement();
             StatusVO status = dubboPayService.status(payDTO.getType(), payDTO.getRemoteId());
-            if (CommonUtils.compare(status.getStatus(), TradeEnum.FINISH.getCode())) {
+            if (CommonUtils.compare(status.getStatus(), TradeEnum.FINISH.getDes())) {
                 //更新库
                 tradeMapper.update(null, Wrappers.lambdaUpdate(Trade.class)
                         .set(Trade::getStatus, TradeEnum.FINISH.getCode())
                         .set(Trade::getRemoteNo, payDTO.getRemoteId())
-                        .set(Trade::getPayer,payDTO.getUserID())
+                        .set(Trade::getPayer, payDTO.getUserID())
+                        .set(Trade::getType, payDTO.getType())
                         .set(Trade::getMsg, "支付成功")
                         .eq(Trade::getId, payDTO.getId())
                 );
                 //通知
-                rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_ORDER,ROUTING_KEY_ORDER_FINISH,payDTO);
-                Future future = futureTaskMap.get(payDTO.getRemoteId());
-                if (null != future) {
-                    boolean isCancel = future.cancel(true);
-                    if (isCancel) {
-                        futureTaskMap.remove(payDTO.getRemoteId());
-                    }
-                }
+                rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_ORDER, ROUTING_KEY_ORDER_FINISH, payDTO);
+                removeTask(payDTO.getRemoteId());
             }
         };
         ScheduledFuture<?> scheduledFuture = scheduler.scheduleWithFixedDelay(getResultTask, 0, 1, TimeUnit.SECONDS);
@@ -120,32 +118,44 @@ public class OrderReceive {
 
     /**
      * 更新订单详情
+     *
      * @param payDTO
      */
     @RabbitListener(bindings = @QueueBinding(
-            value = @Queue(name = ROUTING_MSG_ORDER),
+            value = @Queue(name = ROUTING_MSG_ORDER_FINISH),
             exchange = @Exchange(name = ROUTING_EXCHANGE_ORDER),
             key = ROUTING_KEY_ORDER_FINISH
     ))
     @Transactional(rollbackFor = Exception.class)
     public void updateDetail(PayDTO payDTO) {
-        String s = (String) redisUtils.get(payDTO.getRemoteId());
-        Integer vip = (Integer) redisUtils.get(payDTO.getRemoteId()+"vip");
-        List<Goods> goodsList = JSON.parseArray(s, Goods.class);
+        String s = (String) redisUtils.get(payDTO.getId());
+        Integer vip = (Integer) redisUtils.get(payDTO.getId() + "vip");
+        List<BuyGoodsDTO> goodsList = JSON.parseArray(s, BuyGoodsDTO.class);
         List<TradeGoods> collect = goodsList.stream().map(e -> {
             TradeGoods tradeGoods = new TradeGoods();
             tradeGoods.setGid(e.getGid())
                     .setName(e.getName())
                     .setTradeId(Long.parseLong(payDTO.getId()))
-                    .setNum(e.getNum().intValue())
-                    .setPrice(vip==1?e.getPriceVip():e.getPriceOut())
+                    .setNum(e.getNum())
+                    .setPrice(vip == 1 ? e.getPriceVip() : e.getPriceOut())
                     .setPriceIn(e.getPriceIn())
                     .setType(e.getType())
                     .setPriceOutSum(tradeGoods.getPrice().multiply(new BigDecimal(e.getNum())))
                     .setPriceInSum(e.getPriceIn().multiply(new BigDecimal(e.getNum())));
-                    goodsMapper.reduceNum(payDTO.getShopId(), e.getGid(),e.getNum().intValue());
+            goodsMapper.reduceNum(payDTO.getShopId(), e.getGid(), e.getNum());
             return tradeGoods;
         }).toList();
         tradeGoodsService.saveBatch(collect);
+    }
+
+
+    void removeTask(String key) {
+        Future future = futureTaskMap.get(key);
+        if (null != future) {
+            boolean isCancel = future.cancel(true);
+            if (isCancel) {
+                futureTaskMap.remove(key);
+            }
+        }
     }
 }

@@ -1,16 +1,16 @@
 package com.li.wisdomcashier.service.impl;
 
-import cn.hutool.extra.cglib.CglibUtil;
 import cn.hutool.http.HttpRequest;
 import cn.hutool.http.HttpUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.baomidou.mybatisplus.core.conditions.Wrapper;
-import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.li.wisdomcashier.controller.goods.dto.*;
+import com.li.wisdomcashier.controller.goods.dto.BuyDTO;
+import com.li.wisdomcashier.controller.goods.dto.DeleteDTO;
+import com.li.wisdomcashier.controller.goods.dto.GoodQueryDTO;
+import com.li.wisdomcashier.controller.goods.dto.GoodsDTO;
 import com.li.wisdomcashier.controller.goods.vo.GoodsVO;
 import com.li.wisdomcashier.convert.GoodsConvert;
 import com.li.wisdomcashier.entry.Goods;
@@ -28,20 +28,14 @@ import com.li.wisdomcashier.utils.RedisUtils;
 import com.li.wisdomcashier.utils.UserUtils;
 import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Resource;
-import jakarta.validation.ReportAsSingleViolation;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
-import org.springframework.web.client.RestTemplate;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.function.Function;
 
 /**
  * @ClassName GoodsServiceImpl
@@ -51,7 +45,7 @@ import java.util.function.Function;
  * @Version 1.0
  */
 @Service
-public class GoodsServiceImpl  extends ServiceImpl<GoodsMapper, Goods> implements GoodsService {
+public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements GoodsService {
 
     @Value("${leaf.url}")
     private String leafUrl;
@@ -59,10 +53,10 @@ public class GoodsServiceImpl  extends ServiceImpl<GoodsMapper, Goods> implement
     @Value("${leaf.key}")
     private String leaKey;
 
-//    @Value("${goodsAPI.app_id}")
+    //    @Value("${goodsAPI.app_id}")
     private String apiId;
 
-//    @Value("${goodsAPI.app_secret}")
+    //    @Value("${goodsAPI.app_secret}")
     private String apiSecret;
 
     @Resource
@@ -76,18 +70,18 @@ public class GoodsServiceImpl  extends ServiceImpl<GoodsMapper, Goods> implement
 
     @Override
     public R<Goods> reqGood(String gid) {
-        if(StringUtils.isBlank(gid)){
+        if (StringUtils.isBlank(gid)) {
             return R.error("参数错误！");
         }
         HashMap<String, Object> paramsMap = new HashMap<>();
-        paramsMap.put("barcode",gid);
-        paramsMap.put("app_id",apiId);
-        paramsMap.put("app_secret",apiSecret);
+        paramsMap.put("barcode", gid);
+        paramsMap.put("app_id", apiId);
+        paramsMap.put("app_secret", apiSecret);
         String result = HttpUtil.get("https://www.mxnzp.com/api/barcode/goods/details", paramsMap);
         Goods goods = new Goods();
         goods.setGid(gid);
         JSONObject jsonObject = JSONUtil.parseObj(result);
-        if(CommonUtils.compare(jsonObject.getStr("code"),"0")){
+        if (CommonUtils.compare(jsonObject.getStr("code"), "0")) {
             return R.ok(goods);
         }
         GoodsApi data = jsonObject.getBean("data", GoodsApi.class);
@@ -116,16 +110,15 @@ public class GoodsServiceImpl  extends ServiceImpl<GoodsMapper, Goods> implement
     public R<GoodsVO> getGoods(String gid, Long sid) {
         List<Goods> goods = goodsMapper.selectList(Wrappers.lambdaQuery(Goods.class)
                 .eq(Goods::getGid, gid).eq(Goods::getSid, sid));
-        if(CollectionUtils.isEmpty(goods)){
+        if (CollectionUtils.isEmpty(goods)) {
             return R.error("不存在该商品！");
         }
         GoodsVO copy = GoodsConvert.INSTANCE.toGoodsVO(goods.getFirst());
-        copy.setPriceOut(String.format("%.2f",goods.getFirst().getPriceOut()));
-        copy.setPriceIn(String.format("%.2f",goods.getFirst().getPriceIn()));
-        copy.setPriceVip(String.format("%.2f",goods.getFirst().getPriceVip()));
+        copy.setPriceOut(String.format("%.2f", goods.getFirst().getPriceOut()));
+        copy.setPriceIn(String.format("%.2f", goods.getFirst().getPriceIn()));
+        copy.setPriceVip(String.format("%.2f", goods.getFirst().getPriceVip()));
         return R.ok(copy);
     }
-
 
 
     @Override
@@ -133,12 +126,12 @@ public class GoodsServiceImpl  extends ServiceImpl<GoodsMapper, Goods> implement
         //获取id
         String body = HttpRequest.get(leafUrl + leaKey)
                 .execute().body();
-        Long id;
-       try {
-         id =  Long.parseLong(body);
-       } catch (NumberFormatException e) {
-           throw new  BusinessException("访问id生成器获取id失败！");
-       }
+        long id;
+        try {
+            id = Long.parseLong(body);
+        } catch (NumberFormatException e) {
+            throw new BusinessException("访问id生成器获取id失败！");
+        }
         Trade trade = new Trade();
         trade.setId(id);
         trade.setIncome(new BigDecimal(buyDTO.getSum()));
@@ -147,9 +140,9 @@ public class GoodsServiceImpl  extends ServiceImpl<GoodsMapper, Goods> implement
         trade.setSid(Long.parseLong(buyDTO.getSid()));
         trade.setOperater(UserUtils.getUser().getId());
         tradeMapper.insert(trade);
-        redisUtils.set(body, JSONUtil.toJsonStr(buyDTO.getGoods()),600);
-        redisUtils.set(body+"vip", buyDTO.getVip(),600);
-        return R.ok(body,"订单创建成功，等待支付！");
+        redisUtils.set(body, JSONUtil.toJsonStr(buyDTO.getGoods()), 600);
+        redisUtils.set(body + "vip", buyDTO.getVip(), 600);
+        return R.ok(body, "订单创建成功，等待支付！");
     }
 
     @Override

@@ -31,7 +31,7 @@ public class PayServiceImpl implements PayService {
             throw new BusinessException(payVO.getMsg());
         }
         //mq
-        payDTO.setRemoteId(payDTO.getRemoteId());
+        payDTO.setRemoteId(payVO.getRemoteID());
         rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_ORDER,ROUTING_KEY_ORDER_CYCLE,payDTO);
         return R.ok(payVO);
     }

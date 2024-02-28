@@ -108,7 +108,7 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
             AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig);
             response = alipayClient.execute(request);
             return PayVO.builder()
-                    .success(CommonUtils.compare(response.getCode(),"10000"))
+                    .success(CommonUtils.compare(response.getCode().charAt(0),'1'))
                     .remoteID(response.getTradeNo())
                     .shopID(dto.getShopId())
                     .msg(response.getSubMsg())

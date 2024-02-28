@@ -52,7 +52,7 @@ cmake-build-*/
 
 # IntelliJ
 out/
-target/
+/**/**/**/target/
 *.iml
 .flattened-pom.xml
 
@@ -82,7 +82,7 @@ fabric.properties
 *.class
 
 # Log file
-*.log
+/**/**/**/*.log
 
 # BlueJ files
 *.ctxt
@@ -99,4 +99,4 @@ hs_err_pid*
 *.iml
 out
 gen
-/**/**/src/main/resources/bootstrap-dev.yaml
+/**/**/**/src/main/resources/bootstrap-dev.yaml

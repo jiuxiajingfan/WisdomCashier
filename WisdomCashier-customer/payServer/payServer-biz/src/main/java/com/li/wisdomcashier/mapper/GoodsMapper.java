@@ -2,7 +2,7 @@ package com.li.wisdomcashier.mapper;
 
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.li.wisdomcashier.entry.dto.Goods;
+import com.li.wisdomcashier.entry.po.Goods;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Update;
 

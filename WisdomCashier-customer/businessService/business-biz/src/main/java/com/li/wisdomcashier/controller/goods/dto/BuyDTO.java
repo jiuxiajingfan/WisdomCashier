@@ -1,6 +1,6 @@
 package com.li.wisdomcashier.controller.goods.dto;
 
-import com.li.wisdomcashier.entry.dto.Goods;
+import com.li.wisdomcashier.entry.dto.BuyGoodsDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -33,7 +33,6 @@ public class BuyDTO {
 
     String phone;
 
-
     @NotEmpty(message = "商品不能为空！")
-    List<Goods> goods;
+    List<BuyGoodsDTO> goods;
 }
