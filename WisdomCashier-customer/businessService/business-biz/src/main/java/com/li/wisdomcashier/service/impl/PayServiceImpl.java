@@ -3,9 +3,11 @@ package com.li.wisdomcashier.service.impl;
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.PayVO;
+import com.li.wisdomcashier.entry.vo.StatusVO;
 import com.li.wisdomcashier.exception.BusinessException;
 import com.li.wisdomcashier.service.DubboPayService;
 import com.li.wisdomcashier.service.PayService;
+import com.li.wisdomcashier.utils.UserUtils;
 import jakarta.annotation.Resource;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -24,6 +26,7 @@ public class PayServiceImpl implements PayService {
 
     @Override
     public R<PayVO> pay(PayDTO payDTO) {
+        payDTO.setOperatorId(UserUtils.getUser().getId().toString());
         PayVO payVO = dubboPayService.pay(payDTO);
         if(null == payVO)
             throw new BusinessException("支付发起失败！请检查付款类型");
@@ -35,4 +38,10 @@ public class PayServiceImpl implements PayService {
         rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_ORDER,ROUTING_KEY_ORDER_CYCLE,payDTO);
         return R.ok(payVO);
     }
+
+    @Override
+    public R<StatusVO> status(Integer type, String tradeNo) {
+      return R.ok(dubboPayService.status(type, tradeNo));
+    }
+
 }

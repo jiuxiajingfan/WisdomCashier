@@ -4,6 +4,7 @@ import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.PayVO;
 import com.li.wisdomcashier.entry.dto.RefundDTO;
+import com.li.wisdomcashier.entry.vo.StatusVO;
 import com.li.wisdomcashier.service.PayService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -30,15 +31,15 @@ public class PayController {
 
     @PostMapping("/pay")
     @Operation(summary = "支付")
-    public R<PayVO> aliPay(@RequestBody @Validated PayDTO payDTO) {
+    public R<PayVO> pay(@RequestBody @Validated PayDTO payDTO) {
         return payService.pay(payDTO);
     }
 
-//    @GetMapping("/queryAliPay")
-//    @Operation(summary = "支付宝交易查询")
-//    public R<String> queryAliPay(String tradeNo) {
-//        return payService.queryAliPay(tradeNo);
-//    }
+    @GetMapping("/status")
+    @Operation(summary = "交易查询")
+    public R<StatusVO> status(String tradeNo, Integer type) {
+        return payService.status(type,tradeNo);
+    }
 //
 //    @GetMapping("/cancelPay")
 //    @Operation(summary = "支付宝交易撤销")
