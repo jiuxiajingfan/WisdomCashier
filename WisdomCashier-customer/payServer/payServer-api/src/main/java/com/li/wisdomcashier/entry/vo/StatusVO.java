@@ -10,6 +10,6 @@ import java.io.Serializable;
 @Builder
 @AllArgsConstructor
 public class StatusVO implements Serializable {
-    String code;
+    Integer code;
     String status;
 }

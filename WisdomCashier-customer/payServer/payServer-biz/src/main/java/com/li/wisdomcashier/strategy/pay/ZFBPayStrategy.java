@@ -136,7 +136,7 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
             AlipayClient alipayClient = new DefaultAlipayClient(alipayConfig);
             response = alipayClient.execute(request);
             return StatusVO.builder()
-                    .code(response.getCode())
+                    .code(statusMap.getOrDefault(response.getTradeStatus(), TradeEnum.WAITING).getCode())
                     .status(statusMap.getOrDefault(response.getTradeStatus(), TradeEnum.WAITING).getDes())
                     .build();
         } catch (AlipayApiException e) {

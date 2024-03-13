@@ -15,7 +15,8 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public enum PayEnums {
     ZFB(2, "支付宝"),
-    WX(1, "微信");
+    WX(1, "微信"),
+    XJ(0,"现金");
 
 
     private final Integer type;
