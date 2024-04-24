@@ -1,8 +1,6 @@
 package com.li.wisdomcashier.config;
 
 import com.baomidou.mybatisplus.core.toolkit.CollectionUtils;
-import com.li.wisdomcashier.entry.SwaggerProperties;
-import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;

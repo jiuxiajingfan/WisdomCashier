@@ -1,5 +1,6 @@
 package com.li.wisdomcashier.service.impl;
 
+import com.li.wisdomcashier.annotation.RedissonLock;
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.PayVO;
@@ -25,6 +26,7 @@ public class PayServiceImpl implements PayService {
     public RabbitTemplate rabbitTemplate;
 
     @Override
+    @RedissonLock(keyPrefix = "PAY_PAY",key = "#payDTO.id+#payDTO.type",time = 1000)
     public R<PayVO> pay(PayDTO payDTO) {
         payDTO.setOperatorId(UserUtils.getUser().getId().toString());
         PayVO payVO = dubboPayService.pay(payDTO);
@@ -40,6 +42,7 @@ public class PayServiceImpl implements PayService {
     }
 
     @Override
+    @RedissonLock(keyPrefix = "PAY_STATUS",key = "#tradeNo+#type",time = 1000)
     public R<StatusVO> status(Integer type, String tradeNo) {
       return R.ok(dubboPayService.status(type, tradeNo));
     }
