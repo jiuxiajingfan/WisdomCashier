@@ -54,7 +54,7 @@ public class GoodsController {
 
     @GetMapping("/getGood")
     @Operation(summary = "根据条形码查询商品信息")
-    public R<GoodsVO> getGood(String gid, String sid) {
+    public R<GoodsVO> getGood(@RequestParam("gid") String gid,@RequestParam("sid") String sid) {
         return goodsService.getGoods(gid, Long.parseLong(sid));
     }
 
