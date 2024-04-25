@@ -1,7 +1,6 @@
-package com.li.wisdomcashier.config;
+package com.li.wisdomcashier.service.impl;
 
 import com.li.wisdomcashier.service.CaptchaCacheService;
-import com.li.wisdomcashier.service.impl.CaptchaServiceFactory;
 import com.li.wisdomcashier.utils.RedisUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
