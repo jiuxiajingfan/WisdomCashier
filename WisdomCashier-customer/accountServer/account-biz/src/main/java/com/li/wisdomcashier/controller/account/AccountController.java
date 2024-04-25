@@ -70,10 +70,10 @@ public class AccountController {
             //图像验证码校验
             CaptchaVO captchaVO = new CaptchaVO();
             captchaVO.setCaptchaVerification(loginDTO.getVerify());
-//            ResponseModel verification = captchaService.verification(captchaVO);
-//            if (verification.getRepCode().compareTo(ResponseModel.success().getRepCode()) != 0) {
-//                return R.error(verification.getRepMsg());
-//            }
+            ResponseModel verification = captchaService.verification(captchaVO);
+            if (verification.getRepCode().compareTo(ResponseModel.success().getRepCode()) != 0) {
+                return R.error(verification.getRepMsg());
+            }
         }
         //登录逻辑
         String accessToken = oauthFeignClient.postAccessToken("authorization_password",
