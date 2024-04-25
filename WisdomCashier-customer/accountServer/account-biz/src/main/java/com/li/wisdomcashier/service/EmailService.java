@@ -8,6 +8,7 @@ import jakarta.annotation.Resource;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.scheduling.annotation.Async;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
  * @Version 1.0
  */
 @Service
+@RefreshScope
 public class EmailService {
 
     @Resource

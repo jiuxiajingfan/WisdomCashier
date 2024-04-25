@@ -29,6 +29,7 @@ import com.li.wisdomcashier.utils.UserUtils;
 import io.micrometer.common.util.StringUtils;
 import jakarta.annotation.Resource;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -45,6 +46,7 @@ import java.util.List;
  * @Version 1.0
  */
 @Service
+@RefreshScope
 public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements GoodsService {
 
     @Value("${leaf.url}")

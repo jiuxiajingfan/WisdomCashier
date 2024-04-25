@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
  */
 @Data
 @Component
+@RefreshScope
 public class MinIoClientConfig {
 
     @Value("${minio.endpoint}")

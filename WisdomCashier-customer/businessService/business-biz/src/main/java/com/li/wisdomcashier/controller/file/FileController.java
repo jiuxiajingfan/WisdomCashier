@@ -5,6 +5,7 @@ import com.li.wisdomcashier.utils.MinioUtils;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cloud.context.config.annotation.RefreshScope;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,7 @@ import jakarta.annotation.Resource;
 @RequestMapping("/file")
 @Tag(name = "文件上传下载相关")
 @Slf4j
+@RefreshScope
 public class FileController {
     @Resource
     private MinioUtils minIoUtils;
