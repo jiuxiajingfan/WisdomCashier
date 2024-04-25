@@ -3,7 +3,6 @@ package com.li.wisdomcashier.controller.account;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.anji.captcha.model.vo.CaptchaVO;
 import com.li.wisdomcashier.controller.OauthFeignClient;
 import com.li.wisdomcashier.controller.account.dto.ChangeEmailDTO;
 import com.li.wisdomcashier.controller.account.dto.ChangePwdDTO;
@@ -12,7 +11,10 @@ import com.li.wisdomcashier.controller.account.dto.LoginDTO;
 import com.li.wisdomcashier.controller.account.vo.TokenVO;
 import com.li.wisdomcashier.controller.account.vo.UserDetailVO;
 import com.li.wisdomcashier.entry.R;
+import com.li.wisdomcashier.entry.ResponseModel;
+import com.li.wisdomcashier.entry.vo.CaptchaVO;
 import com.li.wisdomcashier.exception.MyAuthenticationException;
+import com.li.wisdomcashier.service.CaptchaService;
 import com.li.wisdomcashier.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -47,8 +49,8 @@ public class AccountController {
     @Resource
     private UserService userService;
 
-//    @Resource
-//    private CaptchaService captchaService;
+    @Resource
+    private CaptchaService captchaService;
 
     @Resource
     OauthFeignClient oauthFeignClient;
@@ -92,22 +94,22 @@ public class AccountController {
         throw new MyAuthenticationException(parseObj.getStr("msg"));
     }
 
-//    @PostMapping("/getCaptcha")
-////    @Operation(summary = "获取图形验证码")
-//    @PermitAll
-//    public ResponseModel get(@RequestBody CaptchaVO captchaVO) {
-//        return captchaService.get(captchaVO);
-//    }
+    @PostMapping("/getCaptcha")
+    @Operation(summary = "获取图形验证码")
+    @PermitAll
+    public ResponseModel get(@RequestBody CaptchaVO captchaVO) {
+        return captchaService.get(captchaVO);
+    }
 
-//    @PostMapping("/checkCaptcha")
-////    @Operation(summary = "图形验证码检查")
-//    @PermitAll
-//    public ResponseModel check(@RequestBody CaptchaVO captchaVO) {
-//        return captchaService.check(captchaVO);
-//    }
+    @PostMapping("/checkCaptcha")
+    @Operation(summary = "图形验证码检查")
+    @PermitAll
+    public ResponseModel check(@RequestBody CaptchaVO captchaVO) {
+        return captchaService.check(captchaVO);
+    }
 
     @GetMapping("/test")
-    @PreAuthorize("@ss.hasPermission(#id,#no)")
+    @PreAuthorize("@ss.hasPermission(#no,3,2,1)")
     public String test(@RequestParam("id") int id, @RequestParam("no") int no) {
         return "ok!";
     }

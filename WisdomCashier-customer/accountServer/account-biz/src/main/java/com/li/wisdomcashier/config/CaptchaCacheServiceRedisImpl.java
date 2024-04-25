@@ -1,7 +1,9 @@
 package com.li.wisdomcashier.config;
 
-import com.anji.captcha.service.CaptchaCacheService;
+import com.li.wisdomcashier.service.CaptchaCacheService;
+import com.li.wisdomcashier.service.impl.CaptchaServiceFactory;
 import com.li.wisdomcashier.utils.RedisUtils;
+import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,12 @@ public class CaptchaCacheServiceRedisImpl implements CaptchaCacheService {
     @Override
     public String type() {
         return "redis";
+    }
+
+    @Override
+    @PostConstruct
+    public void init() {
+        CaptchaServiceFactory.put("redis", this);
     }
 
     @Override
