@@ -16,12 +16,4 @@ import java.util.List;
  * @since 2023-03-03
  */
 public interface TradeMapper extends BaseMapper<Trade> {
-
-    @Select("select *\n" +
-            "from t_trade\n" +
-            "where sid = #{sid}\n" +
-            "  and operater = #{userID}\n" +
-            "order by create_time desc\n" +
-            "limit 0,10")
-    List<Trade> selectLesat(@Param("sid") Long sid, @Param("userID") Long userId);
 }

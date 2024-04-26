@@ -50,9 +50,9 @@ public class TradeRefund implements Serializable {
     @TableField("status")
     private Integer status;
 
-    @TableField("operater")
+    @TableField("operator")
     @JsonSerialize(using = ToStringSerializer.class)
-    private Long operater;
+    private Long operator;
 
     @TableField("err_msg")
     private String errMsg;

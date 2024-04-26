@@ -35,4 +35,9 @@ public class FrequencyControlException extends RuntimeException {
         this.errorCode = error.getErrorCode();
         this.errorMsg = error.getErrorMsg();
     }
+
+    @Override
+    public synchronized Throwable fillInStackTrace() {
+        return this;
+    }
 }

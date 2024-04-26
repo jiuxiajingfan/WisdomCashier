@@ -2,7 +2,10 @@ package com.li.wisdomcashier.service;
 
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.TradeRefund;
+
+import java.util.List;
 
 /**
  * @author Li
@@ -11,4 +14,5 @@ import com.li.wisdomcashier.entry.TradeRefund;
  */
 public interface TradeRefundService extends IService<TradeRefund> {
 
+    R<List<TradeRefund>> queryRefund(Long sid, Long id);
 }

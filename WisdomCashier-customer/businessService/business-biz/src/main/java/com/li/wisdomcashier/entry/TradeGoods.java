@@ -40,7 +40,7 @@ public class TradeGoods implements Serializable {
     /**
      *
      */
-    private Long trade_id;
+    private Long tradeId;
 
     /**
      *
@@ -50,7 +50,7 @@ public class TradeGoods implements Serializable {
     /**
      *
      */
-    private BigDecimal price_in;
+    private BigDecimal priceIn;
 
     /**
      *
@@ -60,12 +60,12 @@ public class TradeGoods implements Serializable {
     /**
      *
      */
-    private BigDecimal price_out_sum;
+    private BigDecimal priceOutSum;
 
     /**
      *
      */
-    private BigDecimal price_in_sum;
+    private BigDecimal priceInSum;
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

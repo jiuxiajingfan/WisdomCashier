@@ -2,6 +2,8 @@ package com.li.wisdomcashier.exception;
 
 import lombok.Data;
 
+import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.io.Serializable;
 
 @Data

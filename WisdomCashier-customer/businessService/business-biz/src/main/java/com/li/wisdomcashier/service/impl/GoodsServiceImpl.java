@@ -140,7 +140,7 @@ public class GoodsServiceImpl extends ServiceImpl<GoodsMapper, Goods> implements
         trade.setCreateTime(LocalDateTime.now());
         trade.setStatus(TradeEnum.WAITING.getCode());
         trade.setSid(Long.parseLong(buyDTO.getSid()));
-        trade.setOperater(UserUtils.getUser().getId());
+        trade.setOperator(UserUtils.getUser().getId());
         tradeMapper.insert(trade);
         redisUtils.set(body, JSONUtil.toJsonStr(buyDTO.getGoods()), 600);
         redisUtils.set(body + "vip", buyDTO.getVip(), 600);

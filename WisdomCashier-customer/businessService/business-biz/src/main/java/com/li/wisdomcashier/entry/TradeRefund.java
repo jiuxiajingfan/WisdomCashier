@@ -46,7 +46,7 @@ public class TradeRefund implements Serializable {
     /**
      *
      */
-    private Date create_time;
+    private Date createTime;
 
     /**
      *
@@ -56,12 +56,12 @@ public class TradeRefund implements Serializable {
     /**
      *
      */
-    private Long operater;
+    private Long operator;
 
     /**
      *
      */
-    private String err_msg;
+    private String errMsg;
 
     /**
      *

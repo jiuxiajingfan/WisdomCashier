@@ -9,6 +9,7 @@ import com.li.wisdomcashier.entry.dto.PayVO;
 import com.li.wisdomcashier.service.GoodsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,51 +37,59 @@ public class GoodsController {
 
     @PostMapping("/addGood")
     @Operation(summary = "新增商品")
-    public R<String> addGood(@Validated @RequestBody GoodsDTO good) {
-        return goodsService.addGood(good);
+    @PreAuthorize("@ss.hasPermission(#dto.sid,1,2,3)")
+    public R<String> addGood(@Validated @RequestBody GoodsDTO dto) {
+        return goodsService.addGood(dto);
     }
 
     @PostMapping("/getGoodPage")
     @Operation(summary = "根据条形码获取商品信息(分页）")
-    public R<IPage<Goods>> getGoodPage(@Validated @RequestBody GoodQueryDTO goodQueryDTO) {
-        return goodsService.getGoodPage(goodQueryDTO);
+    @PreAuthorize("@ss.hasPermission(#dto.sid,1,2,3)")
+    public R<IPage<Goods>> getGoodPage(@Validated @RequestBody GoodQueryDTO dto) {
+        return goodsService.getGoodPage(dto);
     }
 
     @PostMapping("/updateGood")
     @Operation(summary = "更新商品")
-    public R<String> updateGood(@Validated @RequestBody GoodsDTO good) {
-        return goodsService.updateGood(good);
+    @PreAuthorize("@ss.hasPermission(#dto.sid,1,2,3)")
+    public R<String> updateGood(@Validated @RequestBody GoodsDTO dto) {
+        return goodsService.updateGood(dto);
     }
 
-    @GetMapping("/getGood")
+    @GetMapping("/getGoods")
     @Operation(summary = "根据条形码查询商品信息")
+    @PreAuthorize("@ss.hasPermission(#sid,1,2,3)")
     public R<GoodsVO> getGood(@RequestParam("gid") String gid,@RequestParam("sid") String sid) {
         return goodsService.getGoods(gid, Long.parseLong(sid));
     }
 
     @PostMapping("/buy")
     @Operation(summary = "商品交易")
-    R<String> buy(@RequestBody @Validated BuyDTO buyDTO) {
-        return goodsService.buy(buyDTO);
+    @PreAuthorize("@ss.hasPermission(#dto.sid,1,2,3)")
+    R<String> buy(@RequestBody @Validated BuyDTO dto) {
+        return goodsService.buy(dto);
     }
 
     @PostMapping("/deleteGood")
     @Operation(summary = "删除商品")
-    public R<String> deleteGood(@RequestBody @Validated DeleteDTO deleteDTO) {
-        return goodsService.deleteGood(deleteDTO);
+    @PreAuthorize("@ss.hasPermission(#dto.sid,1,2,3)")
+    public R<String> deleteGood(@RequestBody @Validated DeleteDTO dto) {
+        return goodsService.deleteGood(dto);
     }
 
 
     @PostMapping("/getGoodTemporaryPage")
     @Operation(summary = "获取临期商品")
-    R<IPage<Goods>> getGoodTemporaryPage(@RequestBody @Validated GoodQueryDTO goodQueryDTO) {
-        return goodsService.getGoodTemporaryPage(goodQueryDTO);
+    @PreAuthorize("@ss.hasPermission(#dto.sid,1,2,3)")
+    R<IPage<Goods>> getGoodTemporaryPage(@RequestBody @Validated GoodQueryDTO dto) {
+        return goodsService.getGoodTemporaryPage(dto);
     }
 
     @PostMapping("/updateGoodImg")
     @Operation(summary = "更新商品图片")
-    public R<String> updateGoodImg(@RequestBody @Validated PayVO payVO) {
-        return goodsService.updateGoodImg(payVO);
+    @PreAuthorize("@ss.hasPermission(#dto.shopID,1,2,3)")
+    public R<String> updateGoodImg(@RequestBody @Validated PayVO dto) {
+        return goodsService.updateGoodImg(dto);
     }
 
 
