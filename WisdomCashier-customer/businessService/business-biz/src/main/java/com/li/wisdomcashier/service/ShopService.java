@@ -33,4 +33,12 @@ public interface ShopService extends IService<Shop> {
      * @return
      */
     R<List<Integer>> getTradeStatus(String sid);
+
+    /**
+     * 判断是否是店铺会员
+     * @param sid
+     * @param phone
+     * @return
+     */
+    R<Long> isVip(String sid, String phone);
 }

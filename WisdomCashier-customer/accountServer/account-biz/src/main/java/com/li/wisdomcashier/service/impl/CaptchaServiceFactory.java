@@ -26,5 +26,4 @@ public class CaptchaServiceFactory {
     public static  CaptchaCacheService getCache(String cacheType) {
         return STRATEGY_MAP.get(cacheType);
     }
-
 }

@@ -17,7 +17,7 @@ import java.util.Collection;
  */
 @Slf4j
 public class PermissionConfig {
-    public boolean hasPermission(Long id, Integer... roles) {
+    public boolean hasPermission(Object id, Integer... roles) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null)
             return false;

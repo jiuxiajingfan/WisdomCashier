@@ -25,7 +25,7 @@ public class Vip implements Serializable {
     /**
      *
      */
-    private Long shop_id;
+    private Long shopId;
 
     /**
      *
@@ -45,7 +45,7 @@ public class Vip implements Serializable {
     /**
      *
      */
-    private Date gmt_limit;
+    private Date gmtLimit;
 
     /**
      *
