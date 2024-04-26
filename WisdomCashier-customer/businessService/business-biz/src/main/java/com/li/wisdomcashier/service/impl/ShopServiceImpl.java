@@ -12,9 +12,11 @@ import com.li.wisdomcashier.controller.shop.shopApply.dto.ShopQueryDTO;
 import com.li.wisdomcashier.controller.shop.shopApply.vo.ShopVO;
 import com.li.wisdomcashier.convert.ShopConvert;
 import com.li.wisdomcashier.entry.*;
+import com.li.wisdomcashier.enums.VipEnum;
 import com.li.wisdomcashier.mapper.RoleMapper;
 import com.li.wisdomcashier.mapper.ShopMapper;
 import com.li.wisdomcashier.mapper.SysMenuMapper;
+import com.li.wisdomcashier.mapper.VipMapper;
 import com.li.wisdomcashier.service.ShopService;
 import com.li.wisdomcashier.utils.UserUtils;
 import jakarta.annotation.Resource;
@@ -43,6 +45,9 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
 
     @Resource
     private SysMenuMapper sysMenuMapper;
+
+    @Resource
+    private VipMapper vipMapper;
 
     @Override
     public R<IPage<ShopVO>> getUserShopPage(ShopQueryDTO shopQueryDTO) {
@@ -101,6 +106,17 @@ public class ShopServiceImpl extends ServiceImpl<ShopMapper, Shop> implements Sh
         integers.add(shop.getWxStatus());
         integers.add(shop.getZfbStatus());
         return R.ok(integers);
+    }
+
+    @Override
+    public R<Long> isVip(String sid, String phone) {
+        return R.ok(
+                vipMapper.selectCount(Wrappers.lambdaQuery(Vip.class)
+                .eq(Vip::getPhone, phone)
+                .eq(Vip::getShopId, Long.parseLong(sid))
+                .eq(Vip::getStatus, VipEnum.ACTIVE.getCode())
+                )
+        );
     }
 
 }

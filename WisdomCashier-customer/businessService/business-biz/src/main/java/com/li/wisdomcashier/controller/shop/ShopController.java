@@ -12,6 +12,7 @@ import com.li.wisdomcashier.service.ShopCategoryService;
 import com.li.wisdomcashier.service.ShopService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -61,20 +62,30 @@ public class ShopController {
 
     @Operation(summary = "获取店铺菜单")
     @GetMapping("/getShopMenu")
+    @PreAuthorize("@ss.hasPermission(#sid,3,2,1)")
     public R<List<Tree<String>>> getMenu(String shopId) {
         return shopService.getMenu(Long.parseLong(shopId));
     }
 
     @Operation(summary = "获取店铺分类")
     @GetMapping("/getCategory")
+    @PreAuthorize("@ss.hasPermission(#sid,3,2,1)")
     R<List<String>> getCategory(String sid) {
         return shopCategoryService.getCategory(sid);
     }
 
     @Operation(summary = "支持支付状态")
     @GetMapping("/getTradeStatus")
+    @PreAuthorize("@ss.hasPermission(#sid,3,2,1)")
     R<List<Integer>> getTradeStatus(String sid) {
         return shopService.getTradeStatus(sid);
+    }
+
+    @Operation(summary = "判断是否是店铺会员")
+    @GetMapping("/isVip")
+    @PreAuthorize("@ss.hasPermission(#sid,3,2,1)")
+    public R<Long> isVip(String sid, String phone) {
+        return shopService.isVip(sid, phone);
     }
 
 }
