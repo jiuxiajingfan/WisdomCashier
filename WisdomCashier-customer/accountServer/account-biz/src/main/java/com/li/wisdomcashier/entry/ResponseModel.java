@@ -12,6 +12,7 @@ public class ResponseModel implements Serializable {
     private String repCode;
     private String repMsg;
     private Object repData;
+    private Integer code = 200;
 
     public ResponseModel() {
         this.repCode = RepCodeEnum.SUCCESS.getCode();

@@ -24,7 +24,7 @@ public interface ShopService extends IService<Shop> {
      */
     R<IPage<ShopVO>> getUserShopPage(ShopQueryDTO shopQueryDTO);
 
-    R<List<Tree<String>>> getMenu(long id);
+    R<List<Tree<String>>> getMenu(Long id);
 
     /**
      * 获取交易方式状态

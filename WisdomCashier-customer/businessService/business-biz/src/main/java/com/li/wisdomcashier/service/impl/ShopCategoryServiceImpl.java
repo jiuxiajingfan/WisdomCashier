@@ -29,7 +29,7 @@ public class ShopCategoryServiceImpl extends ServiceImpl<ShopCategoryMapper, Sho
     private ShopCategoryMapper shopCategoryMapper;
 
     @Override
-    @PreAuthorize("@ss.hasPermission(#sid,1,2,3)")
+    @PreAuthorize("@ss.hasPermission(#sid,3,2,1)")
     public R<List<String>> getCategory(String sid) {
         if (StringUtils.isBlank(sid))
             return R.error("店铺ID不能为空！");

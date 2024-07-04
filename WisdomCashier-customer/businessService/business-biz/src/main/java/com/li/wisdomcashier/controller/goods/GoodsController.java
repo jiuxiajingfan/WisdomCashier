@@ -1,7 +1,10 @@
 package com.li.wisdomcashier.controller.goods;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.li.wisdomcashier.controller.goods.dto.*;
+import com.li.wisdomcashier.controller.goods.dto.BuyDTO;
+import com.li.wisdomcashier.controller.goods.dto.DeleteDTO;
+import com.li.wisdomcashier.controller.goods.dto.GoodQueryDTO;
+import com.li.wisdomcashier.controller.goods.dto.GoodsDTO;
 import com.li.wisdomcashier.controller.goods.vo.GoodsVO;
 import com.li.wisdomcashier.entry.Goods;
 import com.li.wisdomcashier.entry.R;
@@ -9,11 +12,10 @@ import com.li.wisdomcashier.entry.dto.PayVO;
 import com.li.wisdomcashier.service.GoodsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.annotation.Resource;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import jakarta.annotation.Resource;
 
 /**
  * @ClassName GoodsController
@@ -28,7 +30,6 @@ import jakarta.annotation.Resource;
 public class GoodsController {
     @Resource
     private GoodsService goodsService;
-
     @GetMapping("/reqGood")
     @Operation(summary = "根据条形码查询商品信息（爬虫）")
     public R<Goods> reqGood(String gid) {

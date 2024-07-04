@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 /**
  * @author Li
@@ -50,7 +49,7 @@ public class ShopApplyServiceImpl extends ServiceImpl<ShopApplyMapper, ShopApply
             apply.setGmtCreate(e.getGmtCreate());
             apply.setId(e.getId());
             return apply;
-        }).collect(Collectors.toList());
+        }).toList();
         if (shopApplies.isEmpty()) {
             collect = new ArrayList<>();
         }

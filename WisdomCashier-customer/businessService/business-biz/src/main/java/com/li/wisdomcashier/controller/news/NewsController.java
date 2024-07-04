@@ -3,6 +3,9 @@ package com.li.wisdomcashier.controller.news;
 import com.li.wisdomcashier.controller.news.vo.NewsVO;
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.service.NewsService;
+import com.li.wisdomcashier.service.ShopApplyService;
+import com.li.wisdomcashier.service.ShopCategoryService;
+import com.li.wisdomcashier.service.ShopService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,6 +30,16 @@ public class NewsController {
 
     @Resource
     private NewsService newsService;
+
+    @Resource
+    private ShopApplyService shopApplyService;
+
+    @Resource
+    private ShopService shopService;
+
+    @Resource
+    private ShopCategoryService shopCategoryService;
+
 
 
     @GetMapping("/getNews")
