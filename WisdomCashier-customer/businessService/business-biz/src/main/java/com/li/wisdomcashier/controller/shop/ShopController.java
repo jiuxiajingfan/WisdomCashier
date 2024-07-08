@@ -67,30 +67,30 @@ public class ShopController {
 
     @Operation(summary = "获取店铺菜单")
     @GetMapping("/getShopMenu")
-    public R<List<Tree<String>>> getMenu(String shopId) {
+    public R<List<Tree<String>>> getMenu(@RequestParam String shopId) {
         return shopService.getMenu(Long.parseLong(shopId));
     }
 
     @Operation(summary = "获取店铺分类")
     @GetMapping("/getCategory")
-    R<List<String>> getCategory(String sid) {
+    R<List<String>> getCategory(@RequestParam String sid) {
         return shopCategoryService.getCategory(sid);
     }
 
     @Operation(summary = "支持支付状态")
     @GetMapping("/getTradeStatus")
-    R<List<Integer>> getTradeStatus(String sid) {
+    R<List<Integer>> getTradeStatus(@RequestParam String sid) {
         return shopService.getTradeStatus(sid);
     }
 
     @Operation(summary = "判断是否是店铺会员")
     @GetMapping("/isVip")
-    public R<Long> isVip(String sid, String phone) {
+    public R<Long> isVip(@RequestParam String sid, @RequestParam String phone) {
         return shopService.isVip(sid, phone);
     }
 
     @Operation(summary = "个人申请加入店铺进度")
-    @PostMapping("/getApplyListPer")
+    @GetMapping("/getApplyListPer")
     R<List<ApplyVO>> getApplyListPer(){
         return applyService.getApplyListPer();
     }

@@ -30,4 +30,7 @@ public class RefundDTO implements Serializable {
 
     @NotNull(message = "标识号不能为空")
     String no;
+
+    @NotNull(message = "交易类型不能为空")
+    Integer type;
 }

@@ -3,6 +3,7 @@ package com.li.wisdomcashier.service;
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.PayVO;
+import com.li.wisdomcashier.entry.dto.RefundDTO;
 import com.li.wisdomcashier.entry.vo.StatusVO;
 
 public interface PayService {
@@ -22,4 +23,5 @@ public interface PayService {
      */
     R<StatusVO> status(Integer type, String tradeNo);
 
+    R<String> refundPay(RefundDTO refundDTO);
 }

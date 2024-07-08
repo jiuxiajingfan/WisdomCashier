@@ -4,6 +4,7 @@ import com.li.wisdomcashier.annotation.RedissonLock;
 import com.li.wisdomcashier.entry.R;
 import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.PayVO;
+import com.li.wisdomcashier.entry.dto.RefundDTO;
 import com.li.wisdomcashier.entry.vo.StatusVO;
 import com.li.wisdomcashier.exception.BusinessException;
 import com.li.wisdomcashier.service.DubboPayService;
@@ -45,6 +46,11 @@ public class PayServiceImpl implements PayService {
     @RedissonLock(keyPrefix = "PAY_STATUS",key = "#tradeNo+#type",time = 1000)
     public R<StatusVO> status(Integer type, String tradeNo) {
       return R.ok(dubboPayService.status(type, tradeNo));
+    }
+
+    @Override
+    public R<String> refundPay(RefundDTO refundDTO) {
+        return null;
     }
 
 }

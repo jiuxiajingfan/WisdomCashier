@@ -53,11 +53,11 @@ public class PayController {
 //        return payService.closePay(tradeNo, Long.parseLong(sid));
 //    }
 //
-//    @PostMapping("/refundPay")
-//    @Operation(summary = "支付宝交易退款")
-//    R<String> refundPay(@RequestBody @Validated RefundDTO refundDTO) {
-//        return payService.refundPay(refundDTO);
-//    }
+    @PostMapping("/refundPay")
+    @Operation(summary = "交易退款")
+    R<String> refundPay(@RequestBody @Validated RefundDTO refundDTO) {
+        return payService.refundPay(refundDTO);
+    }
 //
 //    @PostMapping("/queryRefund")
 //    @Operation(summary = "支付宝交易退款查询")
