@@ -49,6 +49,6 @@ public interface DubboPayService {
      * @param refundDTO
      * @return
      */
-    String refund(Integer type,RefundDTO refundDTO);
+    String refund(RefundDTO refundDTO);
 
 }

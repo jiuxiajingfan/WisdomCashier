@@ -16,13 +16,18 @@ public @interface RedissonLock {
     TimeUnit unit() default TimeUnit.MICROSECONDS;
 
     /**
-     * 尝试时间
+     * 持有时间
      * @return
      */
-    int time() default 30000;
+    int time() default 5000;
 
     /**
      * 是否公平锁，false:非公平锁，true:公平锁
      */
     boolean fair() default false;
+
+    /**
+     * 尝试获取锁的最大时间
+     */
+    int expire() default 1000;
 }

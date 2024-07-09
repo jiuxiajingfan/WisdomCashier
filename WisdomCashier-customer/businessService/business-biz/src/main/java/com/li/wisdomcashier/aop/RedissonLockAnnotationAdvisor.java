@@ -43,7 +43,7 @@ public class RedissonLockAnnotationAdvisor {
         RLock lock = redissonClient.getLock(redissonLock.keyPrefix() + key.get());
         try {
             log.info("{}尝试上锁", Thread.currentThread().getName() +redissonLock.keyPrefix() + key.get());
-            boolean flag = lock.tryLock(redissonLock.time(), redissonLock.unit());
+            boolean flag = lock.tryLock(redissonLock.time(),redissonLock.expire() ,redissonLock.unit());
             if (flag) {
                 log.info("{}上锁成功", Thread.currentThread().getName() +redissonLock.keyPrefix() + key.get());
                 return joinPoint.proceed();

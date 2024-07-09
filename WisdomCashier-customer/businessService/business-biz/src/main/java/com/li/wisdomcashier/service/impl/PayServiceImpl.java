@@ -20,6 +20,7 @@ import static com.li.wisdomcashier.constant.MQConstant.ROUTING_KEY_ORDER_CYCLE;
 
 @Service
 public class PayServiceImpl implements PayService {
+
     @DubboReference(version = "1.0", check = false, timeout = 5000, retries = 0)
     public DubboPayService dubboPayService;
 
@@ -27,7 +28,7 @@ public class PayServiceImpl implements PayService {
     public RabbitTemplate rabbitTemplate;
 
     @Override
-    @RedissonLock(keyPrefix = "PAY_PAY",key = "#payDTO.id+#payDTO.type",time = 1000)
+    @RedissonLock(keyPrefix = "PAY_PAY",key = "#payDTO.id+#payDTO.type",expire = -1)
     public R<PayVO> pay(PayDTO payDTO) {
         payDTO.setOperatorId(UserUtils.getUser().getId().toString());
         PayVO payVO = dubboPayService.pay(payDTO);
@@ -43,14 +44,19 @@ public class PayServiceImpl implements PayService {
     }
 
     @Override
-    @RedissonLock(keyPrefix = "PAY_STATUS",key = "#tradeNo+#type",time = 1000)
+    @RedissonLock(keyPrefix = "PAY_STATUS",key = "#tradeNo+#type",expire = -1)
     public R<StatusVO> status(Integer type, String tradeNo) {
       return R.ok(dubboPayService.status(type, tradeNo));
     }
 
     @Override
-    public R<String> refundPay(RefundDTO refundDTO) {
-        return null;
+    @RedissonLock(keyPrefix = "PAY_REFUND",key = "#dto.sid+#dto.tradeNo+#dto.type",expire = -1)
+    public R<String> refundPay(RefundDTO dto) {
+        String refund = dubboPayService.refund(dto);
+        if(null == refund){
+            throw new BusinessException("发起退款失败");
+        }
+        return R.ok(refund);
     }
 
 }

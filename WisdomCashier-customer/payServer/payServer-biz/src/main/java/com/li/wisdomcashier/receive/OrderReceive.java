@@ -106,13 +106,15 @@ public class OrderReceive {
                         .set(Trade::getType, payDTO.getType())
                         .set(Trade::getMsg, "支付成功")
                         .eq(Trade::getId, payDTO.getId())
+                        .eq(Trade::getStatus,TradeEnum.WAITING.getCode())
                 );
                 //通知
                 rabbitTemplate.convertAndSend(ROUTING_EXCHANGE_ORDER, ROUTING_KEY_ORDER_FINISH, payDTO);
                 removeTask(payDTO.getRemoteId());
             }
         };
-        ScheduledFuture<?> scheduledFuture = scheduler.scheduleWithFixedDelay(getResultTask, 0, 1, TimeUnit.SECONDS);
+        //5秒一次 支付回调网关速度同步更快，作为网关兜底
+        ScheduledFuture<?> scheduledFuture = scheduler.scheduleWithFixedDelay(getResultTask, 5, 5, TimeUnit.SECONDS);
         futureTaskMap.put(payDTO.getRemoteId(), scheduledFuture);
     }
 

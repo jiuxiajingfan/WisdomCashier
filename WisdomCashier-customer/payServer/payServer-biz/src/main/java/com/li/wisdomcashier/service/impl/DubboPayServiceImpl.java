@@ -29,8 +29,8 @@ public class DubboPayServiceImpl implements DubboPayService {
     @Override
     public PayVO pay(PayDTO payDTO) {
         AbstractPayStrategy payStrategy = PayStrategyFactory.getPayStrategy(payDTO.getType());
-        if(Objects.isNull(payStrategy)) {
-            log.error("支付接口调用错误！无该类型{}",payDTO.getType());
+        if (Objects.isNull(payStrategy)) {
+            log.error("支付接口调用错误！无该类型{}", payDTO.getType());
             return null;
         }
         return payStrategy.pay(payDTO);
@@ -39,8 +39,8 @@ public class DubboPayServiceImpl implements DubboPayService {
     @Override
     public StatusVO status(Integer type, String tradeNo) {
         AbstractPayStrategy payStrategy = PayStrategyFactory.getPayStrategy(type);
-        if(Objects.isNull(payStrategy)) {
-            log.error("支付接口调用错误！无该类型{}",type);
+        if (Objects.isNull(payStrategy)) {
+            log.error("支付接口调用错误！无该类型{}", type);
             return null;
         }
         return payStrategy.status(tradeNo);
@@ -49,8 +49,8 @@ public class DubboPayServiceImpl implements DubboPayService {
     @Override
     public String cancel(Integer type, String tradeNo) {
         AbstractPayStrategy payStrategy = PayStrategyFactory.getPayStrategy(type);
-        if(Objects.isNull(payStrategy)) {
-            log.error("支付接口调用错误！无该类型{}",type);
+        if (Objects.isNull(payStrategy)) {
+            log.error("支付接口调用错误！无该类型{}", type);
             return null;
         }
         return payStrategy.cancel(tradeNo);
@@ -59,8 +59,8 @@ public class DubboPayServiceImpl implements DubboPayService {
     @Override
     public String close(Integer type, String tradeNo) {
         AbstractPayStrategy payStrategy = PayStrategyFactory.getPayStrategy(type);
-        if(Objects.isNull(payStrategy)) {
-            log.error("支付接口调用错误！无该类型{}",type);
+        if (Objects.isNull(payStrategy)) {
+            log.error("支付接口调用错误！无该类型{}", type);
             return null;
         }
         return payStrategy.close(tradeNo);
@@ -69,18 +69,18 @@ public class DubboPayServiceImpl implements DubboPayService {
     @Override
     public PayInfo detail(Integer type, String tradeNo) {
         AbstractPayStrategy payStrategy = PayStrategyFactory.getPayStrategy(type);
-        if(Objects.isNull(payStrategy)) {
-            log.error("支付接口调用错误！无该类型{}",type);
+        if (Objects.isNull(payStrategy)) {
+            log.error("支付接口调用错误！无该类型{}", type);
             return null;
         }
         return payStrategy.detail(tradeNo);
     }
 
     @Override
-    public String refund(Integer type, RefundDTO refundDTO) {
-        AbstractPayStrategy payStrategy = PayStrategyFactory.getPayStrategy(type);
-        if(Objects.isNull(payStrategy)) {
-            log.error("支付接口调用错误！无该类型{}",type);
+    public String refund(RefundDTO refundDTO) {
+        AbstractPayStrategy payStrategy = PayStrategyFactory.getPayStrategy(refundDTO.getType());
+        if (Objects.isNull(payStrategy)) {
+            log.error("支付接口调用错误！无该类型{}", refundDTO.getType());
             return null;
         }
         return payStrategy.refund(refundDTO);
