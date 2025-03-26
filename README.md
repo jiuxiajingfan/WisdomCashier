@@ -59,4 +59,4 @@
 ## 特别鸣谢
 
 - 感谢 JetBrains 提供的免费开源 License：
-  - <img height="400" src="https://camo.githubusercontent.com/815ee6b83c8949f0037d19e10ad06da29a2c00dfec546cb26cd35f11895c66fa/68747470733a2f2f7265736f75726365732e6a6574627261696e732e636f6d2f73746f726167652f70726f64756374732f636f6d70616e792f6272616e642f6c6f676f732f6a625f6265616d2e706e67" width="400"/>
+  - <img height="400" src="https://cdn.dianaforever.cn/oss/2025/03/26/idea.ico" width="400"/>
