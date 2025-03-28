@@ -5,6 +5,9 @@ import com.li.wisdomcashier.entry.dto.PayDTO;
 import com.li.wisdomcashier.entry.dto.PayVO;
 import com.li.wisdomcashier.entry.dto.RefundDTO;
 import com.li.wisdomcashier.entry.vo.StatusVO;
+import jakarta.servlet.http.HttpServletRequest;
+
+import java.util.Map;
 
 public interface PayService {
 

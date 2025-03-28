@@ -7,6 +7,7 @@ import com.li.wisdomcashier.entry.dto.RefundDTO;
 import com.li.wisdomcashier.entry.vo.StatusVO;
 import com.li.wisdomcashier.enums.pay.PayEnums;
 import jakarta.annotation.PostConstruct;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 支付策略
@@ -67,4 +68,19 @@ public abstract class AbstractPayStrategy {
      * @param refundDTO dto
      */
     public abstract String refund(RefundDTO refundDTO);
+
+    /**
+     * 支付回调
+     * @param request
+     * @return
+     */
+    public abstract Object payCallback(HttpServletRequest request);
+
+
+    /**
+     * 退款回调
+     * @param request
+     * @return
+     */
+    public abstract Object refundCallback(HttpServletRequest request);
 }

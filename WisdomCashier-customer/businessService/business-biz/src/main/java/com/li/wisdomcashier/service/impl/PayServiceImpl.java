@@ -11,9 +11,12 @@ import com.li.wisdomcashier.service.DubboPayService;
 import com.li.wisdomcashier.service.PayService;
 import com.li.wisdomcashier.utils.UserUtils;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.dubbo.config.annotation.DubboReference;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 import static com.li.wisdomcashier.constant.MQConstant.ROUTING_EXCHANGE_ORDER;
 import static com.li.wisdomcashier.constant.MQConstant.ROUTING_KEY_ORDER_CYCLE;
@@ -58,5 +61,4 @@ public class PayServiceImpl implements PayService {
         }
         return R.ok(refund);
     }
-
 }

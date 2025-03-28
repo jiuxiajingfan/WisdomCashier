@@ -9,9 +9,13 @@ import com.li.wisdomcashier.service.PayService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
+import jakarta.annotation.security.PermitAll;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 
 /**
@@ -64,5 +68,4 @@ public class PayController {
 //    R<String> queryRefund(@RequestBody @Validated RefundDTO refundDTO) {
 //        return payService.queryRefund(refundDTO);
 //    }
-
 }

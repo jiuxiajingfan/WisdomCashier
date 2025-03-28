@@ -7,6 +7,7 @@ import com.li.wisdomcashier.entry.dto.RefundDTO;
 import com.li.wisdomcashier.entry.vo.StatusVO;
 import com.li.wisdomcashier.enums.pay.PayEnums;
 import com.li.wisdomcashier.enums.trade.TradeEnum;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
 
 /**
@@ -58,6 +59,16 @@ public class CashPayStrategy extends AbstractPayStrategy {
 
     @Override
     public String refund(RefundDTO refundDTO) {
+        return null;
+    }
+
+    @Override
+    public Object payCallback(HttpServletRequest request) {
+        return null;
+    }
+
+    @Override
+    public Object refundCallback(HttpServletRequest request) {
         return null;
     }
 }

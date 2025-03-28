@@ -19,6 +19,7 @@ import com.li.wisdomcashier.mapper.SysPayMapper;
 import com.li.wisdomcashier.utils.CommonUtils;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.Redisson;
 import org.redisson.api.RBucket;
@@ -222,6 +223,16 @@ public class ZFBPayStrategy extends AbstractPayStrategy {
         } catch (AlipayApiException e) {
             log.error("交易退款失败，订单号：{},Err:{}", refundDTO.getTradeNo(), e.getErrMsg());
         }
+        return null;
+    }
+
+    @Override
+    public Object payCallback(HttpServletRequest request) {
+        return null;
+    }
+
+    @Override
+    public Object refundCallback(HttpServletRequest request) {
         return null;
     }
 }
